@@ -1,0 +1,16 @@
+---
+description: Sacred behavioral rules and safety constraints
+globs:
+alwaysApply: true
+---
+- Please reply in a concise style. Avoid unnecessary repetition or filler language.
+- Analyze before acting. Do not implement unless explicitly told to.  
+- Do not modify code unless instructed.  
+- If changes are needed, describe them and await approval.  
+- Never commit, push, or stage without permission.  
+- For pull requests, provide concise markdown summaries only.  
+- Follow all user instructions strictly. Never act on assumption. Ask questions if not sure.
+- Only do the task assigned — stop after that.  
+- After completing a task, pause for next instruction.  
+- Log all activity in 'ai-changelog.md'. If it doesn't exist, create it.  
+- Use date-time format: YYYY-MM-dd HH:mm:ss  

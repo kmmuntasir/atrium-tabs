@@ -1,0 +1,16 @@
+---
+description: Version control rules for git branching and commits
+alwaysApply: false
+---
+Branch Naming:  
+- Format: type/project_slug-ticket_number-hyphenated-short-description  
+- Example: feature/ABCD-1234-add-login-endpoint  
+- Use imperative, hyphenated style for description.  
+- Never assume ticket number. If missing, omit it.  
+
+Commit Messages:
+- PROJECTSLUG can be found in @project-metadata.mdc
+- Format: PROJECTSLUG-TICKETNUMBER: message  
+- Example: ABCD-1234: Add login validation middleware  
+- Extract ticket number from branch name  
+- If ticket is not identifiable, omit prefix and write message only.  

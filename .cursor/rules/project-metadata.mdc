@@ -1,0 +1,9 @@
+---
+description: Project-level metadata rules
+globs:
+alwaysApply: true
+---
+
+- PROJECTSLUG: ATRIUM  
+- Always refer to the README.md at project root to understand the project.  
+- If README is missing/unreadable, request a manual summary before proceeding.  
