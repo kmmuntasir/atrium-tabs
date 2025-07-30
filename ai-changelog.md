@@ -1,0 +1,1 @@
+2024-07-30 14:37:00 - Updated PRD-v1.0.md with missing details from the conversation, including translation pipeline review process, toast positioning/styling, and telemetry legal review standard.

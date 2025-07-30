@@ -71,7 +71,7 @@ The extension will be disabled in Incognito mode; no UI or tracking will occur.
 ### 3.2 Group Creation
 - Users pin the extension. Clicking the icon opens a popup showing the group list. A text input field at the bottom allows adding a new group by typing a name and hitting Enter/clicking "Add". The group is added to the list but not switched to. Switching occurs only by clicking the group name.
 - "Save current window as new group" feature: Pops a naming dialog pre-filled with "Window - Jul 30 @ 14:37". Obeys "Include Pinned Tabs in Groups" setting. Auto-assigns a unique color from the palette.
-- When a group with 0 tabs is switched to, a new tab is opened in the browser for that group.
+- Groups with 0 tabs are kept in the list. When a group with 0 tabs is switched to, a new tab is opened in the browser for that group.
 
 ### 3.3 Keyboard Shortcuts
 - Customizable via a custom settings UI.
@@ -115,6 +115,10 @@ The extension will be disabled in Incognito mode; no UI or tracking will occur.
 - **Scope:** Just the JSON file, no thumbnails.
 - **Frequency:** Every hour, keeping 25 historical backups.
 - **Naming:** Single "Atrium Tabs Backups" folder at Drive root. Filename: `atrium-YYYY-MM-DD-HH-mm-ss-v{extVersion}[-manual].json`. Manual jobs always get "-manual" suffix.
+
+### 3.8 Context Menu Integration
+- Right-clicking a tab on the tab bar will show a "Move tab to -> [Group list]" option. When selected, the tab will instantly move to the target group (closes from current window, is now only in target group).
+- The "Save current window as new group" feature does not require a context menu; it is available via a button in the popup.
 
 ## 4. Core Components
 
@@ -223,7 +227,7 @@ The extension will be disabled in Incognito mode; no UI or tracking will occur.
     - **Import/Export:** Allows importing or exporting group collections as JSON files.
     - **Hotkey Mapping:** Custom UI for mapping keyboard shortcuts.
     - **"Include Pinned Tabs in Groups" checkbox:** Controls pinned tab behavior (as described in Core Requirements).
-    - **Eager Load Toggle:** Allows power users to switch between Lazy-load (default) and Eager-load. When Eager-load is enabled, a warning will be displayed about performance impact ("Heads-up: eager loading can hammer RAM/CPU on large groups.").
+    - **Eager Load Toggle:** Allows power users to switch between Lazy-load (default) and Eager-load. When Eager-load is enabled, an inline warning will be displayed about performance impact ("Heads-up: eager loading can hammer RAM/CPU on large groups."). Default is OFF.
     - **Welcome/Quick Tour Tab:** Onboarding carousel accessible as a tab within the settings page.
 
 ### 5.4 Group Management Page (Full-Page)
@@ -240,7 +244,7 @@ The extension will be disabled in Incognito mode; no UI or tracking will occur.
 - **Content:**
     - **Slide 1: "Capture This Chaos"**
         - **Caption:** "Click the Atrium icon once-bam! Your mess becomes 'New Group 0'."
-        - **Shows:** Cursor hitting the toolbar icon -> popup flashes, "+ Save window" clicked -> popup shows newly added "New Group 0" row.
+        - **Shows:** Cursor hitting toolbar icon -> popup flashes, "+ Save window" clicked -> popup shows newly added "New Group 0" row.
         - **CTAs:** Next, Skip Tour.
     - **Slide 2: "Jump Like a Jedi"**
         - **Caption:** "Smash Ctrl/⌘‑Shift‑1.9 to swap groups; your old tabs vanish, the new set pops in."
@@ -324,6 +328,11 @@ The extension will be disabled in Incognito mode; no UI or tracking will occur.
 - **Drag and Drop:** Only supported when "Manual" sort is selected in settings.
 - **Scope:** Chosen sort order applies to both the popup and Group Management page.
 - **Persistence:** Sort setting lives in `storage.local` and syncs across machines via JSON export.
+
+### 6.7 Metrics Definitions
+- **Daily Active Users:** A user is "active" if they simply have Chrome open with the extension installed.
+- **Average Groups per User:** Includes empty groups in the count.
+- **Average Tabs per Group per User:** Counts all tabs (discarded + pinned per current settings).
 
 ## 7. Tech Stack
 
