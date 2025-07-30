@@ -606,70 +606,7 @@ If this, tell me:
 Pick one path (and give the palette details if curated) so we can lock the color selection UI and auto‑assignment logic.
 
 You:
-let's do 32 colors, and try to avoid overlap until all are used.
-
-AI:
-Got it-32 curated swatches with round‑robin auto‑assignment.
-Next question:
-Which exact 32 colors do you want?
-If you already have a palette in mind, drop the HEX codes (in order).
-If not, should I draft one (e.g., Material Design's 10 accent hues x 3 tints + 2 greys chosen for WCAG contrast) and bring it back for your thumbs‑up?
-
-You:
-draft one
-
-AI: Here's a clean 32‑swatch draft, two tints per hue (Material‑inspired: 500 + 700). We'll cycle through them round‑robin when auto‑assigning, avoiding repeats until all 32 are taken.
-Hue	Mid (500)	Dark (700)
-Red	#F44336	#D32F2F
-Deep Orange	#FF5722	#E64A19
-Orange	#FF9800	#F57C00
-Amber	#FFC107	#FFA000
-Yellow	#FFEB3B	#FBC02D
-Lime	#CDDC39	#AFB42B
-Light Green	#8BC34A	#689F38
-Green	#4CAF50	#388E3C
-Teal	#009688	#00796B
-Cyan	#00BCD4	#0097A7
-Light Blue	#03A9F4	#0288D1
-Blue	#2196F3	#1976D2
-Indigo	#3F51B5	#303F9F
-Deep Purple	#673AB7	#512DA8
-Purple	#9C27B0	#7B1FA2
-Pink	#E91E63	#C2185B
-One swatch per group row background; text/icons stay white or near‑white for contrast.
-Question: Happy with this 32‑color set, or would you like any tweaks (e.g., swap in a brown/grey, adjust a specific hex)?
-
-You:
-let's do 36, so that a 6x6 grid can be shown.
-
-AI: We're four swatches short of the 6 x 6 dream. 📦
-Which flavour do you want for the bonus slots?
-Earthy neutrals: Brown 500/700 and Blue‑Grey 500/700.
-Extra brights: punch‑up tints like Electric‑Lime, Hot‑Pink+, etc.
-Your own picks: drop four HEX codes and I'll slot them in.
-Ping me with 1, 2, or your custom hexes, and we'll lock the 36‑color grid.
-
-You:
-redraft.
-
-AI: 36‑Color Palette - 6 x 6 Grid (Redrafted)
-Below is a balanced, high‑contrast set built from Material‑Design swatches.
-Each column is a hue; each row is a deeper / more vibrant shade.
-Auto‑assignment will cycle left -> right, top -> bottom, avoiding repeats until all 36 are used.
-Row ↓ / Hue →	Red	Orange	Yellow	Green	Blue	Purple
-1 (light‑100)	#FFCDD2	#FFE0B2	#FFF9C4	#C8E6C9	#BBDEFB	#E1BEE7
-2 (light‑300)	#E57373	#FFB74D	#FFF176	#A5D6A7	#64B5F6	#BA68C8
-3 (mid‑500)	#F44336	#FF9800	#FFEB3B	#4CAF50	#2196F3	#9C27B0
-4 (mid‑600)	#E53935	#FB8C00	#FDD835	#43A047	#1E88E5	#8E24AA
-5 (dark‑800)	#C62828	#EF6C00	#F9A825	#2E7D32	#1565C0	#6A1B9A
-6 (accent‑A200)	#FF5252	#FFAB40	#FFFF00	#69F0AE	#448AFF	#E040FB
-Accessibility note:
-Rows 1-2 are very light; the popup will switch text/icons to dark gray on those backgrounds for contrast.
-Rows 3-6 keep white foregrounds.
-If any hex needs tweaking (e.g., swap Yellow A200 for a softer Amber), just holler. Otherwise this 36‑pack will ship as the default palette.
-
-You:
-okay, let's redo it. Because the user can choose color theme in the settings.
+The user can choose color theme in the settings.
 we need 16 colors, so 4x4 grid. All should be light color, so that the text can be black/dark. This is for light color theme.
 So we will need another 16 colors where all should be dark colors, so that the text can be white. This is for dark color theme.
 
