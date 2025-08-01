@@ -173,23 +173,26 @@ The extension will be disabled in Incognito mode; no UI or tracking will occur.
 #### 4.4 Color Palettes
 - Two 4x4 grids of 16 colors each:
 
-##### Light-theme palette (pastels - dark text)
+### 🎨 Light-theme palette (Pastels – Dark Text)
 
-| | 1 | 2 | 3 | 4 |
-|---|---|---|---|---|
-| **A** | `#EF9A9A` (Red 200) | `#F48FB1` (Pink 200) | `#CE93D8` (Purple 200) | `#B39DDB` (Deep Purple 200) |
-| **B** | `#9FA8DA` (Indigo 200) | `#90CAF9` (Blue 200) | `#81D4FA` (Light Blue 200) | `#80DEEA` (Cyan 200) |
-| **C** | `#80CBC4` (Teal 200) | `#A5D6A7` (Green 200) | `#C5E1A5` (Light Green 200) | `#E6EE9C` (Lime 200) |
-| **D** | `#FFF59D` (Yellow 200) | `#FFE082` (Amber 200) | `#FFCC80` (Orange 200) | `#FFAB91` (Deep Orange 200) |
+|     | 1               | 2               | 3               | 4               |
+|-----|------------------|------------------|------------------|------------------|
+| A   | `#EF9A9A` (Red 200)       | `#F48FB1` (Pink 200)     | `#CE93D8` (Purple 200)  | `#B39DDB` (Deep Purple 200) |
+| B   | `#9FA8DA` (Indigo 200)    | `#90CAF9` (Blue 200)     | `#81D4FA` (Light Blue 200) | `#80DEEA` (Cyan 200)         |
+| C   | `#80CBC4` (Teal 200)      | `#A5D6A7` (Green 200)    | `#C5E1A5` (Light Green 200) | `#E6EE9C` (Lime 200)        |
+| D   | `#FFF59D` (Yellow 200)    | `#FFE082` (Amber 200)    | `#FFCC80` (Orange 200)     | `#FFAB91` (Deep Orange 200) |
 
-##### Dark-theme palette (deep hues - light text)
+---
 
-| | 1 | 2 | 3 | 4 |
-|---|---|---|---|---|
-| **A** | `#D32F2F` (Red 700) | `#C2185B` (Pink 700) | `#7B1FA2` (Purple 700) | `#512DA8` (Deep Purple 700) |
-| **B** | `#303F9F` (Indigo 700) | `#1976D2` (Blue 700) | `#0288D1` (Light Blue 700) | `#0097A7` (Cyan 700) |
-| **C** | `#00796B` (Teal 700) | `#388E3C` (Green 700) | `#689F38` (Light Green 700) | `#AFB42B` (Lime 700) |
-| **D** | `#FBC02D` (Yellow 700) | `#FFA000` (Amber 700) | `#F57C00` (Orange 700) | `#E64A19` (Deep Orange 700) |
+### 🌙 Dark-theme palette (Deep Hues – Light Text)
+
+|     | 1               | 2               | 3               | 4               |
+|-----|------------------|------------------|------------------|------------------|
+| A   | `#D32F2F` (Red 700)       | `#C2185B` (Pink 700)     | `#7B1FA2` (Purple 700)  | `#512DA8` (Deep Purple 700) |
+| B   | `#303F9F` (Indigo 700)    | `#1976D2` (Blue 700)     | `#0288D1` (Light Blue 700) | `#0097A7` (Cyan 700)         |
+| C   | `#00796B` (Teal 700)      | `#388E3C` (Green 700)    | `#689F38` (Light Green 700) | `#AFB42B` (Lime 700)        |
+| D   | `#FBC02D` (Yellow 700)    | `#FFA000` (Amber 700)    | `#F57C00` (Orange 700)     | `#E64A19` (Deep Orange 700) |
+
 
 ## 5. UI Description
 
