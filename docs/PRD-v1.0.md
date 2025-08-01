@@ -342,7 +342,7 @@ The extension will be disabled in Incognito mode; no UI or tracking will occur.
 ### 7.1 Frontend
 - **UI Framework:** React
 - **Language:** TypeScript
-- **Styling:** Plain CSS/SCSS files
+- **Styling:** Plain CSS/SCSS files (No Tailwind)
 - **Component Library:** Radix UI primitives
 - **Bundler:** Vite
 
