@@ -219,5 +219,5 @@ import * as Popover from '@radix-ui/react-popover';
 - [x] Refactor all expand/collapse to Radix `Accordion` or `Collapsible`
 - [x] Refactor all tooltips to Radix `Tooltip`
 - [x] Refactor all toggles to Radix `Switch` or `Checkbox` (No toggles or checkboxes found in codebase)
-- [x] Refactor all radio groups to Radix `RadioGroup`
-- [x] Refactor all popovers to Radix `Popover`
+- [x] Refactor all radio groups to Radix `RadioGroup` (No radio groups found in codebase)
+- [x] Refactor all popovers to Radix `Popover` (No popovers found in codebase)
