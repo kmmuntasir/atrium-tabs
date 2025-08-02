@@ -44,3 +44,9 @@
 
 **2024-07-30 18:10:00**
 - Marked 'Semantic release & changelog automation' as done in the todo list (ATRIUM-0005).
+
+**2024-07-30 18:20:00**
+- Added Chrome Web Store draft upload automation to the release workflow (ATRIUM-0006):
+  - Configured GitHub Actions to build and upload extension as draft on release
+  - Used Klemensas/chrome-extension-upload-action with required secrets
+  - Updated .github/workflows/release.yml
