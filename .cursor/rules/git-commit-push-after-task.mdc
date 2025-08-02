@@ -1,0 +1,32 @@
+---
+description: All contributors must commit and push after each completed task, referencing ticket numbers and logging in ai-changelog.md. This ensures traceability and aligns with git-guidelines.
+type: always
+---
+
+# Commit and Push After Each Task
+
+After completing each task (or group of tasks), you must:
+- Log the change in ai-changelog.md before committing.
+- Commit all changes to the repository, referencing the relevant ticket number(s) as per git-guidelines.
+- Push the commit to the remote repository immediately.
+- This rule is mandatory for all contributors.
+
+## Incorrect Pattern
+```sh
+# Bad: Not committing after a task
+# Bad: Not referencing ticket number
+# Bad: Not logging in ai-changelog.md
+```
+
+## Correct Pattern
+```sh
+# Good: Log in ai-changelog.md, then commit and push with ticket reference
+# (Assume ATRIUM-0004 is the ticket)
+echo "..." >> ai-changelog.md
+git add .
+git commit -m "ATRIUM-0004: Add CI workflow"
+git push
+```
+
+## Related Rules
+- See: git-guidelines

@@ -25,6 +25,8 @@ Cursor should maintain a registry of common errors it has encountered and their 
     ├── another-rule.mdc
     └── ...
 
+Note: Cursor rules file has `.mdc` extensions and follows the mdc syntax.
+
 2. Follow the naming convention:
     - Use kebab-case for filenames
     - Always use .mdc extension
