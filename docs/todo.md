@@ -12,7 +12,7 @@
 - [x] Basic popup UI scaffold ([tasks_list/04_ui.md](tasks_list/04_ui.md))
 - [x] Group list in popup ([tasks_list/04_ui.md](tasks_list/04_ui.md))
 - [x] Expand/collapse group to show tabs ([tasks_list/04_ui.md](tasks_list/04_ui.md))
-- [ ] Read-only backup preview UI ([tasks_list/04_ui.md](tasks_list/04_ui.md))
+- [x] Read-only backup preview UI ([tasks_list/04_ui.md](tasks_list/04_ui.md))
 - [ ] UI polish: color palette, icon, toast ([tasks_list/04_ui.md](tasks_list/04_ui.md))
 - [ ] Group management features ([tasks_list/05_group_management.md](tasks_list/05_group_management.md))
 - [ ] Tab management features ([tasks_list/06_tab_management.md](tasks_list/06_tab_management.md))
