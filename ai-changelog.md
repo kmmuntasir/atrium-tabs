@@ -23,3 +23,10 @@
   - Installed and pinned compatible versions for ESLint, Prettier, Airbnb TypeScript config, React plugins, TypeScript plugins
   - Resolved all peer dependency conflicts via manual version pinning and cleanup
   - Project ready for further configuration and development
+
+**2024-07-30 17:00:00**
+- Added GitHub Actions CI workflow (ATRIUM-0004):
+  - Lint, test (placeholder), and build jobs run on PR and push to main
+  - All jobs required to pass for merge
+  - Node.js 20.x used for all jobs
+  - Workflow file: .github/workflows/ci.yml
