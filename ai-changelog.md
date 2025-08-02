@@ -50,3 +50,6 @@
   - Configured GitHub Actions to build and upload extension as draft on release
   - Used Klemensas/chrome-extension-upload-action with required secrets
   - Updated .github/workflows/release.yml
+
+**2024-07-30 18:30:00**
+- Fixed todo-changelog-commit-flow rule to set alwaysApply: true, ensuring the rule is always enforced for progress tracking and traceability.
