@@ -1,6 +1,6 @@
 ---
 description: All contributors must commit and push after each completed task, referencing ticket numbers and logging in ai-changelog.md. This ensures traceability and aligns with git-guidelines.
-type: always
+alwaysApply: false
 ---
 
 # Commit and Push After Each Task

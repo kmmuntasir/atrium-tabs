@@ -1,6 +1,6 @@
 ---
 description: After finishing a task, always check the todo list and update it, then update ai-changelog.md, and commit and push all changes. This ensures accurate progress tracking and traceability.
-type: always
+alwaysApply: false
 ---
 
 # Todo List, Changelog, and Commit Flow
