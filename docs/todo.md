@@ -5,7 +5,7 @@
 - [x] Vite & React project bootstrap ([tasks_list/01_project_structure_and_setup.md](tasks_list/01_project_structure_and_setup.md))
 - [x] CI/CD pipeline setup ([tasks_list/02_deployment_and_ci_cd.md](tasks_list/02_deployment_and_ci_cd.md))
 - [x] Semantic release & changelog automation ([tasks_list/02_deployment_and_ci_cd.md](tasks_list/02_deployment_and_ci_cd.md))
-- [ ] Chrome Web Store draft upload automation ([tasks_list/02_deployment_and_ci_cd.md](tasks_list/02_deployment_and_ci_cd.md))
+- [x] Chrome Web Store draft upload automation ([tasks_list/02_deployment_and_ci_cd.md](tasks_list/02_deployment_and_ci_cd.md))
 - [ ] Community health files ([tasks_list/02_deployment_and_ci_cd.md](tasks_list/02_deployment_and_ci_cd.md))
 - [ ] Group data model ([tasks_list/03_data_model.md](tasks_list/03_data_model.md))
 - [ ] Tab data model ([tasks_list/03_data_model.md](tasks_list/03_data_model.md))

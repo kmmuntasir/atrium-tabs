@@ -53,3 +53,6 @@
 
 **2024-07-30 18:30:00**
 - Fixed todo-changelog-commit-flow rule to set alwaysApply: true, ensuring the rule is always enforced for progress tracking and traceability.
+
+**2024-07-30 18:40:00**
+- Marked 'Chrome Web Store draft upload automation' as done in the todo list (ATRIUM-0006).
