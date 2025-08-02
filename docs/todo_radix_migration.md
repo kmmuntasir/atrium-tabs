@@ -215,3 +215,4 @@ import * as Popover from '@radix-ui/react-popover';
 - [x] Install Radix UI packages
 - [x] Refactor all `<button>` to Radix `Button`
 - [x] Refactor all modals/popups to Radix `Dialog`
+- [x] Refactor all dropdowns to Radix `DropdownMenu` or `Select`

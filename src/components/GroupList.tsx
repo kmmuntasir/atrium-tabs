@@ -24,6 +24,7 @@ import TabList from './TabList';
 import { useRef } from 'react';
 import * as Button from '@radix-ui/react-button';
 import * as Dialog from '@radix-ui/react-dialog';
+import * as Select from '@radix-ui/react-select';
 
 // Mapping of icon names to Lucide icons
 const LucideIcons: { [key: string]: React.ElementType } = {
@@ -73,9 +74,9 @@ export default function GroupList() {
   const dragItem = useRef<number | null>(null);
   const dragOverItem = useRef<number | null>(null);
   const [sortOrder, setSortOrder] = useState(() => localStorage.getItem('atrium_group_sort') || 'manual');
-  const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setSortOrder(e.target.value);
-    localStorage.setItem('atrium_group_sort', e.target.value);
+  const handleSortChange = (value: string) => {
+    setSortOrder(value);
+    localStorage.setItem('atrium_group_sort', value);
   };
 
   const handleCreateGroup = (e: React.FormEvent) => {
@@ -222,11 +223,14 @@ export default function GroupList() {
       </Button.Root>
       <div style={{ marginBottom: 12 }}>
         <label htmlFor="group-sort" style={{ marginRight: 8 }}>Sort groups:</label>
-        <select id="group-sort" value={sortOrder} onChange={handleSortChange}>
-          {SORT_OPTIONS.map(opt => (
-            <option key={opt.value} value={opt.value}>{opt.label}</option>
-          ))}
-        </select>
+        <Select.Root value={sortOrder} onValueChange={handleSortChange}>
+          <Select.Trigger id="group-sort" />
+          <Select.Content>
+            {SORT_OPTIONS.map(opt => (
+              <Select.Item key={opt.value} value={opt.value}>{opt.label}</Select.Item>
+            ))}
+          </Select.Content>
+        </Select.Root>
       </div>
       <ul>
         {groups.length === 0 && <li>No groups found.</li>}

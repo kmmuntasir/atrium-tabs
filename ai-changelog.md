@@ -147,3 +147,4 @@
 - ATRIUM-UI-RADIX: Completed checklist item: Installed all required Radix UI packages as per docs/todo_radix_migration.md. Updated checklist.
 - ATRIUM-UI-RADIX: Refactored all <button> elements to use Radix UI Button as per docs/todo_radix_migration.md. Updated checklist.
 - ATRIUM-UI-RADIX: Refactored all modals/popups to use Radix Dialog as per docs/todo_radix_migration.md. Updated checklist.
+- ATRIUM-UI-RADIX: Refactored all dropdowns to use Radix DropdownMenu or Select as per docs/todo_radix_migration.md. Updated checklist.
