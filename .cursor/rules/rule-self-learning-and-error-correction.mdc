@@ -50,7 +50,7 @@ Note: Cursor rules file has `.mdc` extensions and follows the mdc syntax.
     - `agent_requested`, characterized by a `description` which is read by the agent to determine if the rule should be invoked.
     - `always`, characterized by always including the rule into every agent context.
     - `manual`, characterized by requiring direct reference to the file for the rule to be invoked by another rule.
-6. Add YAML frontmatter metadata with `description`, `type`, and `glob` if this will be an `auto_attached` rule.
+6. Add YAML frontmatter metadata. For 'always' rules, use `alwaysApply: true`. For 'auto_attached' rules, use `globs` with `alwaysApply: false`. For 'agent_requested' or 'manual' rules, set `alwaysApply: false` (or omit for manual) and add a `description` for 'agent_requested' rules.
 7. Include examples of both incorrect and correct implementations.
 8. Reference any related rules that might apply.
 

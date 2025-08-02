@@ -1,0 +1,37 @@
+---
+description: When a test fails and the agent has a clear, confident solution, the agent should automatically implement the fix without explicit user approval.
+alwaysApply: true
+---
+# Automatic Test Failure Resolution
+
+## Overview
+This rule grants the agent autonomy to resolve test failures immediately when a clear and confident solution is identified, streamlining the development process by reducing unnecessary approval cycles.
+
+## When to Apply This Rule
+Apply this rule when:
+- A test run results in a failure.
+- The agent has a clear, confident, and direct solution to fix the test (e.g., missing imports, environment configuration, simple mock setup).
+- The solution does not involve significant logical changes to the application code or design decisions that require user input.
+
+## When NOT to Apply This Rule
+Do NOT apply this rule when:
+- The test failure indicates a deeper logical flaw in the application code that needs design consideration or user feedback.
+- The solution is ambiguous, complex, or involves multiple alternative approaches.
+- The fix requires significant refactoring or changes to external dependencies that might have broader implications.
+
+## Incorrect Pattern
+```
+# Test fails due to missing import or simple environment issue
+Assistant: "The test failed because X is not defined. Would you like me to fix this by importing X?"
+User: "Yes"
+```
+
+## Correct Pattern
+```
+# Test fails due to missing import or simple environment issue
+Assistant: "Automatically fixing test failure: imported X to resolve 'X is not defined' error."
+# (Immediately proceeds to implement the fix without explicit confirmation)
+```
+
+## Related Rules
+- See: rule-self-learning-and-error-correction

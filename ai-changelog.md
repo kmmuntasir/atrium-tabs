@@ -90,3 +90,10 @@
   - Integrated GroupList into Popup
   - Added unit tests with mock data for GroupList and Popup
   - All tests passing
+
+**2024-07-30 20:00:00**
+- Added new rule (automatic-test-fix) to allow the agent to automatically fix test failures when a clear solution is identified, without explicit user approval.
+  - Rule file: .cursor/rules/automatic-test-fix.mdc
+
+**2024-07-30 20:10:00**
+- Updated the `rule-self-learning-and-error-correction` rule to explicitly mention using `alwaysApply: true` for 'always' rules in the YAML frontmatter, clarifying metadata usage for different rule types.
