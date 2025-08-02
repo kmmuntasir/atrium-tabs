@@ -4,10 +4,12 @@ import { Button } from '@radix-ui/themes';
 
 interface TabListProps {
   groupId: string;
+  tabs: Tab[];
+  onTabRemove?: (tabId: string) => void;
 }
 
-export default function TabList({ groupId }: TabListProps) {
-  const tabs: Tab[] = getTabs().filter(tab => tab.groupId === groupId);
+export default function TabList({ groupId, tabs, onTabRemove }: TabListProps) {
+  // const tabs: Tab[] = getTabs().filter(tab => tab.groupId === groupId); // Remove this line
 
   const handleOpenNewTab = () => {
     // In a real extension, would use chrome.tabs.create
@@ -25,7 +27,14 @@ export default function TabList({ groupId }: TabListProps) {
       {tabs.map(tab => (
         <li key={tab.id} style={{ display: 'flex', alignItems: 'center', marginBottom: 4 }}>
           <img src={tab.favicon || 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII='} alt="favicon" style={{ width: 16, height: 16, marginRight: 8 }} />
-          <span style={{ fontSize: '0.9em' }}>{tab.title || tab.url}</span>
+          <span style={{ fontSize: '0.9em', flex: 1 }}>{tab.title || tab.url}</span>
+          <button
+            aria-label="Remove tab"
+            style={{ marginLeft: 8, background: 'none', border: 'none', color: '#d32f2f', cursor: 'pointer', fontSize: 16 }}
+            onClick={() => onTabRemove && onTabRemove(tab.id)}
+          >
+            ✕
+          </button>
         </li>
       ))}
     </ul>

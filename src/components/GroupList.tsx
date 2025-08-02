@@ -67,7 +67,7 @@ function isGroupActiveElsewhere(groupId: string, currentWindowId = 'window-1'): 
 
 export default function GroupList() {
   const [groups, setGroups] = useState<Group[]>(getGroups());
-  const tabs = getTabs();
+  const [tabs, setTabs] = useState(getTabs());
   const [expandedGroups, setExpandedGroups] = useState<string[]>(() => {
     const saved = localStorage.getItem('atrium_expanded_groups');
     return saved ? JSON.parse(saved) : [];
@@ -80,6 +80,7 @@ export default function GroupList() {
   const [selectedColor, setSelectedColor] = useState('');
   const [selectedIcon, setSelectedIcon] = useState('');
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
+  const [activeGroupId, setActiveGroupId] = useState<string | null>(groups.length > 0 ? groups[0].id : null);
   const dragItem = useRef<number | null>(null);
   const dragOverItem = useRef<number | null>(null);
   const [sortOrder, setSortOrder] = useState(() => localStorage.getItem('atrium_group_sort') || 'manual');
@@ -117,6 +118,26 @@ export default function GroupList() {
     });
     // In a real extension, here we'd assign allTabs to this group
     setGroups(getGroups());
+  };
+
+  const handleAddTabToActiveGroup = () => {
+    if (!activeGroupId) return;
+    // Mock tab data
+    const url = `https://example.com/${Math.floor(Math.random() * 1000)}`;
+    const title = `Example Tab ${Math.floor(Math.random() * 1000)}`;
+    const favicon = '';
+    const pinned = false;
+    const newTab = {
+      url,
+      title,
+      favicon,
+      pinned,
+      groupId: activeGroupId,
+    };
+    // Use createTab from tab.ts
+    const { createTab, getTabs } = require('../tab');
+    createTab(newTab);
+    setTabs(getTabs());
   };
 
   // For demo, mock group 2 as active elsewhere
@@ -197,6 +218,12 @@ export default function GroupList() {
     dragOverItem.current = null;
   };
 
+  const handleRemoveTab = (tabId: string) => {
+    const { deleteTab, getTabs } = require('../tab');
+    deleteTab(tabId);
+    setTabs(getTabs());
+  };
+
   let sortedGroups = groups.filter(g => !g.deleted);
   if (sortOrder === 'alphabetical') {
     sortedGroups = [...sortedGroups].sort((a, b) => a.name.localeCompare(b.name));
@@ -230,6 +257,21 @@ export default function GroupList() {
       <Button onClick={handleSaveWindowAsGroup} style={{ marginBottom: 16, width: '100%' }}>
         Save Current Window as Group
       </Button>
+      <div style={{ marginBottom: 12 }}>
+        <label htmlFor="active-group-select" style={{ marginRight: 8 }}>Active group:</label>
+        <select
+          id="active-group-select"
+          value={activeGroupId || ''}
+          onChange={e => setActiveGroupId(e.target.value)}
+          style={{ marginRight: 8 }}
+        >
+          <option value="" disabled>Select group</option>
+          {groups.filter(g => !g.deleted).map(g => (
+            <option key={g.id} value={g.id}>{g.name}</option>
+          ))}
+        </select>
+        <Button onClick={handleAddTabToActiveGroup} disabled={!activeGroupId}>Add Tab to Active Group</Button>
+      </div>
       <div style={{ marginBottom: 12 }}>
         <label htmlFor="group-sort" style={{ marginRight: 8 }}>Sort groups:</label>
         <Select.Root value={sortOrder} onValueChange={handleSortChange}>
@@ -327,7 +369,7 @@ export default function GroupList() {
               </Accordion.Trigger>
               <Accordion.Content asChild>
                 <li>
-                  <TabList groupId={group.id} />
+                  <TabList groupId={group.id} key={group.id} tabs={tabs.filter(t => t.groupId === group.id)} onTabRemove={handleRemoveTab} />
                 </li>
               </Accordion.Content>
               {/* Keep Dialogs and selectors as before, outside Accordion.Content */}

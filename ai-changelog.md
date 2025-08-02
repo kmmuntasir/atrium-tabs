@@ -161,3 +161,11 @@
 
 - Replaced native `<button>` elements with Radix UI `Button.Root` components in `src/components/Popup.tsx` and `src/components/TabList.tsx` to align with Radix UI best practices and enhance accessibility.
 - Replaced native `<button>` elements with Radix UI `Button.Root` components in `src/components/GroupList.tsx` to further align with Radix UI best practices and enhance accessibility.
+
+**2024-07-31 09:43:00**
+- Began implementation of Tab management features (ATRIUM-0027, ATRIUM-0028):
+  - Added active group selection and ability to add a new tab to the selected group (mock logic, UI updates in real time).
+  - Added close (✕) icon to each tab for removal from group (mock logic, UI updates in real time).
+  - Updated TabList to accept tabs and removal callback as props.
+  - Added/updated unit and integration tests for tab creation, group assignment, and tab removal.
+  - Parent todo item remains unchecked as more subtasks are left to do for full tab management feature completion.
