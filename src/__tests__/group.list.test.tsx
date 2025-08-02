@@ -3,6 +3,8 @@ import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
 import * as Tooltip from '@radix-ui/react-tooltip';
 import GroupList from '../components/GroupList';
+import { axe, toHaveNoViolations } from 'jest-axe';
+expect.extend(toHaveNoViolations);
 describe('Group List', () => {
   it('renders add group input and button', () => {
     render(
@@ -13,5 +15,13 @@ describe('Group List', () => {
     expect(screen.getByPlaceholderText('New group name')).toBeInTheDocument();
     expect(screen.getByText('Add')).toBeInTheDocument();
   });
-  // ...more cases from test_cases/02_ui.md
+  it('is accessible', async () => {
+    const { container } = render(
+      <Tooltip.Provider>
+        <GroupList />
+      </Tooltip.Provider>
+    );
+    const results = await axe(container);
+    expect(results).toHaveNoViolations();
+  });
 });

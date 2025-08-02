@@ -3,6 +3,8 @@ import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
 import * as Tooltip from '@radix-ui/react-tooltip';
 import Popup from '../components/Popup';
+import { axe, toHaveNoViolations } from 'jest-axe';
+expect.extend(toHaveNoViolations);
 describe('Popup UI', () => {
   it('renders popup heading', () => {
     render(
@@ -12,5 +14,13 @@ describe('Popup UI', () => {
     );
     expect(screen.getByText('Atrium Tabs')).toBeInTheDocument();
   });
-  // ...more cases from test_cases/02_ui.md
+  it('is accessible', async () => {
+    const { container } = render(
+      <Tooltip.Provider>
+        <Popup />
+      </Tooltip.Provider>
+    );
+    const results = await axe(container);
+    expect(results).toHaveNoViolations();
+  });
 });
