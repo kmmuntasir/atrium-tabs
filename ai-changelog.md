@@ -83,3 +83,10 @@
   - Updated manifest.json for popup entry
   - Added unit test for rendering
   - All tests passing
+
+**2024-07-30 19:50:00**
+- Implemented Group list in popup (ATRIUM-0011):
+  - Added GroupList component to display icon, name, tab count, and lock icon
+  - Integrated GroupList into Popup
+  - Added unit tests with mock data for GroupList and Popup
+  - All tests passing

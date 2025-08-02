@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import Popup from '../src/components/Popup';
+import GroupList from '../src/components/GroupList';
 import * as groupModule from '../src/group';
 import * as tabModule from '../src/tab';
 
@@ -15,20 +15,21 @@ const mockTabs = [
   { id: 'c', url: '', title: '', pinned: false, groupId: '2', favicon: '', createdAt: '' },
 ];
 
-describe('Popup', () => {
+describe('GroupList', () => {
   beforeEach(() => {
     vi.spyOn(groupModule, 'getGroups').mockReturnValue(mockGroups);
     vi.spyOn(tabModule, 'getTabs').mockReturnValue(mockTabs);
   });
 
-  it('renders group list with group info', () => {
-    render(<Popup />);
-    expect(screen.getByText('Atrium Tabs')).toBeDefined();
+  it('renders group info and lock icon', () => {
+    render(<GroupList />);
     expect(screen.getByText('Work')).toBeDefined();
     expect(screen.getByText('Personal')).toBeDefined();
     expect(screen.getAllByText('💼')[0]).toBeDefined();
     expect(screen.getAllByText('🏠')[0]).toBeDefined();
     expect(screen.getByText('(2)')).toBeDefined();
     expect(screen.getByText('(1)')).toBeDefined();
+    // Lock icon for group 2 (mocked as active elsewhere)
+    expect(screen.getByTitle('Active elsewhere')).toBeDefined();
   });
 });
