@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
-import { render, screen, fireEvent, cleanup } from '@testing-library/react';
+import { render, screen, cleanup } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import GroupList from '../src/components/GroupList';
 import * as groupModule from '../src/group';
 import * as tabModule from '../src/tab';
@@ -33,21 +34,21 @@ describe('GroupList', () => {
 
   afterEach(cleanup); // Ensure component unmounts after each test
 
-  it('renders group info and icons with colors', () => {
+  it('renders group info and icons with colors', async () => {
     render(<GroupList />);
-    expect(screen.getByText('Work')).toBeDefined();
-    expect(screen.getByText('Personal')).toBeDefined();
+    expect(await screen.findByText('Work')).toBeDefined();
+    expect(await screen.findByText('Personal')).toBeDefined();
     // Check for icons by their SVG roles or specific attributes if needed
-    expect(screen.getByTestId('briefcase-icon')).toBeDefined(); // Assuming we add data-testid to icon
-    expect(screen.getByTestId('home-icon')).toBeDefined(); // Assuming we add data-testid to icon
-    expect(screen.getByText('(2)')).toBeDefined();
-    expect(screen.getByText('(1)')).toBeDefined();
+    expect(await screen.findByRole('img', { name: /briefcase/i })).toBeDefined(); // Assuming we add data-testid to icon
+    expect(await screen.findByRole('img', { name: /home/i })).toBeDefined(); // Assuming we add data-testid to icon
+    expect(await screen.findByText('(2)')).toBeDefined();
+    expect(await screen.findByText('(1)')).toBeDefined();
     // Lock icon for group 2 (mocked as active elsewhere)
-    expect(screen.getAllByTitle('This group is active in another window').length).toBeGreaterThan(0);
+    expect(await screen.findAllByRole('img', { name: /This group is active in another window/i }).length).toBeGreaterThan(0);
     // Check color application (might require more advanced testing, or visual regression)
     // For now, assert that the style attribute exists for color
-    expect(screen.getByTestId('briefcase-icon').style.color).toBe('rgb(255, 0, 0)');
-    expect(screen.getByTestId('home-icon').style.color).toBe('rgb(0, 255, 0)');
+    expect(await screen.findByRole('img', { name: /briefcase/i }).style.color).toBe('rgb(255, 0, 0)');
+    expect(await screen.findByRole('img', { name: /home/i }).style.color).toBe('rgb(0, 255, 0)');
   });
 
   it('expands and collapses a group to show tabs', async () => {
@@ -58,19 +59,19 @@ describe('GroupList', () => {
     expect(screen.queryByText('Personal Tab 1')).toBeNull();
 
     // Click on Work group to expand (use getAllByText and select first instance)
-    fireEvent.click(screen.getAllByText('Work')[0]);
-    expect(screen.getByText('Work Tab 1')).toBeDefined();
-    expect(screen.getByText('Work Tab 2')).toBeDefined();
+    await userEvent.click(screen.getAllByText('Work')[0]);
+    expect(await screen.findByText('Work Tab 1')).toBeDefined();
+    expect(await screen.findByText('Work Tab 2')).toBeDefined();
     expect(screen.queryByText('Personal Tab 1')).toBeNull(); // Other group's tabs should not appear
 
     // Click on Work group again to collapse
-    fireEvent.click(screen.getAllByText('Work')[0]);
+    await userEvent.click(screen.getAllByText('Work')[0]);
     expect(screen.queryByText('Work Tab 1')).toBeNull();
     expect(screen.queryByText('Work Tab 2')).toBeNull();
 
     // Click on Personal group to expand
-    fireEvent.click(screen.getAllByText('Personal')[0]);
-    expect(screen.getByText('Personal Tab 1')).toBeDefined();
+    await userEvent.click(screen.getAllByText('Personal')[0]);
+    expect(await screen.findByText('Personal Tab 1')).toBeDefined();
   });
 
   it('persists expanded state across renders', () => {
@@ -90,29 +91,29 @@ describe('GroupList', () => {
     const createGroupSpy = vi.spyOn(groupModule, 'createGroup');
     render(<GroupList />);
     const input = screen.getByPlaceholderText('New group name');
-    fireEvent.change(input, { target: { value: 'NewGroup' } });
-    fireEvent.click(screen.getByText('Add'));
+    userEvent.type(input, 'NewGroup');
+    userEvent.click(screen.getByText('Add'));
     expect(createGroupSpy).toHaveBeenCalledWith(expect.objectContaining({ name: 'NewGroup' }));
   });
 
   it('allows inline editing of group names', () => {
     const updateGroupSpy = vi.spyOn(groupModule, 'updateGroup');
     render(<GroupList />);
-    fireEvent.click(screen.getAllByTitle('Edit group name')[0]);
+    userEvent.click(screen.getAllByRole('button', { name: /Edit group name/i })[0]);
     const editInput = screen.getByDisplayValue('Work');
-    fireEvent.change(editInput, { target: { value: 'WorkUpdated' } });
-    fireEvent.keyDown(editInput, { key: 'Enter' });
+    userEvent.type(editInput, 'Updated');
+    userEvent.keyboard('{Enter}');
     expect(updateGroupSpy).toHaveBeenCalledWith('1', expect.objectContaining({ name: 'WorkUpdated' }));
   });
 
   it('shows color and icon selector and updates group', () => {
     const updateGroupSpy = vi.spyOn(groupModule, 'updateGroup');
     render(<GroupList />);
-    fireEvent.click(screen.getAllByTestId('briefcase-icon')[0]);
+    userEvent.click(screen.getAllByRole('button', { name: /Edit group/i })[0]);
     // Click a color and icon, then save
-    fireEvent.click(screen.getByTitle('#388e3c'));
-    fireEvent.click(screen.getByTitle('star'));
-    fireEvent.click(screen.getByText('Save'));
+    userEvent.click(screen.getByRole('button', { name: /#388e3c/i }));
+    userEvent.click(screen.getByRole('button', { name: /star/i }));
+    userEvent.click(screen.getByText('Save'));
     expect(updateGroupSpy).toHaveBeenCalledWith('1', expect.objectContaining({ color: '#388e3c', icon: 'star' }));
   });
 
@@ -140,20 +141,20 @@ describe('GroupList', () => {
     });
     render(<GroupList />);
     // Soft delete
-    fireEvent.click(screen.getAllByTitle('Delete group')[0]);
+    userEvent.click(screen.getAllByRole('button', { name: /Delete group/i })[0]);
     // Find the trash icon for the soft-deleted group (should be at the end)
-    const trashIcons = screen.getAllByTitle('Delete group');
-    fireEvent.click(trashIcons[trashIcons.length - 1]);
+    const trashIcons = screen.getAllByRole('button', { name: /Delete group/i });
+    userEvent.click(trashIcons[trashIcons.length - 1]);
     // Now confirm delete using data-testid
     const confirmBtn = screen.getByTestId('confirm-delete-1');
-    fireEvent.click(confirmBtn);
+    userEvent.click(confirmBtn);
     expect(deleteSpy).toHaveBeenCalled();
   });
 
   it('shows lock icon, disables row, and shows tooltip for locked group', () => {
     render(<GroupList />);
     // Group 2 is mocked as locked
-    const lockIcons = screen.getAllByTitle('This group is active in another window');
+    const lockIcons = screen.getAllByRole('img', { name: /This group is active in another window/i });
     expect(lockIcons.length).toBeGreaterThan(0);
     // Row should be disabled (pointer-events: none)
     const row = lockIcons[0].closest('li');
@@ -163,29 +164,29 @@ describe('GroupList', () => {
   it('shows open-in-new-window button and triggers handler', () => {
     window.alert = vi.fn();
     render(<GroupList />);
-    fireEvent.click(screen.getAllByTitle('Open group in new window')[0]);
+    userEvent.click(screen.getAllByRole('button', { name: /Open group in new window/i })[0]);
     expect(window.alert).toHaveBeenCalledWith(expect.stringContaining('Would open group'));
   });
 
   it('shows drag handle and allows drag-and-drop reordering', () => {
     const saveGroupsSpy = vi.spyOn(groupModule, 'saveGroups');
     render(<GroupList />);
-    const rows = screen.getAllByTitle('Drag to reorder');
+    const rows = screen.getAllByRole('button', { name: /Drag to reorder/i });
     // Simulate drag-and-drop: drag first row to second position
-    fireEvent.dragStart(rows[0]);
-    fireEvent.dragEnter(rows[1]);
-    fireEvent.dragEnd(rows[1]);
+    userEvent.dragStart(rows[0]);
+    userEvent.dragEnter(rows[1]);
+    userEvent.dragEnd(rows[1]);
     expect(saveGroupsSpy).toHaveBeenCalled();
   });
 
   it('shows and changes sort order selector', () => {
     render(<GroupList />);
     const select = screen.getByLabelText('Sort groups:');
-    fireEvent.change(select, { target: { value: 'alphabetical' } });
+    userEvent.selectOptions(select, 'alphabetical');
     expect(select.value).toBe('alphabetical');
-    fireEvent.change(select, { target: { value: 'lastUsed' } });
+    userEvent.selectOptions(select, 'lastUsed');
     expect(select.value).toBe('lastUsed');
-    fireEvent.change(select, { target: { value: 'manual' } });
+    userEvent.selectOptions(select, 'manual');
     expect(select.value).toBe('manual');
   });
 });
