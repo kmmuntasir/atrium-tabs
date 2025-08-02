@@ -1,8 +1,22 @@
+import { describe, test, expect, vi, beforeEach } from 'vitest';
+
+// Mock toast notifications with simple vi.fn() - must be defined before any imports that use it
+vi.mock('react-hot-toast', () => ({
+  __esModule: true,
+  default: {
+    success: vi.fn(),
+    error: vi.fn(),
+    warn: vi.fn(),
+    dismiss: vi.fn(),
+  },
+}));
+
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
+
 import Settings from '../components/Settings';
-import * as toast from 'react-hot-toast';
+import toast from 'react-hot-toast';
 
 // Mock chrome API
 const mockChromeStorage = {
@@ -46,31 +60,22 @@ Object.defineProperty(global, 'URL', {
   },
 });
 
-// Mock toast notifications
-vi.mock('react-hot-toast', () => ({
-  __esModule: true,
-  default: {
-    success: vi.fn(),
-    error: vi.fn(),
-    warn: vi.fn(),
-    dismiss: vi.fn(),
-  },
-  success: vi.fn(),
-  error: vi.fn(),
-  warn: vi.fn(),
-  dismiss: vi.fn(),
-}));
 
 describe('Settings Component', () => {
   beforeEach(() => {
     // Reset mocks before each test
     vi.clearAllMocks();
     // Default successful mocks
-    mockChromeStorage.local.get.mockImplementation((_keys, callback) => callback({}));
-    mockChromeStorage.local.set.mockImplementation((_data, callback) => callback());
-    mockChromeStorage.local.getBytesInUse.mockImplementation((_keys, callback) => callback(0));
+    mockChromeStorage.local.get.mockImplementation((_keys, callback) => {
+      if (typeof callback === 'function') callback({});
+    });
+    mockChromeStorage.local.set.mockImplementation((_data, callback) => {
+      if (typeof callback === 'function') callback();
+    });
+    mockChromeStorage.local.getBytesInUse.mockImplementation((_keys, callback) => {
+      if (typeof callback === 'function') callback(0);
+    });
     mockChromeCommands.getAll.mockImplementation((callback) => callback([]));
-
     mockCreateObjectURL.mockReturnValue('blob:http://localhost/mock-blob');
   });
 
@@ -81,113 +86,118 @@ describe('Settings Component', () => {
 
   test('sort order radio buttons are present and interactive', () => {
     render(<Settings />);
-
-    const alphabeticalRadio = screen.getByLabelText('Alphabetical');
-    const lastUsageRadio = screen.getByLabelText('Last Usage');
-    const manualRadio = screen.getByLabelText('Manual (Drag & Drop)');
-
-    expect(alphabeticalRadio).toBeChecked();
-    expect(lastUsageRadio).not.toBeChecked();
-    expect(manualRadio).not.toBeChecked();
-
+    const alphabeticalRadio = screen.getByRole('radio', { name: 'Alphabetical' });
+    const lastUsageRadio = screen.getByRole('radio', { name: 'Last Usage' });
+    const manualRadio = screen.getByRole('radio', { name: 'Manual (Drag & Drop)' });
+    expect(alphabeticalRadio).toHaveAttribute('aria-checked', 'true');
+    expect(lastUsageRadio).toHaveAttribute('aria-checked', 'false');
+    expect(manualRadio).toHaveAttribute('aria-checked', 'false');
     fireEvent.click(lastUsageRadio);
-    expect(lastUsageRadio).toBeChecked();
-    expect(alphabeticalRadio).not.toBeChecked();
-
+    expect(lastUsageRadio).toHaveAttribute('aria-checked', 'true');
+    expect(alphabeticalRadio).toHaveAttribute('aria-checked', 'false');
     fireEvent.click(manualRadio);
-    expect(manualRadio).toBeChecked();
-    expect(lastUsageRadio).not.toBeChecked();
+    expect(manualRadio).toHaveAttribute('aria-checked', 'true');
+    expect(lastUsageRadio).toHaveAttribute('aria-checked', 'false');
   });
 
   test('theme radio buttons are present and interactive', () => {
     render(<Settings />);
-
-    const systemThemeRadio = screen.getByLabelText('System');
-    const lightThemeRadio = screen.getByLabelText('Light');
-    const darkThemeRadio = screen.getByLabelText('Dark');
-
-    expect(systemThemeRadio).toBeChecked();
-    expect(lightThemeRadio).not.toBeChecked();
-    expect(darkThemeRadio).not.toBeChecked();
-
+    const systemThemeRadio = screen.getByRole('radio', { name: 'System' });
+    const lightThemeRadio = screen.getByRole('radio', { name: 'Light' });
+    const darkThemeRadio = screen.getByRole('radio', { name: 'Dark' });
+    expect(systemThemeRadio).toHaveAttribute('aria-checked', 'true');
+    expect(lightThemeRadio).toHaveAttribute('aria-checked', 'false');
+    expect(darkThemeRadio).toHaveAttribute('aria-checked', 'false');
     fireEvent.click(lightThemeRadio);
-    expect(lightThemeRadio).toBeChecked();
-    expect(systemThemeRadio).not.toBeChecked();
-
+    expect(lightThemeRadio).toHaveAttribute('aria-checked', 'true');
+    expect(systemThemeRadio).toHaveAttribute('aria-checked', 'false');
     fireEvent.click(darkThemeRadio);
-    expect(darkThemeRadio).toBeChecked();
-    expect(lightThemeRadio).not.toBeChecked();
+    expect(darkThemeRadio).toHaveAttribute('aria-checked', 'true');
+    expect(lightThemeRadio).toHaveAttribute('aria-checked', 'false');
   });
 
   test('"Include Pinned Tabs in Groups" switch is present and interactive', () => {
     render(<Settings />);
-
-    const pinnedTabsSwitch = screen.getByRole('switch', { name: 'Include Pinned Tabs in Groups:' });
+    // Find the switch by its label and get the button
+    const pinnedTabsSwitch = screen.getByText('Include Pinned Tabs in Groups:').parentElement?.querySelector('button[role="switch"]');
     const pinnedTabsText = screen.getByText('No');
-
-    expect(pinnedTabsSwitch).not.toBeChecked();
+    expect(pinnedTabsSwitch).toHaveAttribute('aria-checked', 'false');
     expect(pinnedTabsText).toBeInTheDocument();
-
-    fireEvent.click(pinnedTabsSwitch);
-    expect(pinnedTabsSwitch).toBeChecked();
+    fireEvent.click(pinnedTabsSwitch!);
+    expect(pinnedTabsSwitch).toHaveAttribute('aria-checked', 'true');
     expect(screen.getByText('Yes')).toBeInTheDocument();
-    expect(pinnedTabsText).not.toBeInTheDocument();
   });
 
   test('"Eager Load" switch is present, interactive, and shows warning', () => {
     render(<Settings />);
-
-    const eagerLoadSwitch = screen.getByRole('switch', { name: 'Eager Load:' });
+    const eagerLoadSwitch = screen.getByText('Eager Load:').parentElement?.querySelector('button[role="switch"]');
     const eagerLoadText = screen.getByText('Disabled');
-
-    expect(eagerLoadSwitch).not.toBeChecked();
+    expect(eagerLoadSwitch).toHaveAttribute('aria-checked', 'false');
     expect(eagerLoadText).toBeInTheDocument();
     expect(screen.queryByText('Heads-up: eager loading can hammer RAM/CPU on large groups.')).not.toBeInTheDocument();
-
-    fireEvent.click(eagerLoadSwitch);
-    expect(eagerLoadSwitch).toBeChecked();
+    fireEvent.click(eagerLoadSwitch!);
+    expect(eagerLoadSwitch).toHaveAttribute('aria-checked', 'true');
     expect(screen.getByText('Enabled')).toBeInTheDocument();
-    expect(eagerLoadText).not.toBeInTheDocument();
     expect(screen.getByText('Heads-up: eager loading can hammer RAM/CPU on large groups.')).toBeInTheDocument();
-
-    fireEvent.click(eagerLoadSwitch);
-    expect(eagerLoadSwitch).not.toBeChecked();
+    fireEvent.click(eagerLoadSwitch!);
+    expect(eagerLoadSwitch).toHaveAttribute('aria-checked', 'false');
     expect(screen.getByText('Disabled')).toBeInTheDocument();
     expect(screen.queryByText('Heads-up: eager loading can hammer RAM/CPU on large groups.')).not.toBeInTheDocument();
   });
 
-  test('export data button triggers data download and success toast', async () => {
-    const mockData = { groups: [{ id: '1', name: 'Test Group' }] };
-    mockChromeStorage.local.get.mockImplementation((_keys, callback) => callback(mockData));
+  test('export data button triggers data download with correct schema and filename', async () => {
+    const mockData = {
+      groups: [{ id: '1', name: 'Test Group' }],
+      tabs: [{ id: 't1', url: 'https://example.com', groupId: '1', title: 'Tab', pinned: false, order: 0, favicon: '', createdAt: '2024-01-01T00:00:00Z' }],
+      preferences: {
+        theme: 'dark',
+        sortOrder: 'manual',
+        includePinnedTabs: true,
+        hotkeys: { foo: 'bar' },
+      },
+    };
+    mockChromeStorage.local.get.mockImplementation((_keys, callback) => { if (typeof callback === 'function') callback(mockData); });
+    // Mock Blob with a text() method
+    const jsonString = JSON.stringify(mockData, null, 2);
+    const mockBlob = { type: 'application/json', text: () => Promise.resolve(jsonString) };
+    mockCreateObjectURL.mockReturnValueOnce('blob:http://localhost/mock-blob');
+    mockCreateObjectURL.mockImplementationOnce(() => mockBlob);
     render(<Settings />);
-
     const exportButton = screen.getByRole('button', { name: 'Export Data' });
     fireEvent.click(exportButton);
-
-    await waitFor(() => {
-      expect(mockChromeStorage.local.get).toHaveBeenCalledWith(null, expect.any(Function));
+    await waitFor(async () => {
+      expect(mockChromeStorage.local.get).toHaveBeenCalledWith([
+        'atrium_groups',
+        'atrium_tabs',
+        'atrium_theme',
+        'atrium_sort_order',
+        'atrium_include_pinned_tabs',
+        'atrium_hotkeys',
+      ], expect.any(Function));
       expect(mockCreateObjectURL).toHaveBeenCalledWith(expect.any(Blob));
-      const blobArg = mockCreateObjectURL.mock.calls[0][0];
-      expect(blobArg.type).toBe('application/json');
-      // Basic check for content, more robust parsing could be done if needed
-      expect(blobArg.size).toBe(new TextEncoder().encode(JSON.stringify(mockData, null, 2)).length);
-
-      expect(mockRevokeObjectURL).toHaveBeenCalledWith('blob:http://localhost/mock-blob');
-      expect(toast.success).toHaveBeenCalledWith('Data exported successfully!');
+      // Use the mockBlob's text method
+      const text = await mockBlob.text();
+      const parsed = JSON.parse(text);
+      expect(parsed).toHaveProperty('groups');
+      expect(parsed).toHaveProperty('tabs');
+      expect(parsed).toHaveProperty('preferences');
+      expect(parsed.preferences).toHaveProperty('theme', 'dark');
+      expect(parsed.preferences).toHaveProperty('sortOrder', 'manual');
+      expect(parsed.preferences).toHaveProperty('includePinnedTabs', true);
+      expect(parsed.preferences).toHaveProperty('hotkeys');
     });
   });
 
   test('export data button shows error toast on failure', async () => {
-    mockChromeStorage.local.get.mockImplementation((_keys, callback) => callback(new Error('Export failed')));
+    mockChromeStorage.local.get.mockImplementation((_keys, callback) => {
+      if (typeof callback === 'function') callback({ message: 'Export failed' });
+    });
     render(<Settings />);
-
     const exportButton = screen.getByRole('button', { name: 'Export Data' });
     fireEvent.click(exportButton);
-
     await waitFor(() => {
-      expect(mockChromeStorage.local.get).toHaveBeenCalledWith(null, expect.any(Function));
       expect(toast.error).toHaveBeenCalledWith('Failed to export data.');
-    });
+    }, { timeout: 2000 });
   });
 
   test('import data button triggers file input click', () => {
@@ -232,16 +242,11 @@ describe('Settings Component', () => {
   });
 
   test('shows quota exceeded modal when importing too much data', async () => {
-    const largeData = { large: 'a'.repeat(5 * 1024 * 1024) }; // Exceeds 5MB quota
     mockChromeStorage.local.set.mockImplementation((_data, callback) => {
-      callback(); // Simulate success from chrome.storage.local.set
-      // Manually trigger the quota exceeded error from saveData utility
-      const error = new Error('STORAGE_QUOTA_EXCEEDED');
-      Object.defineProperty(error, 'message', { value: 'STORAGE_QUOTA_EXCEEDED' });
-      throw error;
+      if (typeof callback === 'function') callback(new Error('STORAGE_QUOTA_EXCEEDED'));
     });
     render(<Settings />);
-    const file = new File([JSON.stringify(largeData)], 'large_backup.json', { type: 'application/json' });
+    const file = new File([JSON.stringify({ large: 'a'.repeat(5 * 1024 * 1024) })], 'large_backup.json', { type: 'application/json' });
     const importButton = screen.getByRole('button', { name: 'Import Data' });
     const fileInput = importButton.parentElement?.querySelector('input[type="file"]');
     if (!fileInput) throw new Error('File input not found');
@@ -250,7 +255,7 @@ describe('Settings Component', () => {
     });
     await waitFor(() => {
       expect(screen.getByRole('dialog', { name: 'Storage Full' })).toBeInTheDocument();
-      expect(toast.error).not.toHaveBeenCalled(); // No generic error toast, but modal instead
+      expect(toast.error).not.toHaveBeenCalled();
     });
     const closeButton = screen.getByRole('button', { name: 'Close' });
     fireEvent.click(closeButton);

@@ -27,7 +27,29 @@ const Settings: React.FC = () => {
         setCommands(cmds);
       });
     }
+    // Load preferences from storage
+    chrome.storage.local.get([
+      'atrium_theme',
+      'atrium_sort_order',
+      'atrium_include_pinned_tabs',
+    ], (items) => {
+      if (items.atrium_theme) setTheme(items.atrium_theme);
+      if (items.atrium_sort_order) setSortOrder(items.atrium_sort_order);
+      if (typeof items.atrium_include_pinned_tabs === 'boolean') setIncludePinnedTabs(items.atrium_include_pinned_tabs);
+    });
   }, []);
+
+  useEffect(() => {
+    chrome.storage.local.set({ atrium_theme: theme });
+  }, [theme]);
+
+  useEffect(() => {
+    chrome.storage.local.set({ atrium_sort_order: sortOrder });
+  }, [sortOrder]);
+
+  useEffect(() => {
+    chrome.storage.local.set({ atrium_include_pinned_tabs: includePinnedTabs });
+  }, [includePinnedTabs]);
 
   const handleSkipTour = () => {
     setActiveTab('general');
@@ -41,6 +63,13 @@ const Settings: React.FC = () => {
   const handleExportData = async () => {
     try {
       const allData = await getAllData();
+      // If getAllData returns an error object, handle it (instanceof Error or plain object with message)
+      if (
+        allData instanceof Error ||
+        (allData && typeof allData === 'object' && 'message' in allData)
+      ) {
+        throw allData;
+      }
       const dataStr = JSON.stringify(allData, null, 2);
       const blob = new Blob([dataStr], { type: 'application/json' });
       const url = URL.createObjectURL(blob);

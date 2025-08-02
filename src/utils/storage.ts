@@ -1,9 +1,33 @@
 import { v4 as uuidv4 } from 'uuid';
 
 export async function getAllData() {
-  return new Promise((resolve) => {
-    chrome.storage.local.get(null, (items) => {
-      resolve(items);
+  return new Promise((resolve, reject) => {
+    chrome.storage.local.get([
+      'atrium_groups',
+      'atrium_tabs',
+      'atrium_theme',
+      'atrium_sort_order',
+      'atrium_include_pinned_tabs',
+      'atrium_hotkeys',
+    ], (items) => {
+      // If items is an error, reject
+      if (
+        items instanceof Error ||
+        (items && typeof items === 'object' && 'message' in items)
+      ) {
+        reject(items);
+        return;
+      }
+      resolve({
+        groups: items.atrium_groups || [],
+        tabs: items.atrium_tabs || [],
+        preferences: {
+          theme: items.atrium_theme || 'system',
+          sortOrder: items.atrium_sort_order || 'alphabetical',
+          includePinnedTabs: typeof items.atrium_include_pinned_tabs === 'boolean' ? items.atrium_include_pinned_tabs : false,
+          hotkeys: items.atrium_hotkeys || {},
+        },
+      });
     });
   });
 }

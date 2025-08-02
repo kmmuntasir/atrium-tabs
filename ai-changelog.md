@@ -215,3 +215,12 @@
 - Skipped failing tests in src/__tests__/settings.test.tsx due to jsdom or platform limitations (import/export, WelcomeTour tab, and file input simulation).
 - All other tests now pass after migration to Vitest and proper mocking of react-hot-toast and useState.
 - Committed and pushed as ATRIUM-0005 for test maintenance and compliance with the automatic test fix rule.
+
+**2024-12-21 19:05**
+- Implemented Export Groups, Tabs, and Preferences as JSON (ATRIUM-0043):
+  - Updated getAllData() in src/utils/storage.ts to return structured schema with groups, tabs, and preferences
+  - Enhanced Settings.tsx to persist and load preferences (theme, sortOrder, includePinnedTabs) from chrome.storage.local
+  - Export downloads file as 'atrium-tabs-backup.json' with correct schema per PRD requirements
+  - Added robust error handling in export logic for both production and test environments
+  - Fixed all settings.test.tsx tests by simplifying react-hot-toast mock structure and resolving Vitest hoisting issues
+  - All 14 settings tests now pass with proper error toast verification
