@@ -34,3 +34,10 @@
 **2024-07-30 17:30:00**
 - Added new rule (todo-changelog-commit-flow) to enforce checking and updating the todo list, changelog, and committing/pushing after each task for accurate progress tracking and traceability.
   - Rule file: .cursor/rules/todo-changelog-commit-flow.mdc
+
+**2024-07-30 18:00:00**
+- Set up semantic-release and changelog automation (ATRIUM-0005):
+  - Installed semantic-release and required plugins
+  - Added .releaserc.json configuration
+  - Initialized CHANGELOG.md
+  - Added GitHub Actions workflow for release automation (.github/workflows/release.yml)
