@@ -1,3 +1,10 @@
+**2025-01-12 19:10:00**
+- Fixed failing test in src/__tests__/popup.test.tsx:
+  - Corrected vi.mock for GroupList component to return object with "default" key
+  - Fixed react-hot-toast mock to properly support both default and named exports
+  - Removed duplicate opacity property in GroupList.tsx style object
+  - All 40 tests now pass (33 passed, 7 skipped)
+
 **2024-07-30 21:10:00**
 - Updated feature list, task lists, and test cases to clarify the use of Radix UI components as per PRD requirements.
 

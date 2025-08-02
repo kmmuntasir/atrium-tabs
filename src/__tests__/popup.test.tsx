@@ -3,6 +3,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import Popup from '../components/Popup';
 import { getStorageUsage, checkDataIntegrity, getAllData } from '../utils/storage';
+import toast from 'react-hot-toast';
 
 // Mock chrome API
 const mockChromeStorage = {
@@ -42,12 +43,18 @@ Object.defineProperty(global, 'URL', {
 });
 
 // Mock toast notifications
-vi.mock('react-hot-toast', () => ({
-  success: vi.fn(),
-  error: vi.fn(),
-  warn: vi.fn(),
-  dismiss: vi.fn(),
-}));
+vi.mock('react-hot-toast', () => {
+  const mockToast = {
+    success: vi.fn(),
+    error: vi.fn(),
+    warn: vi.fn(),
+    dismiss: vi.fn(),
+  };
+  return {
+    default: mockToast,
+    ...mockToast,
+  };
+});
 
 // Mock utilities
 vi.mock('../utils/storage', () => ({
@@ -55,6 +62,11 @@ vi.mock('../utils/storage', () => ({
   checkDataIntegrity: vi.fn(),
   getAllData: vi.fn(),
   saveData: vi.fn(),
+}));
+
+// Mock GroupList as it's a child component not relevant to Popup's direct logic being tested here
+vi.mock('../components/GroupList', () => ({
+  default: () => <div data-testid="group-list">Group List</div>
 }));
 
 describe('Popup Component', () => {
@@ -69,9 +81,6 @@ describe('Popup Component', () => {
     (mockChromeStorage.local.clear as vi.Mock).mockImplementation((callback) => callback());
 
     mockCreateObjectURL.mockReturnValue('blob:http://localhost/mock-blob');
-
-    // Mock GroupList as it's a child component not relevant to Popup's direct logic being tested here
-    vi.mock('../components/GroupList', () => () => <div data-testid="group-list">Group List</div>);
   });
 
   test('renders without crashing', async () => {
@@ -89,41 +98,37 @@ describe('Popup Component', () => {
 
   test('shows storage warning at 50% capacity', async () => {
     (getStorageUsage as vi.Mock).mockResolvedValue({ bytesInUse: 2.5 * 1024 * 1024, quotaBytes: mockChromeStorage.local.QUOTA_BYTES });
-    const toastSuccessSpy = vi.spyOn(require('react-hot-toast'), 'success');
 
     render(<Popup />);
     await waitFor(() => {
-      expect(toastSuccessSpy).toHaveBeenCalledWith('Storage at 50% capacity.', { id: 'storage-warning', duration: Infinity });
+      expect(toast.success).toHaveBeenCalledWith('Storage at 50% capacity.', { id: 'storage-warning', duration: Infinity });
     });
   });
 
   test('shows storage warning at 80% capacity', async () => {
     (getStorageUsage as vi.Mock).mockResolvedValue({ bytesInUse: 4 * 1024 * 1024, quotaBytes: mockChromeStorage.local.QUOTA_BYTES });
-    const toastWarnSpy = vi.spyOn(require('react-hot-toast'), 'warn');
 
     render(<Popup />);
     await waitFor(() => {
-      expect(toastWarnSpy).toHaveBeenCalledWith('Storage getting full: 80% capacity.', { id: 'storage-warning', duration: Infinity });
+      expect(toast.warn).toHaveBeenCalledWith('Storage getting full: 80% capacity.', { id: 'storage-warning', duration: Infinity });
     });
   });
 
   test('shows storage error at 90% capacity', async () => {
     (getStorageUsage as vi.Mock).mockResolvedValue({ bytesInUse: 4.5 * 1024 * 1024, quotaBytes: mockChromeStorage.local.QUOTA_BYTES });
-    const toastErrorSpy = vi.spyOn(require('react-hot-toast'), 'error');
 
     render(<Popup />);
     await waitFor(() => {
-      expect(toastErrorSpy).toHaveBeenCalledWith('Storage nearly full: 90% capacity. Export or delete data.', { id: 'storage-warning', duration: Infinity });
+      expect(toast.error).toHaveBeenCalledWith('Storage nearly full: 90% capacity. Export or delete data.', { id: 'storage-warning', duration: Infinity });
     });
   });
 
   test('dismisses storage warning when usage is below 50%', async () => {
     (getStorageUsage as vi.Mock).mockResolvedValue({ bytesInUse: 1 * 1024 * 1024, quotaBytes: mockChromeStorage.local.QUOTA_BYTES });
-    const toastDismissSpy = vi.spyOn(require('react-hot-toast'), 'dismiss');
 
     render(<Popup />);
     await waitFor(() => {
-      expect(toastDismissSpy).toHaveBeenCalledWith('storage-warning');
+      expect(toast.dismiss).toHaveBeenCalledWith('storage-warning');
     });
   });
 
@@ -139,7 +144,6 @@ describe('Popup Component', () => {
     (checkDataIntegrity as vi.Mock).mockResolvedValue(false);
     const mockCorruptedData = { corrupted: true };
     (getAllData as vi.Mock).mockResolvedValue(mockCorruptedData);
-    const toastSuccessSpy = vi.spyOn(require('react-hot-toast'), 'success');
 
     render(<Popup />);
     await waitFor(() => {
@@ -156,7 +160,7 @@ describe('Popup Component', () => {
       expect(blobArg.type).toBe('application/json');
       expect(blobArg.size).toBe(new TextEncoder().encode(JSON.stringify(mockCorruptedData, null, 2)).length);
       expect(mockRevokeObjectURL).toHaveBeenCalledWith('blob:http://localhost/mock-blob');
-      expect(toastSuccessSpy).toHaveBeenCalledWith('Raw data exported successfully!');
+      expect(toast.success).toHaveBeenCalledWith('Raw data exported successfully!');
       expect(screen.queryByRole('dialog', { name: 'Data Corruption Detected' })).not.toBeInTheDocument();
     });
   });
@@ -178,7 +182,6 @@ describe('Popup Component', () => {
 
   test('"Start Fresh" button in corruption modal clears storage and reloads extension', async () => {
     (checkDataIntegrity as vi.Mock).mockResolvedValue(false);
-    const toastSuccessSpy = vi.spyOn(require('react-hot-toast'), 'success');
 
     render(<Popup />);
     await waitFor(() => {
@@ -190,7 +193,7 @@ describe('Popup Component', () => {
 
     await waitFor(() => {
       expect(mockChromeStorage.local.clear).toHaveBeenCalledTimes(1);
-      expect(toastSuccessSpy).toHaveBeenCalledWith('Storage cleared. Starting fresh!');
+      expect(toast.success).toHaveBeenCalledWith('Storage cleared. Starting fresh!');
       expect(chrome.runtime.reload).toHaveBeenCalledTimes(1);
     });
   });

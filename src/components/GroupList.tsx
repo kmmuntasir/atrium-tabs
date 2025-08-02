@@ -401,11 +401,10 @@ export default function GroupList() {
                     alignItems: 'center',
                     marginBottom: 8,
                     cursor: isPendingDelete ? 'not-allowed' : 'grab',
-                    opacity: isPendingDelete ? 0.5 : 1,
+                    opacity: isPendingDelete || isActiveElsewhere ? 0.5 : 1,
                     textDecoration: isPendingDelete ? 'line-through' : 'none',
                     background: dragOverItem.current === idx ? '#f0f0f0' : undefined,
                     pointerEvents: isActiveElsewhere ? 'none' : undefined,
-                    opacity: isActiveElsewhere ? 0.5 : 1,
                   }}
                   title={isActiveElsewhere ? 'This group is active in another window' : undefined}
                 >
