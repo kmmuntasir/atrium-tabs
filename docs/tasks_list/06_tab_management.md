@@ -60,11 +60,16 @@ Switching to an empty group opens a new blank tab.
 **Description:**
 Add context menu to move a tab to a group from the Chrome tab bar.
 
+**Status:** Skipped (Chrome API limitation)
+
+**Note:**
+Chrome Extensions cannot show a custom group selection menu or custom UI in the tab bar context menu. Only a single menu item can be added, and group selection must be handled elsewhere (e.g., via extension popup). Therefore, this feature cannot be implemented as described.
+
 **Acceptance Criteria:**
-- Context menu appears on tab right-click.
-- Tab moves to selected group.
-- Unit test: Context menu logic.
-- Integration test: Tab moves in UI and storage.
+- Context menu appears on tab right-click. *(Not possible as described)*
+- Tab moves to selected group. *(Not possible as described)*
+- Unit test: Context menu logic. *(N/A)*
+- Integration test: Tab moves in UI and storage. *(N/A)*
 
 **Dependencies:** ATRIUM-0030
 

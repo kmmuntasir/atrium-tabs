@@ -194,3 +194,6 @@
 
 **2024-07-31 16:37**
 - Skipped the 'focuses last active tab on group switch' test in GroupList due to Radix Accordion not responding to synthetic click events in jsdom. All other GroupList tests pass. Committed and pushed as ATRIUM-0005.
+
+**2024-07-31 16:40**
+- Skipped ATRIUM-0032 (Context Menu: Move Tab to Group from Tab Bar) due to Chrome API limitations. Documented in tasks_list/06_tab_management.md. No implementation possible as described.
