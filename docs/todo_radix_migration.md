@@ -213,4 +213,4 @@ import * as Popover from '@radix-ui/react-popover';
 ## 11. **Migration Checklist**
 
 - [x] Install Radix UI packages
-- [ ] Refactor all `<button>`
+- [x] Refactor all `<button>` to Radix `Button`

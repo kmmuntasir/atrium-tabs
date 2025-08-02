@@ -145,3 +145,4 @@
 - Added npm script 'test' to package.json for running all tests
 - Marked group management as complete in docs/todo.md
 - ATRIUM-UI-RADIX: Completed checklist item: Installed all required Radix UI packages as per docs/todo_radix_migration.md. Updated checklist.
+- ATRIUM-UI-RADIX: Refactored all <button> elements to use Radix UI Button as per docs/todo_radix_migration.md. Updated checklist.

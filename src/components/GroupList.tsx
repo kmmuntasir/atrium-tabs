@@ -22,6 +22,7 @@ import {
 } from 'lucide-react';
 import TabList from './TabList';
 import { useRef } from 'react';
+import * as Button from '@radix-ui/react-button';
 
 // Mapping of icon names to Lucide icons
 const LucideIcons: { [key: string]: React.ElementType } = {
@@ -213,11 +214,11 @@ export default function GroupList() {
           style={{ flex: 1, marginRight: 8 }}
           disabled={creating}
         />
-        <button type="submit" disabled={creating || !newGroupName.trim()}>Add</button>
+        <Button.Root type="submit" disabled={creating || !newGroupName.trim()}>Add</Button.Root>
       </form>
-      <button onClick={handleSaveWindowAsGroup} style={{ marginBottom: 16, width: '100%' }}>
+      <Button.Root onClick={handleSaveWindowAsGroup} style={{ marginBottom: 16, width: '100%' }}>
         Save Current Window as Group
-      </button>
+      </Button.Root>
       <div style={{ marginBottom: 12 }}>
         <label htmlFor="group-sort" style={{ marginRight: 8 }}>Sort groups:</label>
         <select id="group-sort" value={sortOrder} onChange={handleSortChange}>
@@ -329,8 +330,8 @@ export default function GroupList() {
                         </span>
                       );
                     })}
-                    <button onClick={() => saveSelector(group)} style={{ marginLeft: 8 }}>Save</button>
-                    <button onClick={closeSelector} style={{ marginLeft: 4 }}>Cancel</button>
+                    <Button.Root onClick={() => saveSelector(group)} style={{ marginLeft: 8 }}>Save</Button.Root>
+                    <Button.Root onClick={closeSelector} style={{ marginLeft: 4 }}>Cancel</Button.Root>
                   </div>
                 </li>
               )}
