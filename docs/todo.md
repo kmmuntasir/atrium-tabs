@@ -11,7 +11,7 @@
 - [x] Tab data model ([tasks_list/03_data_model.md](tasks_list/03_data_model.md))
 - [x] Basic popup UI scaffold ([tasks_list/04_ui.md](tasks_list/04_ui.md))
 - [x] Group list in popup ([tasks_list/04_ui.md](tasks_list/04_ui.md))
-- [ ] Expand/collapse group to show tabs ([tasks_list/04_ui.md](tasks_list/04_ui.md))
+- [x] Expand/collapse group to show tabs ([tasks_list/04_ui.md](tasks_list/04_ui.md))
 - [ ] Read-only backup preview UI ([tasks_list/04_ui.md](tasks_list/04_ui.md))
 - [ ] UI polish: color palette, icon, toast ([tasks_list/04_ui.md](tasks_list/04_ui.md))
 - [ ] Group management features ([tasks_list/05_group_management.md](tasks_list/05_group_management.md))

@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { render, screen, cleanup } from '@testing-library/react';
 import Popup from '../src/components/Popup';
 import * as groupModule from '../src/group';
 import * as tabModule from '../src/tab';
@@ -20,6 +20,8 @@ describe('Popup', () => {
     vi.spyOn(groupModule, 'getGroups').mockReturnValue(mockGroups);
     vi.spyOn(tabModule, 'getTabs').mockReturnValue(mockTabs);
   });
+
+  afterEach(cleanup); // Ensure component unmounts after each test
 
   it('renders group list with group info', () => {
     render(<Popup />);

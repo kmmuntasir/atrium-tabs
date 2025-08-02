@@ -97,3 +97,11 @@
 
 **2024-07-30 20:10:00**
 - Updated the `rule-self-learning-and-error-correction` rule to explicitly mention using `alwaysApply: true` for 'always' rules in the YAML frontmatter, clarifying metadata usage for different rule types.
+
+**2024-07-30 20:20:00**
+- Implemented Expand/collapse group to show tabs (ATRIUM-0012):
+  - Installed lucide-react for icons
+  - Created TabList component to display tabs within groups
+  - Modified GroupList to include expand/collapse state, toggle logic, and conditional rendering of TabList
+  - Updated unit tests for GroupList to cover expand/collapse and persistence, and for Popup
+  - All tests passing
