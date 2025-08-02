@@ -6,6 +6,7 @@ export interface Tab {
   title: string;
   pinned: boolean;
   groupId: string;
+  order: number; // Order within group
   favicon: string;
   createdAt: string;
 }
@@ -14,21 +15,27 @@ const TABS_KEY = 'atrium_tabs';
 
 export function getTabs(): Tab[] {
   const data = localStorage.getItem(TABS_KEY);
-  return data ? JSON.parse(data) : [];
+  const tabs: Tab[] = data ? JSON.parse(data) : [];
+  // Sort tabs by order within each group
+  return tabs.sort((a, b) => a.groupId === b.groupId ? a.order - b.order : 0);
 }
 
 export function saveTabs(tabs: Tab[]): void {
   localStorage.setItem(TABS_KEY, JSON.stringify(tabs));
 }
 
-export function createTab(tab: Omit<Tab, 'id' | 'createdAt'>): Tab {
+export function createTab(tab: Omit<Tab, 'id' | 'createdAt' | 'order'>): Tab {
   const now = new Date().toISOString();
+  const tabs = getTabs();
+  // Find max order in this group
+  const groupTabs = tabs.filter(t => t.groupId === tab.groupId);
+  const nextOrder = groupTabs.length > 0 ? Math.max(...groupTabs.map(t => t.order)) + 1 : 0;
   const newTab: Tab = {
     ...tab,
     id: uuidv4(),
     createdAt: now,
+    order: nextOrder,
   };
-  const tabs = getTabs();
   saveTabs([...tabs, newTab]);
   return newTab;
 }

@@ -169,3 +169,8 @@
   - Updated TabList to accept tabs and removal callback as props.
   - Added/updated unit and integration tests for tab creation, group assignment, and tab removal.
   - Parent todo item remains unchecked as more subtasks are left to do for full tab management feature completion.
+
+**2024-07-31 09:43:00**
+- Implemented tab reordering within a group (drag-and-drop, persistent order).
+- Updated TabList and GroupList to support drag-and-drop and order persistence.
+- Added/updated integration test for drag-and-drop reorder logic.

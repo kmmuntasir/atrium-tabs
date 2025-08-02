@@ -6,14 +6,27 @@ interface TabListProps {
   groupId: string;
   tabs: Tab[];
   onTabRemove?: (tabId: string) => void;
+  onTabReorder?: (fromIndex: number, toIndex: number) => void;
 }
 
-export default function TabList({ groupId, tabs, onTabRemove }: TabListProps) {
-  // const tabs: Tab[] = getTabs().filter(tab => tab.groupId === groupId); // Remove this line
+export default function TabList({ groupId, tabs, onTabRemove, onTabReorder }: TabListProps) {
+  // Drag-and-drop state
+  const [draggedIdx, setDraggedIdx] = React.useState<number | null>(null);
+  const [dragOverIdx, setDragOverIdx] = React.useState<number | null>(null);
 
   const handleOpenNewTab = () => {
     // In a real extension, would use chrome.tabs.create
     alert('Would open a new tab in this group (mock)');
+  };
+
+  const handleDragStart = (idx: number) => setDraggedIdx(idx);
+  const handleDragEnter = (idx: number) => setDragOverIdx(idx);
+  const handleDragEnd = () => {
+    if (draggedIdx !== null && dragOverIdx !== null && draggedIdx !== dragOverIdx && onTabReorder) {
+      onTabReorder(draggedIdx, dragOverIdx);
+    }
+    setDraggedIdx(null);
+    setDragOverIdx(null);
   };
 
   return (
@@ -24,8 +37,16 @@ export default function TabList({ groupId, tabs, onTabRemove }: TabListProps) {
           <Button style={{ marginLeft: 8 }} onClick={handleOpenNewTab}>Open New Tab</Button>
         </li>
       )}
-      {tabs.map(tab => (
-        <li key={tab.id} style={{ display: 'flex', alignItems: 'center', marginBottom: 4 }}>
+      {tabs.map((tab, idx) => (
+        <li
+          key={tab.id}
+          style={{ display: 'flex', alignItems: 'center', marginBottom: 4, background: dragOverIdx === idx ? '#f0f0f0' : undefined, cursor: 'grab' }}
+          draggable
+          onDragStart={() => handleDragStart(idx)}
+          onDragEnter={() => handleDragEnter(idx)}
+          onDragEnd={handleDragEnd}
+        >
+          <span style={{ marginRight: 8, cursor: 'grab' }} title="Drag to reorder">☰</span>
           <img src={tab.favicon || 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII='} alt="favicon" style={{ width: 16, height: 16, marginRight: 8 }} />
           <span style={{ fontSize: '0.9em', flex: 1 }}>{tab.title || tab.url}</span>
           <button

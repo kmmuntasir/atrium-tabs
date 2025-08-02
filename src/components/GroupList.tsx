@@ -224,6 +224,23 @@ export default function GroupList() {
     setTabs(getTabs());
   };
 
+  const handleReorderTabs = (fromIdx: number, toIdx: number, groupId?: string) => {
+    // Only reorder tabs within the same group
+    const groupTabs = tabs.filter(t => t.groupId === groupId);
+    if (fromIdx < 0 || toIdx < 0 || fromIdx === toIdx || fromIdx >= groupTabs.length || toIdx >= groupTabs.length) return;
+    const reordered = [...groupTabs];
+    const [moved] = reordered.splice(fromIdx, 1);
+    reordered.splice(toIdx, 0, moved);
+    // Update order field
+    reordered.forEach((t, i) => t.order = i);
+    // Update all tabs
+    const otherTabs = tabs.filter(t => t.groupId !== groupId);
+    const newTabs = [...otherTabs, ...reordered];
+    const { saveTabs, getTabs } = require('../tab');
+    saveTabs(newTabs);
+    setTabs(getTabs());
+  };
+
   let sortedGroups = groups.filter(g => !g.deleted);
   if (sortOrder === 'alphabetical') {
     sortedGroups = [...sortedGroups].sort((a, b) => a.name.localeCompare(b.name));
@@ -369,7 +386,7 @@ export default function GroupList() {
               </Accordion.Trigger>
               <Accordion.Content asChild>
                 <li>
-                  <TabList groupId={group.id} key={group.id} tabs={tabs.filter(t => t.groupId === group.id)} onTabRemove={handleRemoveTab} />
+                  <TabList groupId={group.id} key={group.id} tabs={tabs.filter(t => t.groupId === group.id)} onTabRemove={handleRemoveTab} onTabReorder={(from, to) => handleReorderTabs(from, to, group.id)} />
                 </li>
               </Accordion.Content>
               {/* Keep Dialogs and selectors as before, outside Accordion.Content */}
