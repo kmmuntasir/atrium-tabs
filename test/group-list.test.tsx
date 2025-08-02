@@ -5,17 +5,7 @@ import GroupList from '../src/components/GroupList';
 import * as groupModule from '../src/group';
 import * as tabModule from '../src/tab';
 
-const mockGroups = [
-  { id: '1', name: 'Work', createdAt: '', updatedAt: '', color: '', icon: '💼', order: 1, lastActiveAt: '' },
-  { id: '2', name: 'Personal', createdAt: '', updatedAt: '', color: '', icon: '🏠', order: 2, lastActiveAt: '' },
-];
-const mockTabs = [
-  { id: 'a', url: 'http://work1.com', title: 'Work Tab 1', pinned: false, groupId: '1', favicon: 'fav1.ico', createdAt: '' },
-  { id: 'b', url: 'http://work2.com', title: 'Work Tab 2', pinned: false, groupId: '1', favicon: 'fav2.ico', createdAt: '' },
-  { id: 'c', url: 'http://personal1.com', title: 'Personal Tab 1', pinned: false, groupId: '2', favicon: 'fav3.ico', createdAt: '' },
-];
-
-// Simple in-memory localStorage mock for expandedGroups
+// Mock localStorage for GroupList component's useState initial value
 globalThis.localStorage = {
   _data: {} as Record<string, string>,
   getItem(key: string) { return this._data[key] || null; },
@@ -23,6 +13,16 @@ globalThis.localStorage = {
   removeItem(key: string) { delete this._data[key]; },
   clear() { this._data = {}; },
 } as Storage;
+
+const mockGroups = [
+  { id: '1', name: 'Work', createdAt: '', updatedAt: '', color: '#FF0000', icon: 'briefcase', order: 1, lastActiveAt: '' },
+  { id: '2', name: 'Personal', createdAt: '', updatedAt: '', color: '#00FF00', icon: 'home', order: 2, lastActiveAt: '' },
+];
+const mockTabs = [
+  { id: 'a', url: 'http://work1.com', title: 'Work Tab 1', pinned: false, groupId: '1', favicon: 'fav1.ico', createdAt: '' },
+  { id: 'b', url: 'http://work2.com', title: 'Work Tab 2', pinned: false, groupId: '1', favicon: 'fav2.ico', createdAt: '' },
+  { id: 'c', url: 'http://personal1.com', title: 'Personal Tab 1', pinned: false, groupId: '2', favicon: 'fav3.ico', createdAt: '' },
+];
 
 describe('GroupList', () => {
   beforeEach(() => {
@@ -33,16 +33,22 @@ describe('GroupList', () => {
 
   afterEach(cleanup); // Ensure component unmounts after each test
 
-  it('renders group info and lock icon', () => {
+  it('renders group info and icons with colors', () => {
     render(<GroupList />);
     expect(screen.getByText('Work')).toBeDefined();
     expect(screen.getByText('Personal')).toBeDefined();
-    expect(screen.getAllByText('💼')[0]).toBeDefined();
-    expect(screen.getAllByText('🏠')[0]).toBeDefined();
+    // Check for icons by their SVG roles or specific attributes if needed
+    expect(screen.getByTestId('briefcase-icon')).toBeDefined(); // Assuming we add data-testid to icon
+    expect(screen.getByTestId('home-icon')).toBeDefined(); // Assuming we add data-testid to icon
     expect(screen.getByText('(2)')).toBeDefined();
     expect(screen.getByText('(1)')).toBeDefined();
     // Lock icon for group 2 (mocked as active elsewhere)
     expect(screen.getByTitle('Active elsewhere')).toBeDefined();
+
+    // Check color application (might require more advanced testing, or visual regression)
+    // For now, assert that the style attribute exists for color
+    expect(screen.getByTestId('briefcase-icon').style.color).toBe('rgb(255, 0, 0)');
+    expect(screen.getByTestId('home-icon').style.color).toBe('rgb(0, 255, 0)');
   });
 
   it('expands and collapses a group to show tabs', async () => {
