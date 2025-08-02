@@ -7,30 +7,49 @@ interface TabListProps {
   tabs: Tab[];
   onTabRemove?: (tabId: string) => void;
   onTabReorder?: (fromIndex: number, toIndex: number) => void;
+  onTabDrop?: (tabId: string, fromGroupId: string, toGroupId: string, copy: boolean) => void;
 }
 
-export default function TabList({ groupId, tabs, onTabRemove, onTabReorder }: TabListProps) {
+export default function TabList({ groupId, tabs, onTabRemove, onTabReorder, onTabDrop }: TabListProps) {
   // Drag-and-drop state
   const [draggedIdx, setDraggedIdx] = React.useState<number | null>(null);
   const [dragOverIdx, setDragOverIdx] = React.useState<number | null>(null);
+  const [draggedTabId, setDraggedTabId] = React.useState<string | null>(null);
 
   const handleOpenNewTab = () => {
     // In a real extension, would use chrome.tabs.create
     alert('Would open a new tab in this group (mock)');
   };
 
-  const handleDragStart = (idx: number) => setDraggedIdx(idx);
+  // Handle drag start for cross-group
+  const handleDragStart = (idx: number) => {
+    setDraggedIdx(idx);
+    setDraggedTabId(tabs[idx].id);
+  };
   const handleDragEnter = (idx: number) => setDragOverIdx(idx);
   const handleDragEnd = () => {
-    if (draggedIdx !== null && dragOverIdx !== null && draggedIdx !== dragOverIdx && onTabReorder) {
-      onTabReorder(draggedIdx, dragOverIdx);
+    setDraggedIdx(null);
+    setDragOverIdx(null);
+    setDraggedTabId(null);
+  };
+  // Handle drop for cross-group
+  const handleDrop = (e: React.DragEvent<HTMLUListElement>) => {
+    e.preventDefault();
+    if (onTabDrop && draggedTabId) {
+      const fromGroupId = e.dataTransfer.getData('fromGroupId');
+      const copy = e.ctrlKey || e.metaKey;
+      onTabDrop(draggedTabId, fromGroupId, groupId, copy);
     }
     setDraggedIdx(null);
     setDragOverIdx(null);
+    setDraggedTabId(null);
+  };
+  const handleDragOver = (e: React.DragEvent<HTMLUListElement>) => {
+    e.preventDefault();
   };
 
   return (
-    <ul style={{ listStyle: 'none', paddingLeft: 20, marginTop: 8 }}>
+    <ul style={{ listStyle: 'none', paddingLeft: 20, marginTop: 8 }} onDrop={handleDrop} onDragOver={handleDragOver}>
       {tabs.length === 0 && (
         <li style={{ fontSize: '0.8em', color: '#666' }}>
           No tabs in this group.
@@ -42,7 +61,7 @@ export default function TabList({ groupId, tabs, onTabRemove, onTabReorder }: Ta
           key={tab.id}
           style={{ display: 'flex', alignItems: 'center', marginBottom: 4, background: dragOverIdx === idx ? '#f0f0f0' : undefined, cursor: 'grab' }}
           draggable
-          onDragStart={() => handleDragStart(idx)}
+          onDragStart={e => { handleDragStart(idx); e.dataTransfer.setData('fromGroupId', groupId); }}
           onDragEnter={() => handleDragEnter(idx)}
           onDragEnd={handleDragEnd}
         >

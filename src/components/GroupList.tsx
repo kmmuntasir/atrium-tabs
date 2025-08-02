@@ -241,6 +241,31 @@ export default function GroupList() {
     setTabs(getTabs());
   };
 
+  const handleTabDrop = (tabId: string, fromGroupId: string, toGroupId: string, copy: boolean) => {
+    if (fromGroupId === toGroupId) return; // Ignore same-group drops (handled by reorder)
+    const { getTabs, saveTabs, createTab } = require('../tab');
+    const allTabs = getTabs();
+    const tab = allTabs.find(t => t.id === tabId);
+    if (!tab) return;
+    if (copy) {
+      // Copy: create new tab in target group with new id/order
+      createTab({
+        url: tab.url,
+        title: tab.title,
+        pinned: tab.pinned,
+        groupId: toGroupId,
+        favicon: tab.favicon,
+      });
+    } else {
+      // Move: update groupId and order, remove from old group
+      const targetTabs = allTabs.filter(t => t.groupId === toGroupId);
+      tab.groupId = toGroupId;
+      tab.order = targetTabs.length;
+      saveTabs(allTabs);
+    }
+    setTabs(getTabs());
+  };
+
   let sortedGroups = groups.filter(g => !g.deleted);
   if (sortOrder === 'alphabetical') {
     sortedGroups = [...sortedGroups].sort((a, b) => a.name.localeCompare(b.name));
@@ -386,7 +411,14 @@ export default function GroupList() {
               </Accordion.Trigger>
               <Accordion.Content asChild>
                 <li>
-                  <TabList groupId={group.id} key={group.id} tabs={tabs.filter(t => t.groupId === group.id)} onTabRemove={handleRemoveTab} onTabReorder={(from, to) => handleReorderTabs(from, to, group.id)} />
+                  <TabList
+                    groupId={group.id}
+                    key={group.id}
+                    tabs={tabs.filter(t => t.groupId === group.id)}
+                    onTabRemove={handleRemoveTab}
+                    onTabReorder={(from, to) => handleReorderTabs(from, to, group.id)}
+                    onTabDrop={handleTabDrop}
+                  />
                 </li>
               </Accordion.Content>
               {/* Keep Dialogs and selectors as before, outside Accordion.Content */}

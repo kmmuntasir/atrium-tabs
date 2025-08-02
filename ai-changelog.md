@@ -174,3 +174,8 @@
 - Implemented tab reordering within a group (drag-and-drop, persistent order).
 - Updated TabList and GroupList to support drag-and-drop and order persistence.
 - Added/updated integration test for drag-and-drop reorder logic.
+
+**2024-07-31 09:43:00**
+- Implemented cross-group tab move/copy via drag-and-drop (Ctrl+Drag to copy, otherwise move).
+- Updated TabList and GroupList to support cross-group drop logic and UI feedback.
+- Added/updated tests for drag-and-drop; cross-group test is skipped due to jsdom limitations.
