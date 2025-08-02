@@ -197,3 +197,6 @@
 
 **2024-07-31 16:40**
 - Skipped ATRIUM-0032 (Context Menu: Move Tab to Group from Tab Bar) due to Chrome API limitations. Documented in tasks_list/06_tab_management.md. No implementation possible as described.
+
+**2024-07-31 16:45**
+- Marked 'Tab management features' as done in todo.md. All subfeatures are implemented, tested, or officially skipped due to platform limitations. Committed and pushed as ATRIUM-0005.

@@ -15,7 +15,7 @@
 - [x] Read-only backup preview UI ([tasks_list/04_ui.md](tasks_list/04_ui.md))
 - [x] UI polish: color palette, icon, toast (now includes Radix UI styling considerations) ([tasks_list/04_ui.md](tasks_list/04_ui.md))
 - [x] Group management features ([tasks_list/05_group_management.md](tasks_list/05_group_management.md))
-- [ ] Tab management features ([tasks_list/06_tab_management.md](tasks_list/06_tab_management.md))
+- [x] Tab management features  <!-- Marked as done: all subfeatures implemented, tested, or skipped due to platform limitations -->
 - [ ] Settings & customization (now includes Radix UI accessibility features) ([tasks_list/07_settings_and_customization.md](tasks_list/07_settings_and_customization.md))
 - [ ] Import/export & backup ([tasks_list/08_import_export_and_backup.md](tasks_list/08_import_export_and_backup.md))
 - [ ] Error handling & storage ([tasks_list/09_error_handling_and_storage.md](tasks_list/09_error_handling_and_storage.md))
