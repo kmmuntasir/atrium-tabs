@@ -179,3 +179,6 @@
 - Implemented cross-group tab move/copy via drag-and-drop (Ctrl+Drag to copy, otherwise move).
 - Updated TabList and GroupList to support cross-group drop logic and UI feedback.
 - Added/updated tests for drag-and-drop; cross-group test is skipped due to jsdom limitations.
+
+**2024-07-31 09:43:00**
+- Implemented auto-create tab when switching to an empty group (mock logic, useEffect in GroupList).

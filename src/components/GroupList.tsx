@@ -81,6 +81,22 @@ export default function GroupList() {
   const [selectedIcon, setSelectedIcon] = useState('');
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
   const [activeGroupId, setActiveGroupId] = useState<string | null>(groups.length > 0 ? groups[0].id : null);
+  React.useEffect(() => {
+    if (!activeGroupId) return;
+    const groupTabs = tabs.filter(t => t.groupId === activeGroupId);
+    if (groupTabs.length === 0) {
+      // Auto-create a new tab in the empty group
+      const { createTab, getTabs } = require('../tab');
+      createTab({
+        url: `https://example.com/${Math.floor(Math.random() * 1000)}`,
+        title: `Example Tab ${Math.floor(Math.random() * 1000)}`,
+        favicon: '',
+        pinned: false,
+        groupId: activeGroupId,
+      });
+      setTabs(getTabs());
+    }
+  }, [activeGroupId, tabs]);
   const dragItem = useRef<number | null>(null);
   const dragOverItem = useRef<number | null>(null);
   const [sortOrder, setSortOrder] = useState(() => localStorage.getItem('atrium_group_sort') || 'manual');
