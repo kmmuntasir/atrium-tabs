@@ -7,7 +7,7 @@
 - [x] Semantic release & changelog automation ([tasks_list/02_deployment_and_ci_cd.md](tasks_list/02_deployment_and_ci_cd.md))
 - [x] Chrome Web Store draft upload automation ([tasks_list/02_deployment_and_ci_cd.md](tasks_list/02_deployment_and_ci_cd.md))
 - [x] Community health files ([tasks_list/02_deployment_and_ci_cd.md](tasks_list/02_deployment_and_ci_cd.md))
-- [ ] Group data model ([tasks_list/03_data_model.md](tasks_list/03_data_model.md))
+- [x] Group data model ([tasks_list/03_data_model.md](tasks_list/03_data_model.md))
 - [ ] Tab data model ([tasks_list/03_data_model.md](tasks_list/03_data_model.md))
 - [ ] Basic popup UI scaffold ([tasks_list/04_ui.md](tasks_list/04_ui.md))
 - [ ] Group list in popup ([tasks_list/04_ui.md](tasks_list/04_ui.md))
