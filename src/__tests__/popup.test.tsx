@@ -2,7 +2,7 @@ import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import Popup from '../components/Popup';
-import { getStorageUsage, checkDataIntegrity, getAllData } from '../utils/storage';
+import { getStorageUsage, checkDataIntegrity, getAllData, attemptAutoRepair } from '../utils/storage';
 import toast from 'react-hot-toast';
 
 // Mock chrome API
@@ -66,6 +66,7 @@ vi.mock('../utils/storage', () => ({
   checkDataIntegrity: vi.fn(),
   getAllData: vi.fn(),
   saveData: vi.fn(),
+  attemptAutoRepair: vi.fn(),
 }));
 
 // Mock GroupList as it's a child component not relevant to Popup's direct logic being tested here
@@ -180,6 +181,7 @@ describe('Popup Component', () => {
     fireEvent.click(autoRepairButton);
 
     await waitFor(() => {
+      expect(attemptAutoRepair).toHaveBeenCalledTimes(1);
       expect(chrome.runtime.reload).toHaveBeenCalledTimes(1);
     });
   });

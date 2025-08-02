@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { getGroups, Group, createGroup, updateGroup, softDeleteGroup, restoreGroup, deleteGroup, saveGroups } from '../group';
 import { getTabs, createTab, updateTab, deleteTab, saveTabs } from '../tab';
 import { 
@@ -94,7 +94,7 @@ export default function GroupList() {
       return !prev;
     });
   };
-  React.useEffect(() => {
+  useEffect(() => {
     if (!activeGroupId) return;
     const groupTabs = tabs.filter(t => t.groupId === activeGroupId);
     if (groupTabs.length === 0) {
@@ -120,29 +120,18 @@ export default function GroupList() {
     localStorage.setItem('atrium_group_sort', value);
   };
 
-  const handleCreateGroup = async (e: React.FormEvent) => {
+  const handleCreateGroup = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newGroupName.trim()) return;
     setCreating(true);
-    const group = createGroup({
-      name: newGroupName.trim(),
-      color: '#1976d2', // default blue
-      icon: 'folder', // default icon
-      order: groups.length,
-      lastActiveAt: new Date().toISOString(),
+    createGroup({ name: newGroupName.trim(), color: '#1976d2', icon: 'folder', order: groups.length, lastActiveAt: new Date().toISOString() }, (newGroup) => {
+      createTab({ url: 'chrome://newtab/', title: 'New Tab', favicon: '', pinned: false, groupId: newGroup.id }, () => {
+        setGroups(getGroups());
+        setTabs(getTabs());
+        setNewGroupName('');
+        setCreating(false);
+      });
     });
-    setGroups(getGroups());
-    // Create a new tab in the new group by default
-    await createTab({
-      url: 'chrome://newtab/',
-      title: 'New Tab',
-      favicon: '',
-      pinned: false,
-      groupId: group.id,
-    });
-    setTabs(getTabs());
-    setNewGroupName('');
-    setCreating(false);
   };
 
   const handleSaveWindowAsGroup = () => {
@@ -285,11 +274,11 @@ export default function GroupList() {
     if (!tab) return;
     if (copy) {
       // Copy: create new tab in target group with new id/order
-      await createTab({
-        url: tab.url,
-        title: tab.title,
-        pinned: tab.pinned,
-        groupId: toGroupId,
+      await createTab({ 
+        url: tab.url, 
+        title: tab.title, 
+        pinned: tab.pinned, 
+        groupId: toGroupId, 
         favicon: tab.favicon,
       });
     } else {

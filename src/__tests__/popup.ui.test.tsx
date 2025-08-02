@@ -1,20 +1,22 @@
 import { describe, it, expect, vi } from 'vitest';
 import '@testing-library/jest-dom';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import * as Tooltip from '@radix-ui/react-tooltip';
 import Popup from '../components/Popup';
 import { axe, toHaveNoViolations } from 'jest-axe';
 expect.extend(toHaveNoViolations);
 
 // Mock toast notifications
+const mockToast = {
+  success: vi.fn(),
+  error: vi.fn(),
+  warn: vi.fn(),
+  dismiss: vi.fn(),
+};
 vi.mock('react-hot-toast', () => ({
   __esModule: true,
-  default: {
-    success: vi.fn(),
-    error: vi.fn(),
-    warn: vi.fn(),
-    dismiss: vi.fn(),
-  },
+  default: mockToast,
+  ...mockToast,
 }));
 
 // Mock chrome.runtime.sendMessage for testing messages sent to the runtime
@@ -56,10 +58,6 @@ Object.defineProperty(global, 'chrome', {
   configurable: true,
 });
 
-// Mock toast (react-hot-toast) to prevent actual toasts from appearing during tests
-import toast from 'react-hot-toast';
-vi.mock('react-hot-toast');
-
 describe('Popup UI', () => {
   beforeEach(() => {
     // Reset mocks before each test to ensure test isolation
@@ -100,7 +98,9 @@ describe('Popup UI', () => {
       },
     }, {}, () => {});
 
-    expect(screen.getByText('Storage Full')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByRole('dialog', { name: /Storage Full/i })).toBeInTheDocument();
+    });
     expect(screen.getByText('Storage full. Export or delete some groups before continuing.')).toBeInTheDocument();
 
     const results = await axe(screen.getByRole('dialog'));
@@ -121,21 +121,21 @@ describe('Popup UI', () => {
       type: 'STORAGE_WARNING',
       payload: { message: 'Critical warning', level: 'critical' },
     }, {}, () => {});
-    expect(toast.error).toHaveBeenCalledWith('Critical warning', { id: 'storage-warning', duration: Infinity });
+    expect(mockToast.error).toHaveBeenCalledWith('Critical warning', { id: 'storage-warning', duration: Infinity });
 
     // Test high warning
     await listener({
       type: 'STORAGE_WARNING',
       payload: { message: 'High warning', level: 'high' },
     }, {}, () => {});
-    expect(toast.warn).toHaveBeenCalledWith('High warning', { id: 'storage-warning', duration: Infinity });
+    expect(mockToast.warn).toHaveBeenCalledWith('High warning', { id: 'storage-warning', duration: Infinity });
 
     // Test medium warning
     await listener({
       type: 'STORAGE_WARNING',
       payload: { message: 'Medium warning', level: 'medium' },
     }, {}, () => {});
-    expect(toast.success).toHaveBeenCalledWith('Medium warning', { id: 'storage-warning', duration: Infinity });
+    expect(mockToast.success).toHaveBeenCalledWith('Medium warning', { id: 'storage-warning', duration: Infinity });
 
     // Test dismiss
     await listener({
@@ -145,6 +145,6 @@ describe('Popup UI', () => {
     // Dismiss is called in Popup.tsx if usagePercentage is not in the warning range
     // The test setup for Popup renders it first, then it checks initial storage usage
     // and dismisses the toast if usage is low. So, we'll check it here.
-    expect(toast.dismiss).toHaveBeenCalledWith('storage-warning');
+    expect(mockToast.dismiss).toHaveBeenCalledWith('storage-warning');
   });
 });

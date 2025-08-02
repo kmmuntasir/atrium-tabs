@@ -27,7 +27,8 @@ describe('GroupList', () => {
     // Switch to group 2 (empty)
     fireEvent.change(screen.getByLabelText(/active group/i), { target: { value: 'g2' } });
     // Expand group 2 accordion
-    fireEvent.click(screen.getAllByText('Group 2').find(el => el.tagName === 'SPAN'));
+    const group2Trigger = screen.getAllByText('Group 2').find(el => el.closest('[data-radix-collection-item]'));
+    fireEvent.click(group2Trigger);
     // Should auto-create a tab in group 2
     expect(await screen.findByText((c) => c.toLowerCase().includes('example tab'))).toBeInTheDocument();
   });
@@ -46,7 +47,8 @@ describe('GroupList', () => {
       </Tooltip.Provider>
     );
     // Expand group 1 accordion
-    fireEvent.click(screen.getAllByText('Group 1').find(el => el.tagName === 'SPAN'));
+    const group1Trigger = screen.getAllByText('Group 1').find(el => el.closest('[data-radix-collection-item]'));
+    fireEvent.click(group1Trigger);
     // By default, both tabs shown
     expect(await screen.findByText((c) => c.includes('Tab A'))).toBeInTheDocument();
     expect(await screen.findByText((c) => c.includes('Tab B'))).toBeInTheDocument();
@@ -70,7 +72,8 @@ describe('GroupList', () => {
       </Tooltip.Provider>
     );
     // Expand group 1 accordion
-    fireEvent.click(screen.getAllByText('Group 1').find(el => el.tagName === 'SPAN'));
+    const group1Trigger = screen.getAllByText('Group 1').find(el => el.closest('[data-radix-collection-item]'));
+    fireEvent.click(group1Trigger);
     // Simulate open
     fireEvent.click(screen.getByText(/simulate tab open/i));
     expect((await screen.findAllByText((c) => c.toLowerCase().includes('tab'))).length).toBeGreaterThan(1);

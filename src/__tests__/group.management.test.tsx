@@ -15,12 +15,11 @@ describe('Group Management', () => {
     const addButton = screen.getByText('Add');
     fireEvent.click(addButton);
     
-    // Wait for the async operation to complete and input to be re-enabled
     await waitFor(() => {
       expect(input).not.toBeDisabled();
       expect(input).toHaveValue(''); // input is cleared after add
     });
-    // Optionally, check if the group appears in the DOM if the component renders it
+    expect(await screen.findByText('Test Group')).toBeInTheDocument();
   });
   // ...more cases from test_cases/03_group_management.md
 });
