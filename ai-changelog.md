@@ -200,3 +200,13 @@
 
 **2024-07-31 16:45**
 - Marked 'Tab management features' as done in todo.md. All subfeatures are implemented, tested, or officially skipped due to platform limitations. Committed and pushed as ATRIUM-0005.
+
+**2024-07-31 17:00**
+- Implemented Settings & customization, Import/export & backup, and Error handling & storage features.
+  - Developed Settings UI with sort order, theme, pinned tabs, and eager load toggles.
+  - Implemented Export/Import functionality for user data.
+  - Added storage quota warnings and data corruption handling with a safe-mode prompt.
+- Wrote comprehensive unit tests for Settings, Import/Export, and Error Handling for Storage features.
+  - Tests cover UI interactions, data persistence, and error scenarios.
+- Updated `manifest.json` with command definitions for hotkeys.
+- All relevant tests pass.
