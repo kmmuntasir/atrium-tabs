@@ -1,10 +1,10 @@
 # TODO
 
-- [ ] Project repository setup ([tasks_list/01_project_structure_and_setup.md](tasks_list/01_project_structure_and_setup.md))
-- [ ] Tooling, linting, and TypeScript config ([tasks_list/01_project_structure_and_setup.md](tasks_list/01_project_structure_and_setup.md))
-- [ ] Vite & React project bootstrap ([tasks_list/01_project_structure_and_setup.md](tasks_list/01_project_structure_and_setup.md))
-- [ ] CI/CD pipeline setup ([tasks_list/02_deployment_and_ci_cd.md](tasks_list/02_deployment_and_ci_cd.md))
-- [ ] Semantic release & changelog automation ([tasks_list/02_deployment_and_ci_cd.md](tasks_list/02_deployment_and_ci_cd.md))
+- [x] Project repository setup ([tasks_list/01_project_structure_and_setup.md](tasks_list/01_project_structure_and_setup.md))
+- [x] Tooling, linting, and TypeScript config ([tasks_list/01_project_structure_and_setup.md](tasks_list/01_project_structure_and_setup.md))
+- [x] Vite & React project bootstrap ([tasks_list/01_project_structure_and_setup.md](tasks_list/01_project_structure_and_setup.md))
+- [x] CI/CD pipeline setup ([tasks_list/02_deployment_and_ci_cd.md](tasks_list/02_deployment_and_ci_cd.md))
+- [x] Semantic release & changelog automation ([tasks_list/02_deployment_and_ci_cd.md](tasks_list/02_deployment_and_ci_cd.md))
 - [ ] Chrome Web Store draft upload automation ([tasks_list/02_deployment_and_ci_cd.md](tasks_list/02_deployment_and_ci_cd.md))
 - [ ] Community health files ([tasks_list/02_deployment_and_ci_cd.md](tasks_list/02_deployment_and_ci_cd.md))
 - [ ] Group data model ([tasks_list/03_data_model.md](tasks_list/03_data_model.md))

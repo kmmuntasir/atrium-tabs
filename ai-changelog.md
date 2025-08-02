@@ -41,3 +41,6 @@
   - Added .releaserc.json configuration
   - Initialized CHANGELOG.md
   - Added GitHub Actions workflow for release automation (.github/workflows/release.yml)
+
+**2024-07-30 18:10:00**
+- Marked 'Semantic release & changelog automation' as done in the todo list (ATRIUM-0005).
