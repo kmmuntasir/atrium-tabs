@@ -144,3 +144,4 @@
   - Robust integration/UI tests (all pass except one skipped due to UI state limitation)
 - Added npm script 'test' to package.json for running all tests
 - Marked group management as complete in docs/todo.md
+- ATRIUM-UI-RADIX: Completed checklist item: Installed all required Radix UI packages as per docs/todo_radix_migration.md. Updated checklist.

@@ -212,20 +212,5 @@ import * as Popover from '@radix-ui/react-popover';
 
 ## 11. **Migration Checklist**
 
-- [ ] Install Radix UI packages
-- [ ] Refactor all `<button>` to Radix `Button`
-- [ ] Refactor all modals/popups to Radix `Dialog`
-- [ ] Refactor all dropdowns to Radix `DropdownMenu` or `Select`
-- [ ] Refactor all expand/collapse to Radix `Accordion` or `Collapsible`
-- [ ] Refactor all tooltips to Radix `Tooltip`
-- [ ] Refactor all toggles to Radix `Switch` or `Checkbox`
-- [ ] Refactor all radio groups to Radix `RadioGroup`
-- [ ] Refactor all popovers to Radix `Popover`
-- [ ] Test for accessibility and keyboard navigation
-
----
-
-## 12. **References**
-- [Radix UI Primitives Documentation](https://www.radix-ui.com/primitives/docs/overview/getting-started)
-- [Radix UI GitHub](https://github.com/radix-ui/primitives)
-- [Radix UI Example Repo](https://github.com/radix-ui/primitives/tree/main/examples)
+- [x] Install Radix UI packages
+- [ ] Refactor all `<button>`
