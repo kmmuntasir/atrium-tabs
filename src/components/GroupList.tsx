@@ -26,7 +26,7 @@ import * as Dialog from '@radix-ui/react-dialog';
 import * as Select from '@radix-ui/react-select';
 import * as Accordion from '@radix-ui/react-accordion';
 import * as Tooltip from '@radix-ui/react-tooltip';
-import * as Button from '@radix-ui/react-button';
+import { Button } from '@radix-ui/themes';
 
 // Mapping of icon names to Lucide icons
 const LucideIcons: { [key: string]: React.ElementType } = {
@@ -225,11 +225,11 @@ export default function GroupList() {
           style={{ flex: 1, marginRight: 8 }}
           disabled={creating}
         />
-        <Button.Root type="submit" disabled={creating || !newGroupName.trim()}>Add</Button.Root>
+        <Button type="submit" disabled={creating || !newGroupName.trim()}>Add</Button>
       </form>
-      <Button.Root onClick={handleSaveWindowAsGroup} style={{ marginBottom: 16, width: '100%' }}>
+      <Button onClick={handleSaveWindowAsGroup} style={{ marginBottom: 16, width: '100%' }}>
         Save Current Window as Group
-      </Button.Root>
+      </Button>
       <div style={{ marginBottom: 12 }}>
         <label htmlFor="group-sort" style={{ marginRight: 8 }}>Sort groups:</label>
         <Select.Root value={sortOrder} onValueChange={handleSortChange}>
@@ -317,9 +317,9 @@ export default function GroupList() {
                   {group.id === activeElsewhereId && <LockIcon />}
                   <Tooltip.Root>
                     <Tooltip.Trigger asChild>
-                      <Button.Root aria-label="Open group in new window" style={{ marginLeft: 8 }} onClick={e => { e.stopPropagation(); handleOpenInNewWindow(group); }} tabIndex={0}>
+                      <Button aria-label="Open group in new window" style={{ marginLeft: 8 }} onClick={e => { e.stopPropagation(); handleOpenInNewWindow(group); }} tabIndex={0}>
                         <ExternalLink size={14} style={{ cursor: 'pointer' }} />
-                      </Button.Root>
+                      </Button>
                     </Tooltip.Trigger>
                     <Tooltip.Content>Open group in new window</Tooltip.Content>
                   </Tooltip.Root>
@@ -362,8 +362,8 @@ export default function GroupList() {
                     <Dialog.Content>
                       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
                         <span>Are you sure you want to delete this group?</span>
-                        <Button.Root onClick={() => { deleteGroup(group.id); setGroups(getGroups()); setPendingDeleteId(null); }}>Confirm</Button.Root>
-                        <Button.Root onClick={() => setPendingDeleteId(null)}>Cancel</Button.Root>
+                        <Button onClick={() => { deleteGroup(group.id); setGroups(getGroups()); setPendingDeleteId(null); }}>Confirm</Button>
+                        <Button onClick={() => setPendingDeleteId(null)}>Cancel</Button>
                       </div>
                     </Dialog.Content>
                   </Dialog.Portal>

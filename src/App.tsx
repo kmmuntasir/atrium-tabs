@@ -3,7 +3,7 @@ import reactLogo from './assets/react.svg'
 import viteLogo from './vite.svg'
 import './App.css'
 import { Toaster } from 'react-hot-toast';
-import * as Button from '@radix-ui/react-button';
+import { Button } from '@radix-ui/themes';
 
 function App() {
   const [count, setCount] = useState(0)
@@ -20,9 +20,9 @@ function App() {
       </div>
       <h1>Vite + React</h1>
       <div className="card">
-        <Button.Root onClick={() => setCount((count) => count + 1)}>
+        <Button onClick={() => setCount((count) => count + 1)}>
           count is {count}
-        </Button.Root>
+        </Button>
         <p>
           Edit <code>src/App.tsx</code> and save to test HMR
         </p>
