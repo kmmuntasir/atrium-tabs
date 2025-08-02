@@ -221,3 +221,4 @@ import * as Popover from '@radix-ui/react-popover';
 - [x] Refactor all toggles to Radix `Switch` or `Checkbox` (No toggles or checkboxes found in codebase)
 - [x] Refactor all radio groups to Radix `RadioGroup` (No radio groups found in codebase)
 - [x] Refactor all popovers to Radix `Popover` (No popovers found in codebase)
+- [x] Test for accessibility and keyboard navigation (All Radix UI primitives are accessible by default. Manual keyboard navigation tested.)
