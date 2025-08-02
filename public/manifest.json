@@ -1,0 +1,14 @@
+{
+  "manifest_version": 3,
+  "name": "Atrium Tabs",
+  "version": "0.1.0",
+  "description": "Minimalist tab group manager",
+  "action": {
+    "default_popup": "index.html",
+    "default_title": "Atrium Tabs"
+  },
+  "permissions": [],
+  "icons": {
+    "128": "vite.svg"
+  }
+}
