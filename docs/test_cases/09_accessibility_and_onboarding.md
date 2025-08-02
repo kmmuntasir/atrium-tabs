@@ -13,7 +13,7 @@
 - [ ] Should pass automated accessibility tests (axe, etc.)
 
 ## Onboarding Carousel
-- [ ] Should show 3-step onboarding carousel on first run
+- [ ] Should show 3-step onboarding carousel on first run, built with Radix UI components
 - [ ] Should display screenshots/GIFs for each step
 - [ ] Should allow user to skip or finish onboarding
 - [ ] Should show “Hotkeys active” toast after onboarding is completed or skipped

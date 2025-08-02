@@ -5,11 +5,11 @@
 2. Tab data model (URL, title, pinned, groupId, favicon, createdAt)
 
 ## UI
-3. Basic popup UI scaffold (React, Vite, initial layout)
+3. Basic popup UI scaffold (React, Vite, Radix UI, Initial Layout)
 4. List all groups in popup (with icon, name, tab count, lock icon if active elsewhere)
 5. Expand/collapse group to show tabs (favicon, title)
 6. Read-only backup preview mimicking popup UI
-7. UI polish: color palette adherence, icon rendering, toast positioning
+7. UI polish: color palette adherence, icon rendering, toast positioning, and Radix UI component styling
 
 ## Group Management
 8. Create new group (manual name input)
@@ -43,7 +43,7 @@
 32. Keyboard shortcut mapping UI
 33. Default hotkeys for group switching (Ctrl/Cmd+Shift+1-9)
 34. Toggle lazy-load/eager-load for tabs (with warning)
-35. ARIA labels and keyboard navigation for accessibility
+35. ARIA labels and keyboard navigation for accessibility, leveraging Radix UI's built-in accessibility features
 
 ## Import/Export & Backup
 36. Export groups, tabs, and preferences as JSON
@@ -67,7 +67,7 @@
 48. High-contrast theme (light mode)
 49. Color-blind shape badge next to group icon
 50. Automated accessibility and UI tests
-51. 3-step onboarding carousel with screenshots/GIFs
+51. 3-step onboarding carousel with screenshots/GIFs, built with Radix UI components
 52. Show “Hotkeys active” toast after onboarding
 
 ## Non-Functional

@@ -38,7 +38,7 @@ Implement automated accessibility and UI tests for all major flows.
 
 ### [ATRIUM-0058] 3-Step Onboarding Carousel with Screenshots/GIFs
 **Description:**
-Implement a 3-step onboarding carousel with screenshots/GIFs.
+Implement a 3-step onboarding carousel with screenshots/GIFs, utilizing Radix UI components for structure and interactivity.
 
 **Acceptance Criteria:**
 - Carousel appears on first run.

@@ -70,7 +70,7 @@ Allow toggling between lazy-load and eager-load for tabs, with warning about per
 
 ### [ATRIUM-0042] ARIA Labels and Keyboard Navigation for Accessibility
 **Description:**
-Add ARIA labels and keyboard navigation to all interactive UI elements.
+Add ARIA labels and keyboard navigation to all interactive UI elements, leveraging Radix UI's built-in accessibility features.
 
 **Acceptance Criteria:**
 - All UI elements have ARIA labels.
