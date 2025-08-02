@@ -141,3 +141,5 @@ Disable group row and show lock icon if group is active in another window.
 - Integration test: UI updates on group state change.
 
 **Dependencies:** ATRIUM-0023
+
+<!-- Tech Stack Reference: See PRD section 7.1. Component Library: Radix UI primitives required. -->

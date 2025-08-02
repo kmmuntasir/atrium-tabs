@@ -73,3 +73,5 @@
 ## Non-Functional
 53. Performance optimization for large groups/tabs
 54. Security review and permissions minimization
+
+<!-- Tech Stack Reference: See PRD section 7.1. Component Library: Radix UI primitives required. -->
