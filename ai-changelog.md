@@ -30,3 +30,7 @@
   - All jobs required to pass for merge
   - Node.js 20.x used for all jobs
   - Workflow file: .github/workflows/ci.yml
+
+**2024-07-30 17:30:00**
+- Added new rule (todo-changelog-commit-flow) to enforce checking and updating the todo list, changelog, and committing/pushing after each task for accurate progress tracking and traceability.
+  - Rule file: .cursor/rules/todo-changelog-commit-flow.mdc
