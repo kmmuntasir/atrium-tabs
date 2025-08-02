@@ -23,6 +23,7 @@ import {
 import TabList from './TabList';
 import { useRef } from 'react';
 import * as Button from '@radix-ui/react-button';
+import * as Dialog from '@radix-ui/react-dialog';
 
 // Mapping of icon names to Lucide icons
 const LucideIcons: { [key: string]: React.ElementType } = {
@@ -286,55 +287,92 @@ export default function GroupList() {
                 <span style={{ marginRight: 8 }} onClick={e => { e.stopPropagation(); softDeleteGroup(group.id); setGroups(getGroups()); }}>
                   <Trash2 size={14} style={{ cursor: 'pointer', color: 'red' }} title="Delete group" />
                 </span>
-                {isPendingDelete && (
-                  <span style={{ marginRight: 8 }} onClick={e => { e.stopPropagation(); deleteGroup(group.id); setGroups(getGroups()); setPendingDeleteId(null); }} data-testid={`confirm-delete-${group.id}`}>
-                    <Check size={16} style={{ cursor: 'pointer', color: 'red' }} title="Confirm delete" />
-                  </span>
-                )}
                 {group.id === activeElsewhereId && <LockIcon />}
                 <span style={{ marginLeft: 8 }} onClick={e => { e.stopPropagation(); handleOpenInNewWindow(group); }}>
                   <ExternalLink size={14} style={{ cursor: 'pointer' }} title="Open group in new window" />
                 </span>
               </li>
-              {isSelecting && (
-                <li style={{ marginBottom: 8 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <span>Color:</span>
-                    {COLOR_OPTIONS.map(color => (
-                      <span
-                        key={color}
-                        onClick={() => setSelectedColor(color)}
-                        style={{
-                          width: 18, height: 18, borderRadius: '50%', background: color,
-                          border: selectedColor === color ? '2px solid #333' : '1px solid #ccc',
-                          cursor: 'pointer', display: 'inline-block'
-                        }}
-                        title={color}
-                      />
-                    ))}
-                    <span style={{ marginLeft: 12 }}>Icon:</span>
-                    {ICON_OPTIONS.map(icon => {
-                      const Icon = LucideIcons[icon];
-                      return (
+              <Dialog.Root open={isSelecting} onOpenChange={open => setSelectorId(open ? group.id : null)}>
+                <Dialog.Trigger asChild>
+                  <li style={{ marginBottom: 8 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <span>Color:</span>
+                      {COLOR_OPTIONS.map(color => (
                         <span
-                          key={icon}
-                          onClick={() => setSelectedIcon(icon)}
+                          key={color}
+                          onClick={() => setSelectedColor(color)}
                           style={{
-                            border: selectedIcon === icon ? '2px solid #333' : '1px solid #ccc',
-                            borderRadius: 4, padding: 2, marginRight: 2, cursor: 'pointer',
-                            background: '#fff', display: 'inline-block'
+                            width: 18, height: 18, borderRadius: '50%', background: color,
+                            border: selectedColor === color ? '2px solid #333' : '1px solid #ccc',
+                            cursor: 'pointer', display: 'inline-block'
                           }}
-                          title={icon}
-                        >
-                          <Icon size={16} style={{ color: selectedColor }} />
-                        </span>
-                      );
-                    })}
-                    <Button.Root onClick={() => saveSelector(group)} style={{ marginLeft: 8 }}>Save</Button.Root>
-                    <Button.Root onClick={closeSelector} style={{ marginLeft: 4 }}>Cancel</Button.Root>
-                  </div>
-                </li>
-              )}
+                          title={color}
+                        />
+                      ))}
+                      <span style={{ marginLeft: 12 }}>Icon:</span>
+                      {ICON_OPTIONS.map(icon => {
+                        const Icon = LucideIcons[icon];
+                        return (
+                          <span
+                            key={icon}
+                            onClick={() => setSelectedIcon(icon)}
+                            style={{
+                              border: selectedIcon === icon ? '2px solid #333' : '1px solid #ccc',
+                              borderRadius: 4, padding: 2, marginRight: 2, cursor: 'pointer',
+                              background: '#fff', display: 'inline-block'
+                            }}
+                            title={icon}
+                          >
+                            <Icon size={16} style={{ color: selectedColor }} />
+                          </span>
+                        );
+                      })}
+                      <Button.Root onClick={() => { saveSelector(group); setSelectorId(null); }} style={{ marginLeft: 8 }}>Save</Button.Root>
+                      <Button.Root onClick={() => setSelectorId(null)} style={{ marginLeft: 4 }}>Cancel</Button.Root>
+                    </div>
+                  </li>
+                </Dialog.Trigger>
+                <Dialog.Portal>
+                  <Dialog.Overlay />
+                  <Dialog.Content>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <span>Color:</span>
+                      {COLOR_OPTIONS.map(color => (
+                        <span
+                          key={color}
+                          onClick={() => setSelectedColor(color)}
+                          style={{
+                            width: 18, height: 18, borderRadius: '50%', background: color,
+                            border: selectedColor === color ? '2px solid #333' : '1px solid #ccc',
+                            cursor: 'pointer', display: 'inline-block'
+                          }}
+                          title={color}
+                        />
+                      ))}
+                      <span style={{ marginLeft: 12 }}>Icon:</span>
+                      {ICON_OPTIONS.map(icon => {
+                        const Icon = LucideIcons[icon];
+                        return (
+                          <span
+                            key={icon}
+                            onClick={() => setSelectedIcon(icon)}
+                            style={{
+                              border: selectedIcon === icon ? '2px solid #333' : '1px solid #ccc',
+                              borderRadius: 4, padding: 2, marginRight: 2, cursor: 'pointer',
+                              background: '#fff', display: 'inline-block'
+                            }}
+                            title={icon}
+                          >
+                            <Icon size={16} style={{ color: selectedColor }} />
+                          </span>
+                        );
+                      })}
+                      <Button.Root onClick={() => { saveSelector(group); setSelectorId(null); }} style={{ marginLeft: 8 }}>Save</Button.Root>
+                      <Button.Root onClick={() => setSelectorId(null)} style={{ marginLeft: 4 }}>Cancel</Button.Root>
+                    </div>
+                  </Dialog.Content>
+                </Dialog.Portal>
+              </Dialog.Root>
               {isExpanded && (
                 <li>
                   <TabList groupId={group.id} />
@@ -350,9 +388,23 @@ export default function GroupList() {
                 <span style={{ marginRight: 8 }} onClick={() => { restoreGroup(group.id); setGroups(getGroups()); }}>
                   <RotateCcw size={16} style={{ cursor: 'pointer' }} title="Restore group" />
                 </span>
-                <span style={{ marginRight: 8 }} onClick={() => { setPendingDeleteId(group.id); }}>
-                  <Trash2 size={16} style={{ cursor: 'pointer', color: 'red' }} title="Confirm delete" />
-                </span>
+                <Dialog.Root open={isPendingDelete} onOpenChange={open => setPendingDeleteId(open ? group.id : null)}>
+                  <Dialog.Trigger asChild>
+                    <span style={{ marginRight: 8 }} onClick={() => { setPendingDeleteId(group.id); }}>
+                      <Trash2 size={16} style={{ cursor: 'pointer', color: 'red' }} title="Confirm delete" />
+                    </span>
+                  </Dialog.Trigger>
+                  <Dialog.Portal>
+                    <Dialog.Overlay />
+                    <Dialog.Content>
+                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
+                        <span>Are you sure you want to delete this group?</span>
+                        <Button.Root onClick={() => { deleteGroup(group.id); setGroups(getGroups()); setPendingDeleteId(null); }}>Confirm</Button.Root>
+                        <Button.Root onClick={() => setPendingDeleteId(null)}>Cancel</Button.Root>
+                      </div>
+                    </Dialog.Content>
+                  </Dialog.Portal>
+                </Dialog.Root>
               </li>
         ))}
       </ul>
