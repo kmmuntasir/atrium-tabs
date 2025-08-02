@@ -1,12 +1,15 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './vite.svg'
-import './App.css'
+import { useState } from 'react';
+import reactLogo from './assets/react.svg';
+import viteLogo from './vite.svg';
+import './App.css';
 import { Toaster } from 'react-hot-toast';
 import { Button } from '@radix-ui/themes';
+import StorageToast from './components/StorageToast';
+import StorageModal from './components/StorageModal';
+import CorruptionModal from './components/CorruptionModal';
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [count, setCount] = useState(0);
 
   return (
     <>
@@ -31,8 +34,11 @@ function App() {
         Click on the Vite and React logos to learn more
       </p>
       <Toaster position="bottom-center" />
+      <StorageToast />
+      <StorageModal />
+      <CorruptionModal />
     </>
-  )
+  );
 }
 
-export default App
+export default App;

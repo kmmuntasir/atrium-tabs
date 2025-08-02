@@ -1,5 +1,5 @@
 import { sendGAEvent } from './utils/telemetry';
-import { getAllData } from './utils/storage';
+import { getAllData, checkDataIntegrity } from './utils/storage';
 
 const ALARM_NAME = 'dailyHeartbeat';
 
@@ -15,8 +15,20 @@ async function handleDailyHeartbeat() {
   console.log('Daily heartbeat sent.', { groupCount, tabCount });
 }
 
+async function runDataIntegrityCheck() {
+  const isDataSane = await checkDataIntegrity();
+  if (!isDataSane) {
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+      if (tabs[0] && tabs[0].id) {
+        chrome.tabs.sendMessage(tabs[0].id, { type: 'DATA_CORRUPTION' });
+      }
+    });
+  }
+}
+
 chrome.runtime.onInstalled.addListener(() => {
   console.log('Extension installed or updated.');
+  runDataIntegrityCheck();
   chrome.alarms.create(ALARM_NAME, {
     when: Date.now() + 60000, // Trigger 1 minute after install/update
     periodInMinutes: 24 * 60, // Daily
@@ -34,6 +46,7 @@ chrome.alarms.onAlarm.addListener((alarm) => {
 // Listen for browser startup to send heartbeat if alarm was missed or not yet scheduled
 chrome.runtime.onStartup.addListener(() => {
   console.log('Browser started.');
+  runDataIntegrityCheck();
   chrome.alarms.get(ALARM_NAME, (alarm) => {
     if (!alarm) {
       console.log('Daily heartbeat alarm not found, creating it.');

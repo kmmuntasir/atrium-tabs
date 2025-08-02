@@ -1,0 +1,31 @@
+
+.storage-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1001;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.storage-modal {
+  background-color: white;
+  padding: 24px;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.storage-modal h2 {
+  margin-top: 0;
+}
+
+.storage-modal button {
+  margin-top: 16px;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+}
