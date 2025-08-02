@@ -26,6 +26,7 @@ import * as Button from '@radix-ui/react-button';
 import * as Dialog from '@radix-ui/react-dialog';
 import * as Select from '@radix-ui/react-select';
 import * as Accordion from '@radix-ui/react-accordion';
+import * as Tooltip from '@radix-ui/react-tooltip';
 
 // Mapping of icon names to Lucide icons
 const LucideIcons: { [key: string]: React.ElementType } = {
@@ -43,7 +44,16 @@ const LucideIcons: { [key: string]: React.ElementType } = {
 };
 
 function LockIcon() {
-  return <span title="This group is active in another window" style={{ marginLeft: 8 }}>🔒</span>;
+  return (
+    <Tooltip.Provider>
+      <Tooltip.Root>
+        <Tooltip.Trigger asChild>
+          <span style={{ marginLeft: 8 }}>🔒</span>
+        </Tooltip.Trigger>
+        <Tooltip.Content>This group is active in another window</Tooltip.Content>
+      </Tooltip.Root>
+    </Tooltip.Provider>
+  );
 }
 
 function getRandomColor() {
@@ -261,7 +271,14 @@ export default function GroupList() {
                   }}
                   title={isActiveElsewhere ? 'This group is active in another window' : undefined}
                 >
-                  <span style={{ marginRight: 8, cursor: 'grab' }} title="Drag to reorder">☰</span>
+                  <Tooltip.Provider>
+                    <Tooltip.Root>
+                      <Tooltip.Trigger asChild>
+                        <span style={{ marginRight: 8, cursor: 'grab' }}>☰</span>
+                      </Tooltip.Trigger>
+                      <Tooltip.Content>Drag to reorder</Tooltip.Content>
+                    </Tooltip.Root>
+                  </Tooltip.Provider>
                   <span style={{ marginRight: 8 }} onClick={e => { e.stopPropagation(); openSelector(group); }}>
                     {IconComponent ? <IconComponent size={16} style={{ color: group.color }} data-testid={`${group.icon?.toLowerCase()}-icon`} /> : group.icon || '📁'}
                   </span>
@@ -283,15 +300,36 @@ export default function GroupList() {
                     )}
                   </span>
                   <span style={{ marginRight: 8 }}>({tabs.filter(t => t.groupId === group.id).length})</span>
-                  <span style={{ marginRight: 8 }} onClick={e => { e.stopPropagation(); startEditing(group); }}>
-                    <Pencil size={14} style={{ cursor: 'pointer' }} title="Edit group name" />
+                  <Tooltip.Provider>
+                    <Tooltip.Root>
+                      <Tooltip.Trigger asChild>
+                        <span style={{ marginRight: 8 }} onClick={e => { e.stopPropagation(); startEditing(group); }}>
+                          <Pencil size={14} style={{ cursor: 'pointer' }} />
+                        </Tooltip.Trigger>
+                        <Tooltip.Content>Edit group name</Tooltip.Content>
+                      </Tooltip.Root>
+                    </Tooltip.Provider>
                   </span>
-                  <span style={{ marginRight: 8 }} onClick={e => { e.stopPropagation(); softDeleteGroup(group.id); setGroups(getGroups()); }}>
-                    <Trash2 size={14} style={{ cursor: 'pointer', color: 'red' }} title="Delete group" />
+                  <Tooltip.Provider>
+                    <Tooltip.Root>
+                      <Tooltip.Trigger asChild>
+                        <span style={{ marginRight: 8 }} onClick={e => { e.stopPropagation(); softDeleteGroup(group.id); setGroups(getGroups()); }}>
+                          <Trash2 size={14} style={{ cursor: 'pointer', color: 'red' }} />
+                        </Tooltip.Trigger>
+                        <Tooltip.Content>Delete group</Tooltip.Content>
+                      </Tooltip.Root>
+                    </Tooltip.Provider>
                   </span>
                   {group.id === activeElsewhereId && <LockIcon />}
-                  <span style={{ marginLeft: 8 }} onClick={e => { e.stopPropagation(); handleOpenInNewWindow(group); }}>
-                    <ExternalLink size={14} style={{ cursor: 'pointer' }} title="Open group in new window" />
+                  <Tooltip.Provider>
+                    <Tooltip.Root>
+                      <Tooltip.Trigger asChild>
+                        <span style={{ marginLeft: 8 }} onClick={e => { e.stopPropagation(); handleOpenInNewWindow(group); }}>
+                          <ExternalLink size={14} style={{ cursor: 'pointer' }} />
+                        </Tooltip.Trigger>
+                        <Tooltip.Content>Open group in new window</Tooltip.Content>
+                      </Tooltip.Root>
+                    </Tooltip.Provider>
                   </span>
                 </li>
               </Accordion.Trigger>
@@ -308,25 +346,39 @@ export default function GroupList() {
         {groups.filter(g => g.deleted).map(group => (
           <li key={group.id} style={{ opacity: 0.5, textDecoration: 'line-through', display: 'flex', alignItems: 'center', marginBottom: 8 }}>
                 <span style={{ flex: 1 }}>{group.name}</span>
-                <span style={{ marginRight: 8 }} onClick={() => { restoreGroup(group.id); setGroups(getGroups()); }}>
-                  <RotateCcw size={16} style={{ cursor: 'pointer' }} title="Restore group" />
+                <Tooltip.Provider>
+                  <Tooltip.Root>
+                    <Tooltip.Trigger asChild>
+                      <span style={{ marginRight: 8 }} onClick={() => { restoreGroup(group.id); setGroups(getGroups()); }}>
+                        <RotateCcw size={16} style={{ cursor: 'pointer' }} />
+                      </Tooltip.Trigger>
+                      <Tooltip.Content>Restore group</Tooltip.Content>
+                    </Tooltip.Root>
+                  </Tooltip.Provider>
                 </span>
                 <Dialog.Root open={isPendingDelete} onOpenChange={open => setPendingDeleteId(open ? group.id : null)}>
                   <Dialog.Trigger asChild>
-                    <span style={{ marginRight: 8 }} onClick={() => { setPendingDeleteId(group.id); }}>
-                      <Trash2 size={16} style={{ cursor: 'pointer', color: 'red' }} title="Confirm delete" />
-                    </span>
-                  </Dialog.Trigger>
-                  <Dialog.Portal>
-                    <Dialog.Overlay />
-                    <Dialog.Content>
-                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
-                        <span>Are you sure you want to delete this group?</span>
-                        <Button.Root onClick={() => { deleteGroup(group.id); setGroups(getGroups()); setPendingDeleteId(null); }}>Confirm</Button.Root>
-                        <Button.Root onClick={() => setPendingDeleteId(null)}>Cancel</Button.Root>
-                      </div>
-                    </Dialog.Content>
-                  </Dialog.Portal>
+                    <Tooltip.Provider>
+                      <Tooltip.Root>
+                        <Tooltip.Trigger asChild>
+                          <span style={{ marginRight: 8 }} onClick={() => { setPendingDeleteId(group.id); }}>
+                            <Trash2 size={16} style={{ cursor: 'pointer', color: 'red' }} />
+                          </Tooltip.Trigger>
+                          <Tooltip.Content>Confirm delete</Tooltip.Content>
+                        </Tooltip.Root>
+                      </Tooltip.Provider>
+                    </Dialog.Trigger>
+                    <Dialog.Portal>
+                      <Dialog.Overlay />
+                      <Dialog.Content>
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
+                          <span>Are you sure you want to delete this group?</span>
+                          <Button.Root onClick={() => { deleteGroup(group.id); setGroups(getGroups()); setPendingDeleteId(null); }}>Confirm</Button.Root>
+                          <Button.Root onClick={() => setPendingDeleteId(null)}>Cancel</Button.Root>
+                        </div>
+                      </Dialog.Content>
+                    </Dialog.Portal>
+                  </Dialog.Root>
                 </Dialog.Root>
               </li>
         ))}

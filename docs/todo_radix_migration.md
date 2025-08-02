@@ -217,3 +217,4 @@ import * as Popover from '@radix-ui/react-popover';
 - [x] Refactor all modals/popups to Radix `Dialog`
 - [x] Refactor all dropdowns to Radix `DropdownMenu` or `Select`
 - [x] Refactor all expand/collapse to Radix `Accordion` or `Collapsible`
+- [x] Refactor all tooltips to Radix `Tooltip`
