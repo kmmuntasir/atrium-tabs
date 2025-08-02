@@ -160,3 +160,4 @@
 ### Updated Radix UI Component Usage
 
 - Replaced native `<button>` elements with Radix UI `Button.Root` components in `src/components/Popup.tsx` and `src/components/TabList.tsx` to align with Radix UI best practices and enhance accessibility.
+- Replaced native `<button>` elements with Radix UI `Button.Root` components in `src/components/GroupList.tsx` to further align with Radix UI best practices and enhance accessibility.
