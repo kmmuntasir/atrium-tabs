@@ -150,3 +150,4 @@
 - ATRIUM-UI-RADIX: Refactored all dropdowns to use Radix DropdownMenu or Select as per docs/todo_radix_migration.md. Updated checklist.
 - ATRIUM-UI-RADIX: Refactored all expand/collapse to use Radix Accordion or Collapsible as per docs/todo_radix_migration.md. Updated checklist.
 - ATRIUM-UI-RADIX: Refactored all tooltips to use Radix Tooltip as per docs/todo_radix_migration.md. Updated checklist.
+- ATRIUM-UI-RADIX: Refactor all toggles to Radix Switch or Checkbox as per docs/todo_radix_migration.md. No toggles or checkboxes found in codebase. Updated checklist.
