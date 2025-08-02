@@ -185,3 +185,6 @@
 
 **2024-07-31 09:43:00**
 - Implemented pinned tabs control: UI toggle to include/exclude pinned tabs from groups, state and localStorage persistence, real-time filtering.
+
+**2024-07-31 09:43:00**
+- Implemented mock real-time tracking of tab open/close/navigation events: UI controls in GroupList, updates state and storage in real time.

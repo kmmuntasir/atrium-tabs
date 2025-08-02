@@ -325,6 +325,36 @@ export default function GroupList() {
       <Button onClick={handleSaveWindowAsGroup} style={{ marginBottom: 16, width: '100%' }}>
         Save Current Window as Group
       </Button>
+      <div style={{ marginBottom: 12, display: 'flex', gap: 8 }}>
+        <Button onClick={handleAddTabToActiveGroup} disabled={!activeGroupId}>Simulate Tab Open</Button>
+        <Button
+          onClick={() => {
+            if (!activeGroupId) return;
+            const groupTabs = tabs.filter(t => t.groupId === activeGroupId);
+            if (groupTabs.length === 0) return;
+            const tabToClose = groupTabs[Math.floor(Math.random() * groupTabs.length)];
+            const { deleteTab, getTabs } = require('../tab');
+            deleteTab(tabToClose.id);
+            setTabs(getTabs());
+          }}
+          disabled={!activeGroupId || tabs.filter(t => t.groupId === activeGroupId).length === 0}
+        >Simulate Tab Close</Button>
+        <Button
+          onClick={() => {
+            if (!activeGroupId) return;
+            const groupTabs = tabs.filter(t => t.groupId === activeGroupId);
+            if (groupTabs.length === 0) return;
+            const tabToNav = groupTabs[Math.floor(Math.random() * groupTabs.length)];
+            const { updateTab, getTabs } = require('../tab');
+            updateTab(tabToNav.id, {
+              url: `https://navigated.com/${Math.floor(Math.random() * 1000)}`,
+              title: `Navigated Tab ${Math.floor(Math.random() * 1000)}`,
+            });
+            setTabs(getTabs());
+          }}
+          disabled={!activeGroupId || tabs.filter(t => t.groupId === activeGroupId).length === 0}
+        >Simulate Tab Navigation</Button>
+      </div>
       <div style={{ marginBottom: 12 }}>
         <label htmlFor="active-group-select" style={{ marginRight: 8 }}>Active group:</label>
         <select
