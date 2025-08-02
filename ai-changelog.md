@@ -231,3 +231,6 @@
   - Added robust error handling in export logic for both production and test environments
   - Fixed all settings.test.tsx tests by simplifying react-hot-toast mock structure and resolving Vitest hoisting issues
   - All 14 settings tests now pass with proper error toast verification
+
+**2024-07-30**
+  - Marked "Import/export & backup" task as completed in `docs/todo.md`.
