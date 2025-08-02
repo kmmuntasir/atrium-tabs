@@ -29,11 +29,25 @@ function defineGlobalLocalStorage() {
       get: vi.fn(),
       set: vi.fn(),
       remove: vi.fn(),
+      getBytesInUse: vi.fn(),
+      QUOTA_BYTES: 5 * 1024 * 1024, // 5MB
     }
+  },
+  runtime: {
+    sendMessage: vi.fn(),
+    getURL: vi.fn(),
+    onMessage: {
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
+    },
+    lastError: undefined,
   },
   tabs: {
     create: vi.fn(),
     remove: vi.fn(),
+  },
+  commands: {
+    getAll: vi.fn(),
   },
   // ...other APIs as needed
 };

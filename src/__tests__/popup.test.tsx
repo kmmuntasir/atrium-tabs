@@ -22,6 +22,10 @@ Object.defineProperty(global, 'chrome', {
     runtime: {
       getURL: (path: string) => `chrome://extension-id/${path}`,
       reload: vi.fn(),
+      onMessage: {
+        addListener: vi.fn(),
+        removeListener: vi.fn(),
+      },
       lastError: undefined,
     },
     tabs: {

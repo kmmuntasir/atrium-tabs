@@ -99,14 +99,17 @@ export default function GroupList() {
     const groupTabs = tabs.filter(t => t.groupId === activeGroupId);
     if (groupTabs.length === 0) {
       // Auto-create a new tab in the empty group
-      await createTab({
-        url: `https://example.com/${Math.floor(Math.random() * 1000)}`,
-        title: `Example Tab ${Math.floor(Math.random() * 1000)}`,
-        favicon: '',
-        pinned: false,
-        groupId: activeGroupId,
-      });
-      setTabs(getTabs());
+      const createDefaultTab = async () => {
+        await createTab({
+          url: `https://example.com/${Math.floor(Math.random() * 1000)}`,
+          title: `Example Tab ${Math.floor(Math.random() * 1000)}`,
+          favicon: '',
+          pinned: false,
+          groupId: activeGroupId,
+        });
+        setTabs(getTabs());
+      };
+      createDefaultTab();
     }
   }, [activeGroupId, tabs]);
   const dragItem = useRef<number | null>(null);

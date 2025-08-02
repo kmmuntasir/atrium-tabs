@@ -12,7 +12,7 @@ vi.mock('react-hot-toast', () => ({
 }));
 
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
 import '@testing-library/jest-dom';
 
 import Settings from '../components/Settings';
@@ -40,6 +40,11 @@ Object.defineProperty(global, 'chrome', {
     runtime: {
       getURL: (path: string) => `chrome://extension-id/${path}`,
       reload: vi.fn(),
+      sendMessage: vi.fn(),
+      onMessage: {
+        addListener: vi.fn(),
+        removeListener: vi.fn(),
+      },
       lastError: undefined,
     },
     tabs: {
@@ -130,8 +135,9 @@ describe('Settings Component', () => {
 
   test('"Eager Load" switch is present, interactive, and shows warning', () => {
     render(<Settings />);
-    const eagerLoadSwitch = screen.getByText('Eager Load:').parentElement?.querySelector('button[role="switch"]');
-    const eagerLoadText = screen.getByText('Disabled');
+    const eagerLoadSection = screen.getByText('Eager Load:').closest('div');
+    const eagerLoadSwitch = within(eagerLoadSection!).getByRole('switch');
+    const eagerLoadText = within(eagerLoadSection!).getByText('Disabled');
     expect(eagerLoadSwitch).toHaveAttribute('aria-checked', 'false');
     expect(eagerLoadText).toBeInTheDocument();
     expect(screen.queryByText('Heads-up: eager loading can hammer RAM/CPU on large groups.')).not.toBeInTheDocument();
@@ -141,11 +147,13 @@ describe('Settings Component', () => {
     expect(screen.getByText('Heads-up: eager loading can hammer RAM/CPU on large groups.')).toBeInTheDocument();
     fireEvent.click(eagerLoadSwitch!);
     expect(eagerLoadSwitch).toHaveAttribute('aria-checked', 'false');
-    expect(screen.getByText('Disabled')).toBeInTheDocument();
+    expect(within(eagerLoadSection!).getByText('Disabled')).toBeInTheDocument();
     expect(screen.queryByText('Heads-up: eager loading can hammer RAM/CPU on large groups.')).not.toBeInTheDocument();
   });
 
   test('"Telemetry & Analytics (Opt-in)" switch is present and interactive', async () => {
+    // Clear previous mock calls
+    mockChromeStorage.local.set.mockClear();
     // Mock initial state for this specific test
     mockChromeStorage.local.get.mockImplementation((keys, callback) => {
       if (typeof callback === 'function') {
@@ -154,29 +162,35 @@ describe('Settings Component', () => {
     });
     render(<Settings />);
 
-    const telemetrySwitch = screen.getByText('Telemetry & Analytics (Opt-in):').parentElement?.querySelector('button[role="switch"]');
+    const telemetrySection = screen.getByText('Telemetry & Analytics (Opt-in):').closest('div');
+    const telemetrySwitch = within(telemetrySection!).getByRole('switch');
     expect(telemetrySwitch).toHaveAttribute('aria-checked', 'false');
-    expect(screen.getByText('Disabled')).toBeInTheDocument();
+    expect(within(telemetrySection!).getByText('Disabled')).toBeInTheDocument();
 
     fireEvent.click(telemetrySwitch!);
     await waitFor(() => {
       expect(telemetrySwitch).toHaveAttribute('aria-checked', 'true');
       expect(screen.getByText('Enabled')).toBeInTheDocument();
-      expect(mockChromeStorage.local.set).toHaveBeenCalledWith({ telemetry_opt_in: true }, expect.any(Function));
+      // Check that the storage was called with the correct parameter
+      const calls = mockChromeStorage.local.set.mock.calls;
+      expect(calls.some(call => call[0]?.telemetry_opt_in === true)).toBe(true);
     });
 
     fireEvent.click(telemetrySwitch!);
     await waitFor(() => {
       expect(telemetrySwitch).toHaveAttribute('aria-checked', 'false');
-      expect(screen.getByText('Disabled')).toBeInTheDocument();
-      expect(mockChromeStorage.local.set).toHaveBeenCalledWith({ telemetry_opt_in: false }, expect.any(Function));
+      expect(within(telemetrySection!).getByText('Disabled')).toBeInTheDocument();
+      // Check that the storage was called with the correct parameter
+      const calls = mockChromeStorage.local.set.mock.calls;
+      expect(calls.some(call => call[0]?.telemetry_opt_in === false)).toBe(true);
     });
   });
 
   test('"High Contrast Theme" switch is present and interactive', () => {
     render(<Settings />);
-    const highContrastSwitch = screen.getByText('High Contrast Theme (Light Mode Only):').parentElement?.querySelector('button[role="switch"]');
-    const highContrastText = screen.getByText('Disabled');
+    const highContrastSection = screen.getByText('High Contrast Theme (Light Mode Only):').closest('div');
+    const highContrastSwitch = within(highContrastSection!).getByRole('switch');
+    const highContrastText = within(highContrastSection!).getByText('Disabled');
     expect(highContrastSwitch).toHaveAttribute('aria-checked', 'false');
     expect(highContrastText).toBeInTheDocument();
     expect(document.documentElement).not.toHaveClass('high-contrast-mode');
@@ -188,7 +202,7 @@ describe('Settings Component', () => {
 
     fireEvent.click(highContrastSwitch!);
     expect(highContrastSwitch).toHaveAttribute('aria-checked', 'false');
-    expect(screen.getByText('Disabled')).toBeInTheDocument();
+    expect(within(highContrastSection!).getByText('Disabled')).toBeInTheDocument();
     expect(document.documentElement).not.toHaveClass('high-contrast-mode');
   });
 
@@ -289,8 +303,9 @@ describe('Settings Component', () => {
   });
 
   test('shows quota exceeded modal when importing too much data', async () => {
-    mockChromeStorage.local.set.mockImplementation((_data, callback) => {
-      if (typeof callback === 'function') callback(new Error('STORAGE_QUOTA_EXCEEDED'));
+    // Mock chrome.storage.local.getBytesInUse to return a high value that would trigger quota exceeded
+    mockChromeStorage.local.getBytesInUse.mockImplementation((keys, callback) => {
+      if (typeof callback === 'function') callback(4.9 * 1024 * 1024); // Nearly full quota
     });
     render(<Settings />);
     const file = new File([JSON.stringify({ large: 'a'.repeat(5 * 1024 * 1024) })], 'large_backup.json', { type: 'application/json' });

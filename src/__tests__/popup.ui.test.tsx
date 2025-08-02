@@ -1,10 +1,21 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
 import * as Tooltip from '@radix-ui/react-tooltip';
 import Popup from '../components/Popup';
 import { axe, toHaveNoViolations } from 'jest-axe';
 expect.extend(toHaveNoViolations);
+
+// Mock toast notifications
+vi.mock('react-hot-toast', () => ({
+  __esModule: true,
+  default: {
+    success: vi.fn(),
+    error: vi.fn(),
+    warn: vi.fn(),
+    dismiss: vi.fn(),
+  },
+}));
 
 // Mock chrome.runtime.sendMessage for testing messages sent to the runtime
 const mockSendMessage = vi.fn();
