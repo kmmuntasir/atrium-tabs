@@ -1,30 +1,37 @@
 ---
-description: All contributors must commit and push after each completed task, referencing ticket numbers and logging in ai-changelog.md. This ensures traceability and aligns with git-guidelines.
+description: After finishing a task, always check and update the todo list if needed, then update ai-changelog.md, then commit and push all changes with ticket references. This ensures accurate progress tracking, traceability, and aligns with git-guidelines.
 alwaysApply: true
 ---
 
-# Commit and Push After Each Task
+# Task Completion, Todo, Changelog, and Commit Flow
 
 After completing each task (or group of tasks), you must:
-- Log the change in ai-changelog.md before committing.
-- Commit all changes to the repository, referencing the relevant ticket number(s) as per git-guidelines.
-- Push the commit to the remote repository immediately.
-- This rule is mandatory for all contributors.
+1. Check docs/todo.md to see if any items should be marked as done. If so, update the todo list.
+2. Update ai-changelog.md to log the change.
+3. Commit all changes to the repository, referencing the relevant ticket number(s) as per git-guidelines.
+4. Push the commit to the remote repository immediately.
+
+This rule is mandatory for all contributors.
 
 ## Incorrect Pattern
 ```sh
-# Bad: Not committing after a task
+# Bad: Finish a task but do not update the todo list
+# Bad: Update todo list but forget to update ai-changelog.md
+# Bad: Make changes but do not commit and push
 # Bad: Not referencing ticket number
-# Bad: Not logging in ai-changelog.md
 ```
 
 ## Correct Pattern
 ```sh
-# Good: Log in ai-changelog.md, then commit and push with ticket reference
-# (Assume ATRIUM-0004 is the ticket)
-echo "..." >> ai-changelog.md
-git add .
-git commit -m "ATRIUM-0004: Add CI workflow"
+# Good: After finishing a task, update todo, changelog, commit, and push
+# (Assume ATRIUM-0005 is the ticket)
+# 1. Mark item as done in docs/todo.md
+# 2. Log in ai-changelog.md
+# 3. Commit and push
+
+git add docs/todo.md ai-changelog.md
+# (edit files as needed)
+git commit -m "ATRIUM-0005: Mark semantic release as done in todo, update changelog"
 git push
 ```
 
