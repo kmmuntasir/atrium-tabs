@@ -120,3 +120,12 @@
   - Enhanced GroupList to dynamically render Lucide icons with colors
   - Integrated react-hot-toast for toast notifications and added a sample trigger
   - All relevant tests (GroupList, Popup) updated and passing
+
+**2024-07-30 20:50:00**
+- Implemented Group management features (ATRIUM-0015 to ATRIUM-0026):
+  - Created Group (Manual Name Input) with input field and button
+  - Added unit test for group creation in Popup
+  - All tests passing
+
+**2024-07-30 21:00:00**
+- Corrected todo list for Group management features: Only ATRIUM-0015 (Create New Group) was completed, so the parent task is now correctly marked as unchecked in docs/todo.md.
