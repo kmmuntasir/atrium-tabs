@@ -139,6 +139,7 @@ describe('Group Management', () => {
 ## 5. Test Setup
 - **Polyfills:** `test/setup.ts` polyfills `ResizeObserver` for the test environment.
 - **Configuration:** Ensure Vitest loads `test/setup.ts` via the `setupFiles` config in `vitest.config.ts`.
+- **Global Mocks:** Place mocks for browser APIs, extension APIs, and storage in `test/setup.ts` so they are available in all tests.
 - **Sample config:**
 ```js
 // vitest.config.ts
@@ -149,6 +150,137 @@ export default defineConfig({
     environment: 'jsdom',
   },
 });
+```
+
+---
+
+## 6. Mocking Strategy
+
+### 6.1. Why Mocks Are Needed
+Mocks are essential to isolate units under test, avoid side effects, and simulate browser/extension APIs not available in the test environment. They ensure tests are reliable, fast, and do not depend on real browser or extension behavior.
+
+### 6.2. What to Mock
+- **Browser APIs:**
+  - `ResizeObserver` (already polyfilled)
+  - `window.matchMedia` (theme/media queries)
+  - `window.open`, `window.close` (popup/window actions)
+  - `navigator.clipboard` (copy/paste)
+- **Extension APIs:**
+  - `chrome.*` APIs (tabs, storage, runtime, etc.)
+- **Storage:**
+  - `window.localStorage` or `chrome.storage` for persistence
+- **UUID Generation:**
+  - For predictable outputs in tests
+- **Timers:**
+  - For animations, debounce, toasts, etc.
+- **Network Requests:**
+  - Mock `fetch` or axios if used
+- **Drag-and-Drop:**
+  - Simulate DnD events for UI tests
+
+### 6.3. Where to Place Mocks
+- **Global mocks:**
+  - Place in `test/setup.ts` for APIs used across many tests
+- **Test-specific mocks:**
+  - Place in the relevant test file, especially for module mocks or spies
+
+### 6.4. Mock Implementation Samples
+
+#### A. Mocking Local Storage
+```ts
+// test/setup.ts
+beforeAll(() => {
+  const localStorageMock = (() => {
+    let store: Record<string, string> = {};
+    return {
+      getItem: (key: string) => store[key] || null,
+      setItem: (key: string, value: string) => { store[key] = value; },
+      removeItem: (key: string) => { delete store[key]; },
+      clear: () => { store = {}; }
+    };
+  })();
+  Object.defineProperty(window, 'localStorage', { value: localStorageMock });
+});
+```
+
+#### B. Mocking Chrome Extension APIs
+```ts
+// test/setup.ts
+beforeAll(() => {
+  (globalThis as any).chrome = {
+    storage: {
+      local: {
+        get: vi.fn(),
+        set: vi.fn(),
+        remove: vi.fn(),
+      }
+    },
+    tabs: {
+      create: vi.fn(),
+      remove: vi.fn(),
+    },
+    // ...other APIs as needed
+  };
+});
+```
+
+#### C. Mocking UUID Generation
+```ts
+// In your test file or setup
+vi.mock('uuid', () => ({
+  v4: () => 'mock-uuid-1234'
+}));
+```
+
+#### D. Mocking matchMedia
+```ts
+// test/setup.ts
+Object.defineProperty(window, 'matchMedia', {
+  writable: true,
+  value: vi.fn().mockImplementation(query => ({
+    matches: false,
+    media: query,
+    onchange: null,
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+    dispatchEvent: vi.fn(),
+  })),
+});
+```
+
+#### E. Mocking Timers
+```ts
+// In your test file
+import { vi } from 'vitest';
+beforeEach(() => {
+  vi.useFakeTimers();
+});
+afterEach(() => {
+  vi.useRealTimers();
+});
+```
+
+#### F. Mocking Clipboard
+```ts
+// test/setup.ts
+Object.defineProperty(navigator, 'clipboard', {
+  value: {
+    writeText: vi.fn(),
+    readText: vi.fn(),
+  },
+});
+```
+
+#### G. Mocking Drag-and-Drop Events
+```ts
+// In your test file
+const dataTransfer = {
+  data: {},
+  setData: function(type: string, val: string) { this.data[type] = val; },
+  getData: function(type: string) { return this.data[type]; },
+};
+fireEvent.dragStart(element, { dataTransfer });
+fireEvent.drop(target, { dataTransfer });
 ```
 
 ---
