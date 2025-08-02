@@ -22,7 +22,6 @@ import {
 } from 'lucide-react';
 import TabList from './TabList';
 import { useRef } from 'react';
-import * as Button from '@radix-ui/react-button';
 import * as Dialog from '@radix-ui/react-dialog';
 import * as Select from '@radix-ui/react-select';
 import * as Accordion from '@radix-ui/react-accordion';
@@ -45,14 +44,12 @@ const LucideIcons: { [key: string]: React.ElementType } = {
 
 function LockIcon() {
   return (
-    <Tooltip.Provider>
-      <Tooltip.Root>
-        <Tooltip.Trigger asChild>
-          <span style={{ marginLeft: 8 }}>🔒</span>
-        </Tooltip.Trigger>
-        <Tooltip.Content>This group is active in another window</Tooltip.Content>
-      </Tooltip.Root>
-    </Tooltip.Provider>
+    <Tooltip.Root>
+      <Tooltip.Trigger asChild>
+        <span style={{ marginLeft: 8 }}>🔒</span>
+      </Tooltip.Trigger>
+      <Tooltip.Content>This group is active in another window</Tooltip.Content>
+    </Tooltip.Root>
   );
 }
 
@@ -227,11 +224,11 @@ export default function GroupList() {
           style={{ flex: 1, marginRight: 8 }}
           disabled={creating}
         />
-        <Button.Root type="submit" disabled={creating || !newGroupName.trim()}>Add</Button.Root>
+        <button type="submit" disabled={creating || !newGroupName.trim()}>Add</button>
       </form>
-      <Button.Root onClick={handleSaveWindowAsGroup} style={{ marginBottom: 16, width: '100%' }}>
+      <button onClick={handleSaveWindowAsGroup} style={{ marginBottom: 16, width: '100%' }}>
         Save Current Window as Group
-      </Button.Root>
+      </button>
       <div style={{ marginBottom: 12 }}>
         <label htmlFor="group-sort" style={{ marginRight: 8 }}>Sort groups:</label>
         <Select.Root value={sortOrder} onValueChange={handleSortChange}>
@@ -271,14 +268,14 @@ export default function GroupList() {
                   }}
                   title={isActiveElsewhere ? 'This group is active in another window' : undefined}
                 >
-                  <Tooltip.Provider>
-                    <Tooltip.Root>
-                      <Tooltip.Trigger asChild>
-                        <span style={{ marginRight: 8, cursor: 'grab' }}>☰</span>
-                      </Tooltip.Trigger>
-                      <Tooltip.Content>Drag to reorder</Tooltip.Content>
-                    </Tooltip.Root>
-                  </Tooltip.Provider>
+                  <Tooltip.Root>
+                    <Tooltip.Trigger asChild>
+                      <span role="button" aria-label="Drag to reorder" style={{ marginRight: 8, cursor: 'grab' }} tabIndex={0}>
+                        ☰
+                      </span>
+                    </Tooltip.Trigger>
+                    <Tooltip.Content>Drag to reorder</Tooltip.Content>
+                  </Tooltip.Root>
                   <span style={{ marginRight: 8 }} onClick={e => { e.stopPropagation(); openSelector(group); }}>
                     {IconComponent ? <IconComponent size={16} style={{ color: group.color }} data-testid={`${group.icon?.toLowerCase()}-icon`} /> : group.icon || '📁'}
                   </span>
@@ -300,37 +297,31 @@ export default function GroupList() {
                     )}
                   </span>
                   <span style={{ marginRight: 8 }}>({tabs.filter(t => t.groupId === group.id).length})</span>
-                  <Tooltip.Provider>
-                    <Tooltip.Root>
-                      <Tooltip.Trigger asChild>
-                        <span style={{ marginRight: 8 }} onClick={e => { e.stopPropagation(); startEditing(group); }}>
-                          <Pencil size={14} style={{ cursor: 'pointer' }} />
-                        </Tooltip.Trigger>
-                        <Tooltip.Content>Edit group name</Tooltip.Content>
-                      </Tooltip.Root>
-                    </Tooltip.Provider>
-                  </span>
-                  <Tooltip.Provider>
-                    <Tooltip.Root>
-                      <Tooltip.Trigger asChild>
-                        <span style={{ marginRight: 8 }} onClick={e => { e.stopPropagation(); softDeleteGroup(group.id); setGroups(getGroups()); }}>
-                          <Trash2 size={14} style={{ cursor: 'pointer', color: 'red' }} />
-                        </Tooltip.Trigger>
-                        <Tooltip.Content>Delete group</Tooltip.Content>
-                      </Tooltip.Root>
-                    </Tooltip.Provider>
-                  </span>
+                  <Tooltip.Root>
+                    <Tooltip.Trigger asChild>
+                      <span role="button" aria-label="Edit group name" style={{ marginRight: 8 }} onClick={e => { e.stopPropagation(); startEditing(group); }} tabIndex={0}>
+                        <Pencil size={14} style={{ cursor: 'pointer' }} />
+                      </span>
+                    </Tooltip.Trigger>
+                    <Tooltip.Content>Edit group name</Tooltip.Content>
+                  </Tooltip.Root>
+                  <Tooltip.Root>
+                    <Tooltip.Trigger asChild>
+                      <span role="button" aria-label="Delete group" style={{ marginRight: 8 }} onClick={e => { e.stopPropagation(); softDeleteGroup(group.id); setGroups(getGroups()); }} tabIndex={0}>
+                        <Trash2 size={14} style={{ cursor: 'pointer', color: 'red' }} />
+                      </span>
+                    </Tooltip.Trigger>
+                    <Tooltip.Content>Delete group</Tooltip.Content>
+                  </Tooltip.Root>
                   {group.id === activeElsewhereId && <LockIcon />}
-                  <Tooltip.Provider>
-                    <Tooltip.Root>
-                      <Tooltip.Trigger asChild>
-                        <span style={{ marginLeft: 8 }} onClick={e => { e.stopPropagation(); handleOpenInNewWindow(group); }}>
-                          <ExternalLink size={14} style={{ cursor: 'pointer' }} />
-                        </Tooltip.Trigger>
-                        <Tooltip.Content>Open group in new window</Tooltip.Content>
-                      </Tooltip.Root>
-                    </Tooltip.Provider>
-                  </span>
+                  <Tooltip.Root>
+                    <Tooltip.Trigger asChild>
+                      <span role="button" aria-label="Open group in new window" style={{ marginLeft: 8 }} onClick={e => { e.stopPropagation(); handleOpenInNewWindow(group); }} tabIndex={0}>
+                        <ExternalLink size={14} style={{ cursor: 'pointer' }} />
+                      </span>
+                    </Tooltip.Trigger>
+                    <Tooltip.Content>Open group in new window</Tooltip.Content>
+                  </Tooltip.Root>
                 </li>
               </Accordion.Trigger>
               <Accordion.Content asChild>
@@ -346,39 +337,35 @@ export default function GroupList() {
         {groups.filter(g => g.deleted).map(group => (
           <li key={group.id} style={{ opacity: 0.5, textDecoration: 'line-through', display: 'flex', alignItems: 'center', marginBottom: 8 }}>
                 <span style={{ flex: 1 }}>{group.name}</span>
-                <Tooltip.Provider>
-                  <Tooltip.Root>
-                    <Tooltip.Trigger asChild>
-                      <span style={{ marginRight: 8 }} onClick={() => { restoreGroup(group.id); setGroups(getGroups()); }}>
-                        <RotateCcw size={16} style={{ cursor: 'pointer' }} />
-                      </Tooltip.Trigger>
-                      <Tooltip.Content>Restore group</Tooltip.Content>
-                    </Tooltip.Root>
-                  </Tooltip.Provider>
-                </span>
+                <Tooltip.Root>
+                  <Tooltip.Trigger asChild>
+                    <span role="button" aria-label="Restore group" style={{ marginRight: 8 }} onClick={() => { restoreGroup(group.id); setGroups(getGroups()); }} tabIndex={0}>
+                      <RotateCcw size={16} style={{ cursor: 'pointer' }} />
+                    </span>
+                  </Tooltip.Trigger>
+                  <Tooltip.Content>Restore group</Tooltip.Content>
+                </Tooltip.Root>
                 <Dialog.Root open={isPendingDelete} onOpenChange={open => setPendingDeleteId(open ? group.id : null)}>
                   <Dialog.Trigger asChild>
-                    <Tooltip.Provider>
-                      <Tooltip.Root>
-                        <Tooltip.Trigger asChild>
-                          <span style={{ marginRight: 8 }} onClick={() => { setPendingDeleteId(group.id); }}>
-                            <Trash2 size={16} style={{ cursor: 'pointer', color: 'red' }} />
-                          </Tooltip.Trigger>
-                          <Tooltip.Content>Confirm delete</Tooltip.Content>
-                        </Tooltip.Root>
-                      </Tooltip.Provider>
-                    </Dialog.Trigger>
-                    <Dialog.Portal>
-                      <Dialog.Overlay />
-                      <Dialog.Content>
-                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
-                          <span>Are you sure you want to delete this group?</span>
-                          <Button.Root onClick={() => { deleteGroup(group.id); setGroups(getGroups()); setPendingDeleteId(null); }}>Confirm</Button.Root>
-                          <Button.Root onClick={() => setPendingDeleteId(null)}>Cancel</Button.Root>
-                        </div>
-                      </Dialog.Content>
-                    </Dialog.Portal>
-                  </Dialog.Root>
+                    <Tooltip.Root>
+                      <Tooltip.Trigger asChild>
+                        <span role="button" aria-label="Confirm delete" style={{ marginRight: 8 }} onClick={() => { setPendingDeleteId(group.id); }} tabIndex={0}>
+                          <Trash2 size={16} style={{ cursor: 'pointer', color: 'red' }} />
+                        </span>
+                      </Tooltip.Trigger>
+                      <Tooltip.Content>Confirm delete</Tooltip.Content>
+                    </Tooltip.Root>
+                  </Dialog.Trigger>
+                  <Dialog.Portal>
+                    <Dialog.Overlay />
+                    <Dialog.Content>
+                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
+                        <span>Are you sure you want to delete this group?</span>
+                        <button onClick={() => { deleteGroup(group.id); setGroups(getGroups()); setPendingDeleteId(null); }}>Confirm</button>
+                        <button onClick={() => setPendingDeleteId(null)}>Cancel</button>
+                      </div>
+                    </Dialog.Content>
+                  </Dialog.Portal>
                 </Dialog.Root>
               </li>
         ))}
