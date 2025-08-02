@@ -5,20 +5,26 @@ import WelcomeTour from './WelcomeTour';
 import { getAllData, saveData } from '../utils/storage';
 import toast from 'react-hot-toast';
 
+interface SettingsProps {
+  initialActiveTab?: string;
+}
+
 interface Command {
   name: string;
   description: string;
   shortcut: string;
 }
 
-const Settings: React.FC = () => {
+const Settings: React.FC<SettingsProps> = ({ initialActiveTab = 'general' }) => {
   const [sortOrder, setSortOrder] = useState('alphabetical');
   const [theme, setTheme] = useState('system');
   const [includePinnedTabs, setIncludePinnedTabs] = useState(false);
   const [eagerLoad, setEagerLoad] = useState(false);
-  const [activeTab, setActiveTab] = useState('general');
+  const [activeTab, setActiveTab] = useState(initialActiveTab);
   const [commands, setCommands] = useState<chrome.commands.Command[]>([]);
   const [showQuotaExceededModal, setShowQuotaExceededModal] = useState(false);
+  const [telemetryOptIn, setTelemetryOptIn] = useState(false);
+  const [highContrast, setHighContrast] = useState(false);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -32,10 +38,14 @@ const Settings: React.FC = () => {
       'atrium_theme',
       'atrium_sort_order',
       'atrium_include_pinned_tabs',
+      'telemetry_opt_in',
+      'atrium_high_contrast',
     ], (items) => {
       if (items.atrium_theme) setTheme(items.atrium_theme);
       if (items.atrium_sort_order) setSortOrder(items.atrium_sort_order);
       if (typeof items.atrium_include_pinned_tabs === 'boolean') setIncludePinnedTabs(items.atrium_include_pinned_tabs);
+      if (typeof items.telemetry_opt_in === 'boolean') setTelemetryOptIn(items.telemetry_opt_in);
+      if (typeof items.atrium_high_contrast === 'boolean') setHighContrast(items.atrium_high_contrast);
     });
   }, []);
 
@@ -50,6 +60,20 @@ const Settings: React.FC = () => {
   useEffect(() => {
     chrome.storage.local.set({ atrium_include_pinned_tabs: includePinnedTabs });
   }, [includePinnedTabs]);
+
+  useEffect(() => {
+    chrome.storage.local.set({ telemetry_opt_in: telemetryOptIn });
+  }, [telemetryOptIn]);
+
+  useEffect(() => {
+    chrome.storage.local.set({ atrium_high_contrast: highContrast });
+    // Apply/remove a class to the body or root element to trigger CSS changes
+    if (highContrast) {
+      document.documentElement.classList.add('high-contrast-mode');
+    } else {
+      document.documentElement.classList.remove('high-contrast-mode');
+    }
+  }, [highContrast]);
 
   const handleSkipTour = () => {
     setActiveTab('general');
@@ -195,6 +219,25 @@ const Settings: React.FC = () => {
                 Heads-up: eager loading can hammer RAM/CPU on large groups.
               </Text>
             )}
+          </Flex>
+
+          <Flex direction="column" gap="3" mt="5">
+            <Text size="2" mb="2">High Contrast Theme (Light Mode Only):</Text>
+            <Flex gap="2" align="center">
+              <Switch checked={highContrast} onCheckedChange={setHighContrast} />
+              <Text size="2">{highContrast ? 'Enabled' : 'Disabled'}</Text>
+            </Flex>
+          </Flex>
+
+          <Flex direction="column" gap="3" mt="5">
+            <Text size="2" mb="2">Telemetry & Analytics (Opt-in):</Text>
+            <Flex gap="2" align="center">
+              <Switch checked={telemetryOptIn} onCheckedChange={setTelemetryOptIn} />
+              <Text size="2">{telemetryOptIn ? 'Enabled' : 'Disabled'}</Text>
+            </Flex>
+            <Text size="1" color="gray">
+              Help us improve by sending anonymous usage data (e.g., total groups/tabs, crash reports).
+            </Text>
           </Flex>
 
           <Flex direction="column" gap="3" mt="5">

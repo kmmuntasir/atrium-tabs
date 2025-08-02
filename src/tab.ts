@@ -1,4 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
+import { getPreference } from './utils/storage';
 
 export interface Tab {
   id: string; // UUID
@@ -9,6 +10,7 @@ export interface Tab {
   order: number; // Order within group
   favicon: string;
   createdAt: string;
+  discarded: boolean; // Indicates if the tab is currently discarded
 }
 
 const TABS_KEY = 'atrium_tabs';
@@ -24,17 +26,23 @@ export function saveTabs(tabs: Tab[]): void {
   localStorage.setItem(TABS_KEY, JSON.stringify(tabs));
 }
 
-export function createTab(tab: Omit<Tab, 'id' | 'createdAt' | 'order'>): Tab {
+export async function createTab(tab: Omit<Tab, 'id' | 'createdAt' | 'order' | 'discarded'>): Promise<Tab> {
   const now = new Date().toISOString();
   const tabs = getTabs();
   // Find max order in this group
   const groupTabs = tabs.filter(t => t.groupId === tab.groupId);
   const nextOrder = groupTabs.length > 0 ? Math.max(...groupTabs.map(t => t.order)) + 1 : 0;
+
+  // Determine discarded state based on eagerLoad preference
+  const eagerLoad = await getPreference<boolean>('atrium_eager_load', false);
+  const discarded = !eagerLoad;
+
   const newTab: Tab = {
     ...tab,
     id: uuidv4(),
     createdAt: now,
     order: nextOrder,
+    discarded: discarded,
   };
   saveTabs([...tabs, newTab]);
   return newTab;

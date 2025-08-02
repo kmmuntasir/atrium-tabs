@@ -2,10 +2,12 @@ import React, { useEffect, useState } from 'react';
 import GroupList from './GroupList';
 import toast from 'react-hot-toast';
 import { Button, Dialog, Flex, Text } from '@radix-ui/themes';
-import { getStorageUsage, checkDataIntegrity, getAllData } from '../utils/storage';
+import { getStorageUsage, checkDataIntegrity, getAllData, attemptAutoRepair } from '../utils/storage';
 
 export default function Popup() {
   const [showCorruptionModal, setShowCorruptionModal] = useState(false);
+  const [showStorageFullModal, setShowStorageFullModal] = useState(false);
+  const [storageFullMessage, setStorageFullMessage] = useState('');
   const openSettingsPage = () => {
     chrome.tabs.create({ url: chrome.runtime.getURL('settings.html') });
   };
@@ -31,9 +33,15 @@ export default function Popup() {
     }
   };
 
-  const handleAutoRepair = () => {
-    // For now, simply reload the extension to attempt a fresh start
-    chrome.runtime.reload();
+  const handleAutoRepair = async () => {
+    try {
+      await attemptAutoRepair();
+      toast.success('Auto-repair attempted. Reloading extension...');
+      chrome.runtime.reload();
+    } catch (error) {
+      console.error('Error during auto-repair:', error);
+      toast.error('Auto-repair failed.');
+    }
   };
 
   const handleStartFresh = () => {
@@ -74,6 +82,30 @@ export default function Popup() {
       }
     };
     runInitialChecks();
+
+    const handleMessages = (message: any, sender: chrome.runtime.MessageSender, sendResponse: (response?: any) => void) => {
+      if (message.type === 'STORAGE_WARNING') {
+        const { message: msg, level } = message.payload;
+        if (level === 'critical') {
+          toast.error(msg, { id: 'storage-warning', duration: Infinity });
+        } else if (level === 'high') {
+          toast.warn(msg, { id: 'storage-warning', duration: Infinity });
+        } else if (level === 'medium') {
+          toast.success(msg, { id: 'storage-warning', duration: Infinity });
+        }
+      } else if (message.type === 'STORAGE_FULL') {
+        setStorageFullMessage(message.payload.message);
+        setShowStorageFullModal(true);
+      }
+      sendResponse(); // Acknowledge message receipt
+    };
+
+    chrome.runtime.onMessage.addListener(handleMessages);
+
+    // Clean up the listener when the component unmounts
+    return () => {
+      chrome.runtime.onMessage.removeListener(handleMessages);
+    };
   }, []);
 
   return (
@@ -99,6 +131,24 @@ export default function Popup() {
             </Button>
             <Button variant="destructive" onClick={handleStartFresh}>
               Start Fresh
+            </Button>
+          </Flex>
+        </Dialog.Content>
+      </Dialog.Root>
+
+      <Dialog.Root open={showStorageFullModal} onOpenChange={setShowStorageFullModal}>
+        <Dialog.Content style={{ maxWidth: 450 }}>
+          <Dialog.Title>Storage Full</Dialog.Title>
+          <Dialog.Description size="2" mb="4">
+            {storageFullMessage}
+          </Dialog.Description>
+
+          <Flex gap="3" mt="4" justify="end">
+            <Button variant="soft" color="gray" onClick={openSettingsPage}>
+              Go to Settings (to Export/Delete)
+            </Button>
+            <Button variant="outline" onClick={() => setShowStorageFullModal(false)}>
+              Close
             </Button>
           </Flex>
         </Dialog.Content>

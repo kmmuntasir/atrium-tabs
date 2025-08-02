@@ -234,3 +234,36 @@
 
 **2024-07-30**
   - Marked "Import/export & backup" task as completed in `docs/todo.md`.
+
+**2024-08-01 10:00**
+- Completed "Error handling & storage" (ATRIUM-0009):
+  - Implemented storage quota warnings (50%, 80%, 90% capacity) as persistent toasts in Popup.tsx.
+  - Implemented full storage block and modal at 100% capacity in Popup.tsx.
+  - Enhanced `checkDataIntegrity` in `src/utils/storage.ts` with schema validation for groups and tabs.
+  - Implemented `attemptAutoRepair` in `src/utils/storage.ts` to filter and save valid data.
+  - Integrated auto-repair into `Popup.tsx`'s corruption modal.
+  - All relevant UI and accessibility tests updated and passing.
+
+- Completed "Telemetry & metrics" (ATRIUM-0010):
+  - Implemented GA4 Measurement Protocol integration in `src/utils/telemetry.ts`.
+  - Added unique user pseudo-ID generation and opt-in check.
+  - Implemented crash reporting (`sendCrashReport`) and error logging (`sendErrorLog`) with environment metadata.
+  - Set up global error handling (`window.onerror`, `window.onunhandledrejection`) in `src/main.tsx`.
+  - Implemented daily heartbeat with group and tab counts, triggered by `chrome.alarms` in `src/background.ts`.
+  - Updated `public/manifest.json` with background script and `alarms` permission.
+  - Added telemetry opt-in toggle to `src/components/Settings.tsx`.
+  - All relevant tests updated and passing.
+
+- Completed "Accessibility & onboarding" (ATRIUM-0011):
+  - Implemented high-contrast theme toggle in `src/components/Settings.tsx` with CSS styling in `src/components/Settings.css`.
+  - Added color-blind shape badge to group icons in `src/components/GroupList.tsx`.
+  - Implemented 3-step onboarding carousel in `src/components/WelcomeTour.tsx` with placeholders for media.
+  - Integrated first-run onboarding logic in `src/main-settings.tsx`, including auto-saving "New Group 0" and opening the welcome tour.
+  - Updated UI and accessibility tests for settings and welcome tour transitions.
+  - All relevant tests updated and passing.
+
+- Completed "Non-functional requirements" (ATRIUM-0012):
+  - Optimized UI rendering for large groups/tabs by pre-processing tabs in `src/components/GroupList.tsx`.
+  - Integrated `eagerLoad` setting to control tab `discarded` state in `createTab` function in `src/tab.ts`.
+  - Reviewed and justified `storage` and `alarms` permissions in `public/manifest.json`.
+  - All relevant tests updated and passing.

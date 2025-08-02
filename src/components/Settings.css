@@ -1,3 +1,59 @@
 .settings-container {
   padding: 20px;
 }
+
+/* High Contrast Mode Styles */
+html.high-contrast-mode {
+  /* General text and background adjustments */
+  color: #000000 !important; /* Force black text */
+  background-color: #ffffff !important; /* Force white background */
+}
+
+html.high-contrast-mode body {
+  background-color: #ffffff !important;
+}
+
+html.high-contrast-mode .rt-TextFieldRoot, 
+html.high-contrast-mode .rt-TextArea, 
+html.high-contrast-mode .rt-SelectTrigger, 
+html.high-contrast-mode .rt-SegmentedControl, 
+html.high-contrast-mode .rt-SwitchRoot,
+html.high-contrast-mode .rt-RadioGroupItem {
+  border: 1px solid #000000 !important;
+  background-color: #f0f0f0 !important;
+}
+
+html.high-contrast-mode .rt-Button {
+  border: 1px solid #000000 !important;
+  background-color: #e0e0e0 !important;
+  color: #000000 !important;
+}
+
+html.high-contrast-mode .rt-TabsList {
+  border-bottom: 1px solid #000000 !important;
+}
+
+html.high-contrast-mode .rt-TabsTrigger {
+  color: #000000 !important;
+  border: 1px solid transparent !important;
+}
+
+html.high-contrast-mode .rt-TabsTrigger[data-state="active"] {
+  border-color: #000000 !important;
+  background-color: #f0f0f0 !important;
+}
+
+html.high-contrast-mode .rt-DialogContent {
+  border: 2px solid #000000 !important;
+  background-color: #ffffff !important;
+  color: #000000 !important;
+}
+
+html.high-contrast-mode .rt-DialogOverlay {
+  background-color: rgba(0, 0, 0, 0.7) !important; /* Darker overlay */
+}
+
+/* Ensure text elements have enough contrast */
+html.high-contrast-mode .rt-Text {
+  color: #000000 !important;
+}

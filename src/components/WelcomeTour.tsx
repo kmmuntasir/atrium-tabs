@@ -25,9 +25,9 @@ const WelcomeTour: React.FC<WelcomeTourProps> = ({ onSkip, onFinish }) => {
           <Text align="center">
             Click the Atrium icon once-bam! Your mess becomes 'New Group 0'.
           </Text>
-          {/* Placeholder for image/GIF */}
+          {/* TODO: Add screenshot/GIF of cursor hitting toolbar icon -> popup flashes, "+ Save window" clicked -> popup shows newly added "New Group 0" row. */}
           <div style={{ width: '100%', height: '200px', backgroundColor: '#eee', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-            Image/GIF for Slide 1
+            Image/GIF for Slide 1 (Manually add media here)
           </div>
           <Flex gap="2" mt="3">
             <Button onClick={() => setSlide(2)}>Next</Button>
@@ -42,9 +42,9 @@ const WelcomeTour: React.FC<WelcomeTourProps> = ({ onSkip, onFinish }) => {
           <Text align="center">
             Smash Ctrl/⌘‑Shift‑1.9 to swap groups; your old tabs vanish, the new set pops in.
           </Text>
-          {/* Placeholder for image/GIF */}
+          {/* TODO: Add screenshot/GIF of animated key-combo overlay -> instant tab-swap in the same window; badge shows tab count updating. */}
           <div style={{ width: '100%', height: '200px', backgroundColor: '#eee', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-            Image/GIF for Slide 2
+            Image/GIF for Slide 2 (Manually add media here)
           </div>
           <Flex gap="2" mt="3">
             <Button onClick={() => setSlide(1)} variant="outline">Back</Button>
@@ -60,9 +60,9 @@ const WelcomeTour: React.FC<WelcomeTourProps> = ({ onSkip, onFinish }) => {
           <Text align="center">
             Open Group Management to shuffle tabs between groups-goodbye clutter.
           </Text>
-          {/* Placeholder for image/GIF */}
+          {/* TODO: Add screenshot/GIF of Management page in side-by-side mode; user drags a tab from left column's Dev group into right column's Research group, row count updates. */}
           <div style={{ width: '100%', height: '200px', backgroundColor: '#eee', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-            Image/GIF for Slide 3
+            Image/GIF for Slide 3 (Manually add media here)
           </div>
           <Flex gap="2" mt="3">
             <Button onClick={() => setSlide(2)} variant="outline">Back</Button>

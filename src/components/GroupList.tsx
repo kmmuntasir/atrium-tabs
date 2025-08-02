@@ -28,6 +28,9 @@ import * as Accordion from '@radix-ui/react-accordion';
 import * as Tooltip from '@radix-ui/react-tooltip';
 import { Button } from '@radix-ui/themes';
 
+// Shapes for color-blind accessibility
+const SHAPE_BADGES = ['●', '■', '▲', '◆', '★', '⬟'];
+
 // Mapping of icon names to Lucide icons
 const LucideIcons: { [key: string]: React.ElementType } = {
   folder: Folder,
@@ -96,7 +99,7 @@ export default function GroupList() {
     const groupTabs = tabs.filter(t => t.groupId === activeGroupId);
     if (groupTabs.length === 0) {
       // Auto-create a new tab in the empty group
-      createTab({
+      await createTab({
         url: `https://example.com/${Math.floor(Math.random() * 1000)}`,
         title: `Example Tab ${Math.floor(Math.random() * 1000)}`,
         favicon: '',
@@ -114,7 +117,7 @@ export default function GroupList() {
     localStorage.setItem('atrium_group_sort', value);
   };
 
-  const handleCreateGroup = (e: React.FormEvent) => {
+  const handleCreateGroup = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newGroupName.trim()) return;
     setCreating(true);
@@ -126,6 +129,15 @@ export default function GroupList() {
       lastActiveAt: new Date().toISOString(),
     });
     setGroups(getGroups());
+    // Create a new tab in the new group by default
+    await createTab({
+      url: 'chrome://newtab/',
+      title: 'New Tab',
+      favicon: '',
+      pinned: false,
+      groupId: group.id,
+    });
+    setTabs(getTabs());
     setNewGroupName('');
     setCreating(false);
   };
@@ -145,7 +157,7 @@ export default function GroupList() {
     setGroups(getGroups());
   };
 
-  const handleAddTabToActiveGroup = () => {
+  const handleAddTabToActiveGroup = async () => {
     if (!activeGroupId) return;
     // Mock tab data
     const url = `https://example.com/${Math.floor(Math.random() * 1000)}`;
@@ -160,7 +172,7 @@ export default function GroupList() {
       groupId: activeGroupId,
     };
     // Use createTab from tab.ts
-    createTab(newTab);
+    await createTab(newTab);
     setTabs(getTabs());
   };
 
@@ -263,14 +275,14 @@ export default function GroupList() {
     setTabs(getTabs());
   };
 
-  const handleTabDrop = (tabId: string, fromGroupId: string, toGroupId: string, copy: boolean) => {
+  const handleTabDrop = async (tabId: string, fromGroupId: string, toGroupId: string, copy: boolean) => {
     if (fromGroupId === toGroupId) return; // Ignore same-group drops (handled by reorder)
     const allTabs = getTabs();
     const tab = allTabs.find(t => t.id === tabId);
     if (!tab) return;
     if (copy) {
       // Copy: create new tab in target group with new id/order
-      createTab({
+      await createTab({
         url: tab.url,
         title: tab.title,
         pinned: tab.pinned,
@@ -298,6 +310,18 @@ export default function GroupList() {
 
   const currentWindowId = 'window-1'; // Mocked for now
   const [lastActiveTabIdByGroup, setLastActiveTabIdByGroup] = useState<{ [groupId: string]: string }>({});
+
+  // Pre-process tabs into a map for efficient lookup
+  const tabsByGroupId = React.useMemo(() => {
+    const map: { [groupId: string]: Tab[] } = {};
+    tabs.forEach(tab => {
+      if (!map[tab.groupId]) {
+        map[tab.groupId] = [];
+      }
+      map[tab.groupId].push(tab);
+    });
+    return map;
+  }, [tabs]);
 
   const SORT_OPTIONS = [
     { value: 'manual', label: 'Manual' },
@@ -388,6 +412,9 @@ export default function GroupList() {
           const isSelecting = selectorId === group.id;
           const isPendingDelete = pendingDeleteId === group.id;
           const isActiveElsewhere = isGroupActiveElsewhere(group.id, currentWindowId);
+          const shapeIndex = group.id.charCodeAt(0) % SHAPE_BADGES.length; // Simple consistent mapping
+          const shapeBadge = SHAPE_BADGES[shapeIndex];
+
           return (
             <Accordion.Item value={group.id} key={group.id}>
               <Accordion.Trigger asChild>
@@ -418,6 +445,10 @@ export default function GroupList() {
                   </Tooltip.Root>
                   <span style={{ marginRight: 8 }} onClick={e => { e.stopPropagation(); openSelector(group); }}>
                     {IconComponent ? <IconComponent size={16} style={{ color: group.color }} data-testid={(group.icon ? group.icon.toLowerCase() : 'folder') + '-icon'} /> : group.icon || '📁'}
+                  </span>
+                  {/* Color-blind accessibility shape badge */}
+                  <span style={{ marginRight: 8 }} aria-label="shape marker">
+                    {shapeBadge}
                   </span>
                   <span style={{ flex: 1 }}>
                     {isEditing ? (
@@ -475,7 +506,7 @@ export default function GroupList() {
               <Accordion.Content>
                 <TabList
                   groupId={group.id}
-                  tabs={tabs.filter(t => t.groupId === group.id && (includePinned || !t.pinned))}
+                  tabs={(tabsByGroupId[group.id] || []).filter(t => includePinned || !t.pinned)}
                   lastActiveTabId={lastActiveTabIdByGroup[group.id]}
                   onTabClick={tabId => setLastActiveTabIdByGroup(prev => ({ ...prev, [group.id]: tabId }))}
                   onRemoveTab={handleRemoveTab}

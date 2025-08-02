@@ -145,6 +145,53 @@ describe('Settings Component', () => {
     expect(screen.queryByText('Heads-up: eager loading can hammer RAM/CPU on large groups.')).not.toBeInTheDocument();
   });
 
+  test('"Telemetry & Analytics (Opt-in)" switch is present and interactive', async () => {
+    // Mock initial state for this specific test
+    mockChromeStorage.local.get.mockImplementation((keys, callback) => {
+      if (typeof callback === 'function') {
+        callback({ telemetry_opt_in: false });
+      }
+    });
+    render(<Settings />);
+
+    const telemetrySwitch = screen.getByText('Telemetry & Analytics (Opt-in):').parentElement?.querySelector('button[role="switch"]');
+    expect(telemetrySwitch).toHaveAttribute('aria-checked', 'false');
+    expect(screen.getByText('Disabled')).toBeInTheDocument();
+
+    fireEvent.click(telemetrySwitch!);
+    await waitFor(() => {
+      expect(telemetrySwitch).toHaveAttribute('aria-checked', 'true');
+      expect(screen.getByText('Enabled')).toBeInTheDocument();
+      expect(mockChromeStorage.local.set).toHaveBeenCalledWith({ telemetry_opt_in: true }, expect.any(Function));
+    });
+
+    fireEvent.click(telemetrySwitch!);
+    await waitFor(() => {
+      expect(telemetrySwitch).toHaveAttribute('aria-checked', 'false');
+      expect(screen.getByText('Disabled')).toBeInTheDocument();
+      expect(mockChromeStorage.local.set).toHaveBeenCalledWith({ telemetry_opt_in: false }, expect.any(Function));
+    });
+  });
+
+  test('"High Contrast Theme" switch is present and interactive', () => {
+    render(<Settings />);
+    const highContrastSwitch = screen.getByText('High Contrast Theme (Light Mode Only):').parentElement?.querySelector('button[role="switch"]');
+    const highContrastText = screen.getByText('Disabled');
+    expect(highContrastSwitch).toHaveAttribute('aria-checked', 'false');
+    expect(highContrastText).toBeInTheDocument();
+    expect(document.documentElement).not.toHaveClass('high-contrast-mode');
+
+    fireEvent.click(highContrastSwitch!);
+    expect(highContrastSwitch).toHaveAttribute('aria-checked', 'true');
+    expect(screen.getByText('Enabled')).toBeInTheDocument();
+    expect(document.documentElement).toHaveClass('high-contrast-mode');
+
+    fireEvent.click(highContrastSwitch!);
+    expect(highContrastSwitch).toHaveAttribute('aria-checked', 'false');
+    expect(screen.getByText('Disabled')).toBeInTheDocument();
+    expect(document.documentElement).not.toHaveClass('high-contrast-mode');
+  });
+
   test('export data button triggers data download with correct schema and filename', async () => {
     const mockData = {
       groups: [{ id: '1', name: 'Test Group' }],
@@ -285,33 +332,22 @@ describe('Settings Component', () => {
     });
   });
 
-  test.skip('navigating to Welcome/Quick Tour tab displays tour content', async () => {
-    // Mock useState for activeTab to default to 'welcome-tour'
-    const realUseState = React.useState;
-    vi.spyOn(React, 'useState').mockImplementation((init) => {
-      if (init === 'general') return realUseState('welcome-tour');
-      return realUseState(init);
-    });
-    render(<Settings />);
+  test('navigating to Welcome/Quick Tour tab displays tour content', async () => {
+    render(<Settings initialActiveTab="welcome-tour" />);
     await waitFor(() => {
       expect(screen.getByText((content, element) =>
         element?.tagName === 'H3' && /Slide 1: Capture This Chaos/.test(content)
       )).toBeInTheDocument();
     });
-    vi.spyOn(React, 'useState').mockRestore();
   });
 
-  test.skip('Welcome/Quick Tour carousel navigates correctly', async () => {
-    // Mock useState for activeTab to default to 'welcome-tour'
-    const realUseState = React.useState;
-    vi.spyOn(React, 'useState').mockImplementation((init) => {
-      if (init === 'general') return realUseState('welcome-tour');
-      return realUseState(init);
-    });
-    render(<Settings />);
+  test('Welcome/Quick Tour carousel navigates correctly and shows toast on finish', async () => {
+    render(<Settings initialActiveTab="welcome-tour" />);
+
     await waitFor(() => expect(screen.getByText((content, element) =>
       element?.tagName === 'H3' && /Slide 1: Capture This Chaos/.test(content)
     )).toBeInTheDocument());
+
     // Click Next on Slide 1 -> Go to Slide 2
     fireEvent.click(screen.getByRole('button', { name: 'Next' }));
     await waitFor(() => expect(screen.getByText((content, element) =>
@@ -320,6 +356,7 @@ describe('Settings Component', () => {
     expect(screen.queryByText((content, element) =>
       element?.tagName === 'H3' && /Slide 1: Capture This Chaos/.test(content)
     )).not.toBeInTheDocument();
+
     // Click Next on Slide 2 -> Go to Slide 3
     fireEvent.click(screen.getByRole('button', { name: 'Next' }));
     await waitFor(() => expect(screen.getByText((content, element) =>
@@ -328,12 +365,12 @@ describe('Settings Component', () => {
     expect(screen.queryByText((content, element) =>
       element?.tagName === 'H3' && /Slide 2: Jump Like a Jedi/.test(content)
     )).not.toBeInTheDocument();
-    // Click Done on Slide 3
+
+    // Click Finish on Slide 3
     fireEvent.click(screen.getByRole('button', { name: 'Finish' }));
     expect(screen.queryByText((content, element) =>
       element?.tagName === 'H3' && /Slide 3: Drag, Drop, Dominate/.test(content)
     )).not.toBeInTheDocument();
-    expect(toast.success).toHaveBeenCalledWith('Tour completed!');
-    vi.spyOn(React, 'useState').mockRestore();
+    expect(toast.success).toHaveBeenCalledWith('Hotkeys active!');
   });
 });
