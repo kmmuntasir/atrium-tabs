@@ -81,6 +81,16 @@ export default function GroupList() {
   const [selectedIcon, setSelectedIcon] = useState('');
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
   const [activeGroupId, setActiveGroupId] = useState<string | null>(groups.length > 0 ? groups[0].id : null);
+  const [includePinned, setIncludePinned] = useState(() => {
+    const saved = localStorage.getItem('atrium_include_pinned');
+    return saved ? JSON.parse(saved) : true;
+  });
+  const handlePinnedToggle = () => {
+    setIncludePinned(prev => {
+      localStorage.setItem('atrium_include_pinned', JSON.stringify(!prev));
+      return !prev;
+    });
+  };
   React.useEffect(() => {
     if (!activeGroupId) return;
     const groupTabs = tabs.filter(t => t.groupId === activeGroupId);
@@ -341,6 +351,12 @@ export default function GroupList() {
           </Select.Content>
         </Select.Root>
       </div>
+      <div style={{ marginBottom: 12 }}>
+        <label style={{ marginRight: 8 }}>
+          <input type="checkbox" checked={includePinned} onChange={handlePinnedToggle} />
+          Include pinned tabs in groups
+        </label>
+      </div>
       <Accordion.Root type="multiple" value={expandedGroups} onValueChange={setExpandedGroups}>
         {sortedGroups.map((group, idx) => {
           const IconComponent = group.icon ? LucideIcons[group.icon.toLowerCase()] : Folder;
@@ -430,7 +446,7 @@ export default function GroupList() {
                   <TabList
                     groupId={group.id}
                     key={group.id}
-                    tabs={tabs.filter(t => t.groupId === group.id)}
+                    tabs={tabs.filter(t => t.groupId === group.id && (includePinned || !t.pinned))}
                     onTabRemove={handleRemoveTab}
                     onTabReorder={(from, to) => handleReorderTabs(from, to, group.id)}
                     onTabDrop={handleTabDrop}

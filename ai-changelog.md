@@ -182,3 +182,6 @@
 
 **2024-07-31 09:43:00**
 - Implemented auto-create tab when switching to an empty group (mock logic, useEffect in GroupList).
+
+**2024-07-31 09:43:00**
+- Implemented pinned tabs control: UI toggle to include/exclude pinned tabs from groups, state and localStorage persistence, real-time filtering.
