@@ -1,5 +1,6 @@
 import React from 'react';
 import { Tab, getTabs } from '../tab';
+import * as Button from '@radix-ui/react-button';
 
 interface TabListProps {
   groupId: string;
@@ -18,7 +19,7 @@ export default function TabList({ groupId }: TabListProps) {
       {tabs.length === 0 && (
         <li style={{ fontSize: '0.8em', color: '#666' }}>
           No tabs in this group.
-          <button style={{ marginLeft: 8 }} onClick={handleOpenNewTab}>Open New Tab</button>
+          <Button.Root style={{ marginLeft: 8 }} onClick={handleOpenNewTab}>Open New Tab</Button.Root>
         </li>
       )}
       {tabs.map(tab => (

@@ -156,3 +156,7 @@
 - ATRIUM-UI-RADIX: Refactor all toggles to Radix Switch or Checkbox as per docs/todo_radix_migration.md. No toggles or checkboxes found in codebase. Updated checklist.
 - ATRIUM-UI-RADIX: Refactor all radio groups to Radix RadioGroup and all popovers to Radix Popover as per docs/todo_radix_migration.md. No radio groups or popovers found in codebase. Updated checklist.
 - ATRIUM-UI-RADIX: Tested for accessibility and keyboard navigation. All Radix UI primitives are accessible by default. Manual keyboard navigation tested. Updated checklist.
+
+### Updated Radix UI Component Usage
+
+- Replaced native `<button>` elements with Radix UI `Button.Root` components in `src/components/Popup.tsx` and `src/components/TabList.tsx` to align with Radix UI best practices and enhance accessibility.
