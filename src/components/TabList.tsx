@@ -8,9 +8,11 @@ interface TabListProps {
   onTabRemove?: (tabId: string) => void;
   onTabReorder?: (fromIndex: number, toIndex: number) => void;
   onTabDrop?: (tabId: string, fromGroupId: string, toGroupId: string, copy: boolean) => void;
+  lastActiveTabId?: string;
+  onTabClick?: (tabId: string) => void;
 }
 
-export default function TabList({ groupId, tabs, onTabRemove, onTabReorder, onTabDrop }: TabListProps) {
+export default function TabList({ groupId, tabs, onTabRemove, onTabReorder, onTabDrop, lastActiveTabId, onTabClick }: TabListProps) {
   // Drag-and-drop state
   const [draggedIdx, setDraggedIdx] = React.useState<number | null>(null);
   const [dragOverIdx, setDragOverIdx] = React.useState<number | null>(null);
@@ -48,6 +50,17 @@ export default function TabList({ groupId, tabs, onTabRemove, onTabReorder, onTa
     e.preventDefault();
   };
 
+  const tabRefs = React.useRef<(HTMLLIElement | null)[]>([]);
+  React.useEffect(() => {
+    const idx = tabs.findIndex(tab => tab.id === lastActiveTabId);
+    if (idx !== -1 && tabRefs.current[idx]) {
+      if (typeof tabRefs.current[idx].scrollIntoView === 'function') {
+        tabRefs.current[idx].scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+      tabRefs.current[idx].focus?.();
+    }
+  }, [lastActiveTabId, tabs]);
+
   return (
     <ul style={{ listStyle: 'none', paddingLeft: 20, marginTop: 8 }} onDrop={handleDrop} onDragOver={handleDragOver}>
       {tabs.length === 0 && (
@@ -57,26 +70,29 @@ export default function TabList({ groupId, tabs, onTabRemove, onTabReorder, onTa
         </li>
       )}
       {tabs.map((tab, idx) => (
-        <li
-          key={tab.id}
-          style={{ display: 'flex', alignItems: 'center', marginBottom: 4, background: dragOverIdx === idx ? '#f0f0f0' : undefined, cursor: 'grab' }}
-          draggable
-          onDragStart={e => { handleDragStart(idx); e.dataTransfer.setData('fromGroupId', groupId); }}
-          onDragEnter={() => handleDragEnter(idx)}
-          onDragEnd={handleDragEnd}
-        >
-          <span style={{ marginRight: 8, cursor: 'grab' }} title="Drag to reorder">☰</span>
-          <img src={tab.favicon || 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII='} alt="favicon" style={{ width: 16, height: 16, marginRight: 8 }} />
-          <span style={{ fontSize: '0.9em', flex: 1 }}>{tab.title || tab.url}</span>
-          <button
-            aria-label="Remove tab"
-            style={{ marginLeft: 8, background: 'none', border: 'none', color: '#d32f2f', cursor: 'pointer', fontSize: 16 }}
-            onClick={() => onTabRemove && onTabRemove(tab.id)}
+          <li
+            key={tab.id}
+            ref={el => tabRefs.current[idx] = el}
+            tabIndex={tab.id === lastActiveTabId ? 0 : -1}
+            onClick={() => onTabClick && onTabClick(tab.id)}
+            style={{ display: 'flex', alignItems: 'center', marginBottom: 4, background: dragOverIdx === idx ? '#f0f0f0' : undefined, cursor: 'grab' }}
+            draggable
+            onDragStart={e => { handleDragStart(idx); e.dataTransfer.setData('fromGroupId', groupId); }}
+            onDragEnter={() => handleDragEnter(idx)}
+            onDragEnd={handleDragEnd}
           >
-            ✕
-          </button>
-        </li>
-      ))}
+            <span style={{ marginRight: 8, cursor: 'grab' }} title="Drag to reorder">☰</span>
+            <img src={tab.favicon || 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII='} alt="favicon" style={{ width: 16, height: 16, marginRight: 8 }} />
+            <span style={{ fontSize: '0.9em', flex: 1 }} data-testid={`tab-label-${tab.id}`}>{tab.title || tab.url}</span>
+            <button
+              aria-label="Remove tab"
+              style={{ marginLeft: 8, background: 'none', border: 'none', color: '#d32f2f', cursor: 'pointer', fontSize: 16 }}
+              onClick={() => onTabRemove && onTabRemove(tab.id)}
+            >
+              ✕
+            </button>
+          </li>
+        ))}
     </ul>
   );
 }

@@ -297,6 +297,7 @@ export default function GroupList() {
   }
 
   const currentWindowId = 'window-1'; // Mocked for now
+  const [lastActiveTabIdByGroup, setLastActiveTabIdByGroup] = useState<{ [groupId: string]: string }>({});
 
   const SORT_OPTIONS = [
     { value: 'manual', label: 'Manual' },
@@ -476,6 +477,8 @@ export default function GroupList() {
                 <TabList
                   groupId={group.id}
                   tabs={tabs.filter(t => t.groupId === group.id && (includePinned || !t.pinned))}
+                  lastActiveTabId={lastActiveTabIdByGroup[group.id]}
+                  onTabClick={tabId => setLastActiveTabIdByGroup(prev => ({ ...prev, [group.id]: tabId }))}
                   onRemoveTab={handleRemoveTab}
                   onReorderTabs={handleReorderTabs}
                   onTabDrop={handleTabDrop}
