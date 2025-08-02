@@ -7,11 +7,11 @@ import { getStorageUsage, checkDataIntegrity, getAllData } from '../utils/storag
 // Mock chrome API
 const mockChromeStorage = {
   local: {
-    get: jest.fn(),
-    set: jest.fn(),
-    getBytesInUse: jest.fn(),
+    get: vi.fn(),
+    set: vi.fn(),
+    getBytesInUse: vi.fn(),
     QUOTA_BYTES: 5 * 1024 * 1024, // 5MB
-    clear: jest.fn(),
+    clear: vi.fn(),
   },
 };
 
@@ -20,19 +20,19 @@ Object.defineProperty(global, 'chrome', {
     storage: mockChromeStorage,
     runtime: {
       getURL: (path: string) => `chrome://extension-id/${path}`,
-      reload: jest.fn(),
+      reload: vi.fn(),
       lastError: undefined,
     },
     tabs: {
-      create: jest.fn(),
+      create: vi.fn(),
     },
   },
   writable: true,
 });
 
 // Mock global URL functions for blob downloads
-const mockCreateObjectURL = jest.fn();
-const mockRevokeObjectURL = jest.fn();
+const mockCreateObjectURL = vi.fn();
+const mockRevokeObjectURL = vi.fn();
 
 Object.defineProperty(global, 'URL', {
   value: {
@@ -42,36 +42,36 @@ Object.defineProperty(global, 'URL', {
 });
 
 // Mock toast notifications
-jest.mock('react-hot-toast', () => ({
-  success: jest.fn(),
-  error: jest.fn(),
-  warn: jest.fn(),
-  dismiss: jest.fn(),
+vi.mock('react-hot-toast', () => ({
+  success: vi.fn(),
+  error: vi.fn(),
+  warn: vi.fn(),
+  dismiss: vi.fn(),
 }));
 
 // Mock utilities
-jest.mock('../utils/storage', () => ({
-  getStorageUsage: jest.fn(),
-  checkDataIntegrity: jest.fn(),
-  getAllData: jest.fn(),
-  saveData: jest.fn(),
+vi.mock('../utils/storage', () => ({
+  getStorageUsage: vi.fn(),
+  checkDataIntegrity: vi.fn(),
+  getAllData: vi.fn(),
+  saveData: vi.fn(),
 }));
 
 describe('Popup Component', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     // Default mocks for storage and data integrity
-    (getStorageUsage as jest.Mock).mockResolvedValue({ bytesInUse: 0, quotaBytes: mockChromeStorage.local.QUOTA_BYTES });
-    (checkDataIntegrity as jest.Mock).mockResolvedValue(true);
-    (getAllData as jest.Mock).mockResolvedValue({});
-    (mockChromeStorage.local.get as jest.Mock).mockImplementation((_keys, callback) => callback({}));
-    (mockChromeStorage.local.set as jest.Mock).mockImplementation((_data, callback) => callback());
-    (mockChromeStorage.local.clear as jest.Mock).mockImplementation((callback) => callback());
+    (getStorageUsage as vi.Mock).mockResolvedValue({ bytesInUse: 0, quotaBytes: mockChromeStorage.local.QUOTA_BYTES });
+    (checkDataIntegrity as vi.Mock).mockResolvedValue(true);
+    (getAllData as vi.Mock).mockResolvedValue({});
+    (mockChromeStorage.local.get as vi.Mock).mockImplementation((_keys, callback) => callback({}));
+    (mockChromeStorage.local.set as vi.Mock).mockImplementation((_data, callback) => callback());
+    (mockChromeStorage.local.clear as vi.Mock).mockImplementation((callback) => callback());
 
     mockCreateObjectURL.mockReturnValue('blob:http://localhost/mock-blob');
 
     // Mock GroupList as it's a child component not relevant to Popup's direct logic being tested here
-    jest.mock('../components/GroupList', () => () => <div data-testid="group-list">Group List</div>);
+    vi.mock('../components/GroupList', () => () => <div data-testid="group-list">Group List</div>);
   });
 
   test('renders without crashing', async () => {
@@ -88,8 +88,8 @@ describe('Popup Component', () => {
   });
 
   test('shows storage warning at 50% capacity', async () => {
-    (getStorageUsage as jest.Mock).mockResolvedValue({ bytesInUse: 2.5 * 1024 * 1024, quotaBytes: mockChromeStorage.local.QUOTA_BYTES });
-    const toastSuccessSpy = jest.spyOn(require('react-hot-toast'), 'success');
+    (getStorageUsage as vi.Mock).mockResolvedValue({ bytesInUse: 2.5 * 1024 * 1024, quotaBytes: mockChromeStorage.local.QUOTA_BYTES });
+    const toastSuccessSpy = vi.spyOn(require('react-hot-toast'), 'success');
 
     render(<Popup />);
     await waitFor(() => {
@@ -98,8 +98,8 @@ describe('Popup Component', () => {
   });
 
   test('shows storage warning at 80% capacity', async () => {
-    (getStorageUsage as jest.Mock).mockResolvedValue({ bytesInUse: 4 * 1024 * 1024, quotaBytes: mockChromeStorage.local.QUOTA_BYTES });
-    const toastWarnSpy = jest.spyOn(require('react-hot-toast'), 'warn');
+    (getStorageUsage as vi.Mock).mockResolvedValue({ bytesInUse: 4 * 1024 * 1024, quotaBytes: mockChromeStorage.local.QUOTA_BYTES });
+    const toastWarnSpy = vi.spyOn(require('react-hot-toast'), 'warn');
 
     render(<Popup />);
     await waitFor(() => {
@@ -108,8 +108,8 @@ describe('Popup Component', () => {
   });
 
   test('shows storage error at 90% capacity', async () => {
-    (getStorageUsage as jest.Mock).mockResolvedValue({ bytesInUse: 4.5 * 1024 * 1024, quotaBytes: mockChromeStorage.local.QUOTA_BYTES });
-    const toastErrorSpy = jest.spyOn(require('react-hot-toast'), 'error');
+    (getStorageUsage as vi.Mock).mockResolvedValue({ bytesInUse: 4.5 * 1024 * 1024, quotaBytes: mockChromeStorage.local.QUOTA_BYTES });
+    const toastErrorSpy = vi.spyOn(require('react-hot-toast'), 'error');
 
     render(<Popup />);
     await waitFor(() => {
@@ -118,8 +118,8 @@ describe('Popup Component', () => {
   });
 
   test('dismisses storage warning when usage is below 50%', async () => {
-    (getStorageUsage as jest.Mock).mockResolvedValue({ bytesInUse: 1 * 1024 * 1024, quotaBytes: mockChromeStorage.local.QUOTA_BYTES });
-    const toastDismissSpy = jest.spyOn(require('react-hot-toast'), 'dismiss');
+    (getStorageUsage as vi.Mock).mockResolvedValue({ bytesInUse: 1 * 1024 * 1024, quotaBytes: mockChromeStorage.local.QUOTA_BYTES });
+    const toastDismissSpy = vi.spyOn(require('react-hot-toast'), 'dismiss');
 
     render(<Popup />);
     await waitFor(() => {
@@ -128,7 +128,7 @@ describe('Popup Component', () => {
   });
 
   test('shows data corruption modal when integrity check fails', async () => {
-    (checkDataIntegrity as jest.Mock).mockResolvedValue(false);
+    (checkDataIntegrity as vi.Mock).mockResolvedValue(false);
     render(<Popup />);
     await waitFor(() => {
       expect(screen.getByRole('dialog', { name: 'Data Corruption Detected' })).toBeInTheDocument();
@@ -136,10 +136,10 @@ describe('Popup Component', () => {
   });
 
   test('"Export Raw Data" button in corruption modal triggers download', async () => {
-    (checkDataIntegrity as jest.Mock).mockResolvedValue(false);
+    (checkDataIntegrity as vi.Mock).mockResolvedValue(false);
     const mockCorruptedData = { corrupted: true };
-    (getAllData as jest.Mock).mockResolvedValue(mockCorruptedData);
-    const toastSuccessSpy = jest.spyOn(require('react-hot-toast'), 'success');
+    (getAllData as vi.Mock).mockResolvedValue(mockCorruptedData);
+    const toastSuccessSpy = vi.spyOn(require('react-hot-toast'), 'success');
 
     render(<Popup />);
     await waitFor(() => {
@@ -162,7 +162,7 @@ describe('Popup Component', () => {
   });
 
   test('"Attempt Auto-Repair" button in corruption modal reloads extension', async () => {
-    (checkDataIntegrity as jest.Mock).mockResolvedValue(false);
+    (checkDataIntegrity as vi.Mock).mockResolvedValue(false);
     render(<Popup />);
     await waitFor(() => {
       expect(screen.getByRole('dialog', { name: 'Data Corruption Detected' })).toBeInTheDocument();
@@ -177,8 +177,8 @@ describe('Popup Component', () => {
   });
 
   test('"Start Fresh" button in corruption modal clears storage and reloads extension', async () => {
-    (checkDataIntegrity as jest.Mock).mockResolvedValue(false);
-    const toastSuccessSpy = jest.spyOn(require('react-hot-toast'), 'success');
+    (checkDataIntegrity as vi.Mock).mockResolvedValue(false);
+    const toastSuccessSpy = vi.spyOn(require('react-hot-toast'), 'success');
 
     render(<Popup />);
     await waitFor(() => {
