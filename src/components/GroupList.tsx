@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { getGroups, Group, createGroup, updateGroup, softDeleteGroup, restoreGroup, deleteGroup, saveGroups } from '../group';
-import { getTabs } from '../tab';
+import { getTabs, createTab, updateTab, deleteTab, saveTabs } from '../tab';
 import { 
   ChevronDown, 
   ChevronRight, 
@@ -96,7 +96,6 @@ export default function GroupList() {
     const groupTabs = tabs.filter(t => t.groupId === activeGroupId);
     if (groupTabs.length === 0) {
       // Auto-create a new tab in the empty group
-      const { createTab, getTabs } = require('../tab');
       createTab({
         url: `https://example.com/${Math.floor(Math.random() * 1000)}`,
         title: `Example Tab ${Math.floor(Math.random() * 1000)}`,
@@ -161,7 +160,6 @@ export default function GroupList() {
       groupId: activeGroupId,
     };
     // Use createTab from tab.ts
-    const { createTab, getTabs } = require('../tab');
     createTab(newTab);
     setTabs(getTabs());
   };
@@ -245,7 +243,6 @@ export default function GroupList() {
   };
 
   const handleRemoveTab = (tabId: string) => {
-    const { deleteTab, getTabs } = require('../tab');
     deleteTab(tabId);
     setTabs(getTabs());
   };
@@ -262,14 +259,12 @@ export default function GroupList() {
     // Update all tabs
     const otherTabs = tabs.filter(t => t.groupId !== groupId);
     const newTabs = [...otherTabs, ...reordered];
-    const { saveTabs, getTabs } = require('../tab');
     saveTabs(newTabs);
     setTabs(getTabs());
   };
 
   const handleTabDrop = (tabId: string, fromGroupId: string, toGroupId: string, copy: boolean) => {
     if (fromGroupId === toGroupId) return; // Ignore same-group drops (handled by reorder)
-    const { getTabs, saveTabs, createTab } = require('../tab');
     const allTabs = getTabs();
     const tab = allTabs.find(t => t.id === tabId);
     if (!tab) return;
@@ -333,7 +328,6 @@ export default function GroupList() {
             const groupTabs = tabs.filter(t => t.groupId === activeGroupId);
             if (groupTabs.length === 0) return;
             const tabToClose = groupTabs[Math.floor(Math.random() * groupTabs.length)];
-            const { deleteTab, getTabs } = require('../tab');
             deleteTab(tabToClose.id);
             setTabs(getTabs());
           }}
@@ -345,7 +339,6 @@ export default function GroupList() {
             const groupTabs = tabs.filter(t => t.groupId === activeGroupId);
             if (groupTabs.length === 0) return;
             const tabToNav = groupTabs[Math.floor(Math.random() * groupTabs.length)];
-            const { updateTab, getTabs } = require('../tab');
             updateTab(tabToNav.id, {
               url: `https://navigated.com/${Math.floor(Math.random() * 1000)}`,
               title: `Navigated Tab ${Math.floor(Math.random() * 1000)}`,
@@ -424,106 +417,125 @@ export default function GroupList() {
                     <Tooltip.Content>Drag to reorder</Tooltip.Content>
                   </Tooltip.Root>
                   <span style={{ marginRight: 8 }} onClick={e => { e.stopPropagation(); openSelector(group); }}>
-                    {IconComponent ? <IconComponent size={16} style={{ color: group.color }} data-testid={`${group.icon?.toLowerCase()}-icon`} /> : group.icon || '📁'}
+                    {IconComponent ? <IconComponent size={16} style={{ color: group.color }} data-testid={(group.icon ? group.icon.toLowerCase() : 'folder') + '-icon'} /> : group.icon || '📁'}
                   </span>
                   <span style={{ flex: 1 }}>
                     {isEditing ? (
                       <input
+                        type="text"
                         value={editName}
-                        autoFocus
                         onChange={e => setEditName(e.target.value)}
                         onBlur={() => saveEdit(group)}
                         onKeyDown={e => {
                           if (e.key === 'Enter') saveEdit(group);
-                          if (e.key === 'Escape') { setEditingId(null); setEditName(''); }
+                          if (e.key === 'Escape') {
+                            setEditingId(null);
+                            setEditName(group.name);
+                          }
                         }}
-                        style={{ width: '90%' }}
+                        style={{ width: '100%', padding: '4px 8px', border: '1px solid #ccc', borderRadius: 4 }}
                       />
                     ) : (
-                      group.name
+                      <span style={{ cursor: 'pointer' }} onClick={() => startEditing(group)}>
+                        {group.name}
+                      </span>
                     )}
                   </span>
-                  <span style={{ marginRight: 8 }}>({tabs.filter(t => t.groupId === group.id).length})</span>
-                  <Tooltip.Root>
-                    <Tooltip.Trigger asChild>
-                      <span role="button" aria-label="Edit group name" style={{ marginRight: 8 }} onClick={e => { e.stopPropagation(); startEditing(group); }} tabIndex={0}>
-                        <Pencil size={14} style={{ cursor: 'pointer' }} />
-                      </span>
-                    </Tooltip.Trigger>
-                    <Tooltip.Content>Edit group name</Tooltip.Content>
-                  </Tooltip.Root>
-                  <Tooltip.Root>
-                    <Tooltip.Trigger asChild>
-                      <span role="button" aria-label="Delete group" style={{ marginRight: 8 }} onClick={e => { e.stopPropagation(); softDeleteGroup(group.id); setGroups(getGroups()); }} tabIndex={0}>
-                        <Trash2 size={14} style={{ cursor: 'pointer', color: 'red' }} />
-                      </span>
-                    </Tooltip.Trigger>
-                    <Tooltip.Content>Delete group</Tooltip.Content>
-                  </Tooltip.Root>
-                  {group.id === activeElsewhereId && <LockIcon />}
-                  <Tooltip.Root>
-                    <Tooltip.Trigger asChild>
-                      <Button aria-label="Open group in new window" style={{ marginLeft: 8 }} onClick={e => { e.stopPropagation(); handleOpenInNewWindow(group); }} tabIndex={0}>
-                        <ExternalLink size={14} style={{ cursor: 'pointer' }} />
-                      </Button>
-                    </Tooltip.Trigger>
-                    <Tooltip.Content>Open group in new window</Tooltip.Content>
-                  </Tooltip.Root>
+                  <span style={{ marginLeft: 8 }}>
+                    <Tooltip.Root>
+                      <Tooltip.Trigger asChild>
+                        <span style={{ cursor: 'pointer' }} onClick={() => openSelector(group)}>
+                          <Pencil size={16} />
+                        </span>
+                      </Tooltip.Trigger>
+                      <Tooltip.Content>Edit Group</Tooltip.Content>
+                    </Tooltip.Root>
+                    <Tooltip.Root>
+                      <Tooltip.Trigger asChild>
+                        <span style={{ cursor: 'pointer', marginLeft: 8 }} onClick={() => {
+                          if (isPendingDelete) {
+                            restoreGroup(group.id);
+                            setGroups(getGroups());
+                            setPendingDeleteId(null);
+                          } else {
+                            softDeleteGroup(group.id);
+                            setGroups(getGroups());
+                            setPendingDeleteId(group.id);
+                          }
+                        }}>
+                          {isPendingDelete ? <RotateCcw size={16} /> : <Trash2 size={16} />}
+                        </span>
+                      </Tooltip.Trigger>
+                      <Tooltip.Content>{isPendingDelete ? 'Restore' : 'Delete'}</Tooltip.Content>
+                    </Tooltip.Root>
+                    {isActiveElsewhere && <LockIcon />}
+                  </span>
                 </li>
               </Accordion.Trigger>
-              <Accordion.Content asChild>
-                <li>
-                  <TabList
-                    groupId={group.id}
-                    key={group.id}
-                    tabs={tabs.filter(t => t.groupId === group.id && (includePinned || !t.pinned))}
-                    onTabRemove={handleRemoveTab}
-                    onTabReorder={(from, to) => handleReorderTabs(from, to, group.id)}
-                    onTabDrop={handleTabDrop}
-                  />
-                </li>
+              <Accordion.Content>
+                <TabList
+                  groupId={group.id}
+                  tabs={tabs.filter(t => t.groupId === group.id && (includePinned || !t.pinned))}
+                  onRemoveTab={handleRemoveTab}
+                  onReorderTabs={handleReorderTabs}
+                  onTabDrop={handleTabDrop}
+                  includePinned={includePinned}
+                />
               </Accordion.Content>
-              {/* Keep Dialogs and selectors as before, outside Accordion.Content */}
             </Accordion.Item>
           );
         })}
-        {/* Render soft-deleted groups at the end */}
-        {groups.filter(g => g.deleted).map(group => (
-          <li key={group.id} style={{ opacity: 0.5, textDecoration: 'line-through', display: 'flex', alignItems: 'center', marginBottom: 8 }}>
-                <span style={{ flex: 1 }}>{group.name}</span>
-                <Tooltip.Root>
-                  <Tooltip.Trigger asChild>
-                    <span role="button" aria-label="Restore group" style={{ marginRight: 8 }} onClick={() => { restoreGroup(group.id); setGroups(getGroups()); }} tabIndex={0}>
-                      <RotateCcw size={16} style={{ cursor: 'pointer' }} />
-                    </span>
-                  </Tooltip.Trigger>
-                  <Tooltip.Content>Restore group</Tooltip.Content>
-                </Tooltip.Root>
-                <Dialog.Root open={isPendingDelete} onOpenChange={open => setPendingDeleteId(open ? group.id : null)}>
-                  <Dialog.Trigger asChild>
-                    <Tooltip.Root>
-                      <Tooltip.Trigger asChild>
-                        <span role="button" aria-label="Confirm delete" style={{ marginRight: 8 }} onClick={() => { setPendingDeleteId(group.id); }} tabIndex={0}>
-                          <Trash2 size={16} style={{ cursor: 'pointer', color: 'red' }} />
-                        </span>
-                      </Tooltip.Trigger>
-                      <Tooltip.Content>Confirm delete</Tooltip.Content>
-                    </Tooltip.Root>
-                  </Dialog.Trigger>
-                  <Dialog.Portal>
-                    <Dialog.Overlay />
-                    <Dialog.Content>
-                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
-                        <span>Are you sure you want to delete this group?</span>
-                        <Button onClick={() => { deleteGroup(group.id); setGroups(getGroups()); setPendingDeleteId(null); }}>Confirm</Button>
-                        <Button onClick={() => setPendingDeleteId(null)}>Cancel</Button>
-                      </div>
-                    </Dialog.Content>
-                  </Dialog.Portal>
-                </Dialog.Root>
-              </li>
-        ))}
       </Accordion.Root>
+      <Dialog.Root open={!!selectorId} onOpenChange={setSelectorId}>
+        <Dialog.Content>
+          <Dialog.Header>Edit Group</Dialog.Header>
+          <Dialog.Body>
+            <div style={{ marginBottom: 12 }}>
+              <label htmlFor="group-name" style={{ marginRight: 8 }}>Name:</label>
+              <input
+                type="text"
+                id="group-name"
+                value={editName}
+                onChange={e => setEditName(e.target.value)}
+                style={{ flex: 1, marginRight: 8 }}
+              />
+              <Button onClick={() => saveSelector(groups.find(g => g.id === selectorId)!)} disabled={!editName.trim()}>Save</Button>
+            </div>
+            <div style={{ marginBottom: 12 }}>
+              <label htmlFor="group-color" style={{ marginRight: 8 }}>Color:</label>
+              <Select.Root value={selectedColor} onValueChange={setSelectedColor}>
+                <Select.Trigger id="group-color" />
+                <Select.Content>
+                  {COLOR_OPTIONS.map(color => (
+                    <Select.Item key={color} value={color}>
+                      <div style={{ backgroundColor: color, width: 20, height: 20, borderRadius: 4, marginRight: 8 }} />
+                      {color}
+                    </Select.Item>
+                  ))}
+                </Select.Content>
+              </Select.Root>
+            </div>
+            <div style={{ marginBottom: 12 }}>
+              <label htmlFor="group-icon" style={{ marginRight: 8 }}>Icon:</label>
+              <Select.Root value={selectedIcon} onValueChange={setSelectedIcon}>
+                <Select.Trigger id="group-icon" />
+                <Select.Content>
+                  {ICON_OPTIONS.map(icon => (
+                    <Select.Item key={icon} value={icon}>
+                      <div style={{ marginRight: 8 }}>{LucideIcons[icon] ? React.createElement(LucideIcons[icon], { size: 20 }) : null}</div>
+                      {icon}
+                    </Select.Item>
+                  ))}
+                </Select.Content>
+              </Select.Root>
+            </div>
+          </Dialog.Body>
+          <Dialog.Footer>
+            <Button variant="soft" onClick={closeSelector}>Cancel</Button>
+            <Button onClick={() => saveSelector(groups.find(g => g.id === selectorId)!)} disabled={!editName.trim()}>Save</Button>
+          </Dialog.Footer>
+        </Dialog.Content>
+      </Dialog.Root>
     </>
   );
 }
