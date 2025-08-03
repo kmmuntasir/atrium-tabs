@@ -32,7 +32,21 @@ Apply this rule when:
 5.  **Specify `target_file` First:**
     - Always specify the `target_file` argument as the first argument in the `edit_file` tool call.
 
+6.  **Always Provide All Required Parameters:**
+    - Ensure all mandatory parameters, such as `target_file`, `instructions`, and `code_edit`, are explicitly provided in every `edit_file` tool call. Omitting required parameters will lead to tool call failures.
+
 ## Incorrect Pattern
+```python
+# Bad: Missing required parameter 'instructions'
+print(default_api.edit_file(
+    target_file="src/components/MyComponent.tsx",
+    code_edit="""// ... existing code ...
+export default function NewName() {
+  // ... existing code ..."""
+))
+```
+**Reasoning for Incorrectness:** The `instructions` parameter is mandatory for the `edit_file` tool. Its omission causes the tool call to fail.
+
 ```python
 # Bad: Insufficient context for the change
 print(default_api.edit_file(
@@ -45,7 +59,7 @@ print(default_api.edit_file(
 
 ## Correct Pattern
 ```python
-# Good: Sufficient context provided with '... existing code ...'
+# Good: All required parameters provided and sufficient context provided
 print(default_api.edit_file(
     target_file="src/components/MyComponent.tsx",
     instructions="I am renaming the MyComponent function to NewName.",
@@ -54,7 +68,7 @@ export default function NewName() {
   // ... existing code ..."""
 ))
 ```
-**Reasoning for Correctness:** The `// ... existing code ...` comments provide clear anchors, making the exact location of the `NewName` change unambiguous.
+**Reasoning for Correctness:** Both `instructions` and `code_edit` are provided, and the `// ... existing code ...` comments provide clear anchors, making the exact location of the `NewName` change unambiguous.
 
 ## Related Rules
 - See: rule-self-learning-and-error-correction
