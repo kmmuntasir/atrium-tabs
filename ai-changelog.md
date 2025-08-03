@@ -1,2 +1,3 @@
 ATRIUM-0049, ATRIUM-0050, ATRIUM-0051: Implemented storage quota warnings, storage full modal, and data corruption safe-mode prompt with auto-repair functionality.
 ATRIUM-0052: Implemented opt-in telemetry and metrics with persistent daily rate limiting and daily heartbeat, including group and tab counts.
+ATRIUM-0052: Added unit tests for telemetry and metrics module, covering opt-in, data sent, and rate limiting.
