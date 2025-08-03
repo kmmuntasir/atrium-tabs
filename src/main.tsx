@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom/client';
 import Popup from './components/Popup';
 import './index.css';
@@ -16,8 +16,24 @@ window.onunhandledrejection = (event) => {
   sendErrorLog(new Error(event.reason.message || 'Unhandled promise rejection'), { type: 'unhandledrejection', reason: event.reason });
 };
 
+const AppWrapper = () => {
+  const [eagerLoad, setEagerLoad] = useState(false);
+
+  useEffect(() => {
+    chrome.storage.local.get('atrium_eager_load', (items) => {
+      if (typeof items.atrium_eager_load === 'boolean') {
+        setEagerLoad(items.atrium_eager_load);
+      }
+    });
+  }, []);
+
+  return (
+    <React.StrictMode>
+      <Popup eagerLoad={eagerLoad} />
+    </React.StrictMode>
+  );
+};
+
 ReactDOM.createRoot(document.getElementById('root')!).render(
-  <React.StrictMode>
-    <Popup />
-  </React.StrictMode>
+  <AppWrapper />
 );

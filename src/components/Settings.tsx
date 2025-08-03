@@ -40,6 +40,7 @@ const Settings: React.FC<SettingsProps> = ({ initialActiveTab = 'general' }) => 
       'atrium_include_pinned_tabs',
       'telemetry_opt_in',
       'atrium_high_contrast',
+      'atrium_eager_load',
       'has_run_before',
     ], (items) => {
       if (items.atrium_theme) setTheme(items.atrium_theme);
@@ -47,6 +48,7 @@ const Settings: React.FC<SettingsProps> = ({ initialActiveTab = 'general' }) => 
       if (typeof items.atrium_include_pinned_tabs === 'boolean') setIncludePinnedTabs(items.atrium_include_pinned_tabs);
       if (typeof items.telemetry_opt_in === 'boolean') setTelemetryOptIn(items.telemetry_opt_in);
       if (typeof items.atrium_high_contrast === 'boolean') setHighContrast(items.atrium_high_contrast);
+      if (typeof items.atrium_eager_load === 'boolean') setEagerLoad(items.atrium_eager_load);
 
       // Set active tab to welcome-tour if it's the first run
       if (!items.has_run_before) {
@@ -81,6 +83,10 @@ const Settings: React.FC<SettingsProps> = ({ initialActiveTab = 'general' }) => 
       document.documentElement.classList.remove('high-contrast-mode');
     }
   }, [highContrast, theme]);
+
+  useEffect(() => {
+    chrome.storage.local.set({ atrium_eager_load: eagerLoad });
+  }, [eagerLoad]);
 
   const handleTourComplete = () => {
     setActiveTab('general');

@@ -4,7 +4,11 @@ import toast from 'react-hot-toast';
 import { Button, Dialog, Flex, Text } from '@radix-ui/themes';
 import { getStorageUsage, checkDataIntegrity, getAllData, attemptAutoRepair } from '../utils/storage';
 
-export default function Popup() {
+interface PopupProps {
+  eagerLoad: boolean;
+}
+
+export default function Popup({ eagerLoad }: PopupProps) {
   const [showCorruptionModal, setShowCorruptionModal] = useState(false);
   const [showStorageFullModal, setShowStorageFullModal] = useState(false);
   const [storageFullMessage, setStorageFullMessage] = useState('');
@@ -113,7 +117,7 @@ export default function Popup() {
       <h2>Atrium Tabs</h2>
       <Button onClick={openSettingsPage}>Open Settings</Button>
       <Button onClick={() => toast.success('Hello from Atrium Tabs!')}>Show Toast</Button>
-      <GroupList />
+      <GroupList eagerLoad={eagerLoad} />
 
       <Dialog.Root open={showCorruptionModal} onOpenChange={setShowCorruptionModal}>
         <Dialog.Content style={{ maxWidth: 450 }}>

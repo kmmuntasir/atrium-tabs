@@ -1,6 +1,7 @@
 import React from 'react';
 import { Tab, getTabs } from '../tab';
 import { Button } from '@radix-ui/themes';
+import { undiscardTab } from '../background';
 
 interface TabListProps {
   groupId: string;
@@ -10,9 +11,10 @@ interface TabListProps {
   onTabDrop?: (tabId: string, fromGroupId: string, toGroupId: string, copy: boolean) => void;
   lastActiveTabId?: string;
   onTabClick?: (tabId: string) => void;
+  eagerLoad: boolean; // New prop for eager load setting
 }
 
-export default function TabList({ groupId, tabs, onTabRemove, onTabReorder, onTabDrop, lastActiveTabId, onTabClick }: TabListProps) {
+export default function TabList({ groupId, tabs, onTabRemove, onTabReorder, onTabDrop, lastActiveTabId, onTabClick, eagerLoad }: TabListProps) {
   // Drag-and-drop state
   const [draggedIdx, setDraggedIdx] = React.useState<number | null>(null);
   const [dragOverIdx, setDragOverIdx] = React.useState<number | null>(null);
@@ -61,6 +63,17 @@ export default function TabList({ groupId, tabs, onTabRemove, onTabReorder, onTa
     }
   }, [lastActiveTabId, tabs]);
 
+  const handleTabClick = (tabId: string) => {
+    if (onTabClick) {
+      onTabClick(tabId);
+    }
+    const clickedTab = tabs.find(t => t.id === tabId);
+    // If lazy loading is enabled and the tab is discarded, undiscard it.
+    if (!eagerLoad && clickedTab?.discarded) {
+      undiscardTab(tabId);
+    }
+  };
+
   return (
     <ul style={{ listStyle: 'none', paddingLeft: 20, marginTop: 8 }} onDrop={handleDrop} onDragOver={handleDragOver}>
       {tabs.length === 0 && (
@@ -74,7 +87,7 @@ export default function TabList({ groupId, tabs, onTabRemove, onTabReorder, onTa
             key={tab.id}
             ref={el => tabRefs.current[idx] = el}
             tabIndex={tab.id === lastActiveTabId ? 0 : -1}
-            onClick={() => onTabClick && onTabClick(tab.id)}
+            onClick={() => handleTabClick(tab.id)}
             style={{ display: 'flex', alignItems: 'center', marginBottom: 4, background: dragOverIdx === idx ? '#f0f0f0' : undefined, cursor: 'grab' }}
             draggable
             onDragStart={e => { handleDragStart(idx); e.dataTransfer.setData('fromGroupId', groupId); }}

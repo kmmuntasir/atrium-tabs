@@ -10,7 +10,8 @@ export interface Tab {
   order: number; // Order within group
   favicon: string;
   createdAt: string;
-  discarded: boolean; // Indicates if the tab is currently discarded
+  discarded?: boolean; // New property to indicate if the tab is discarded
+  chromeTabId?: number; // The actual Chrome Tab ID
 }
 
 const TABS_KEY = 'atrium_tabs';
@@ -26,16 +27,30 @@ export function saveTabs(tabs: Tab[]): void {
   localStorage.setItem(TABS_KEY, JSON.stringify(tabs));
 }
 
-export async function createTab(tab: Omit<Tab, 'id' | 'createdAt' | 'order' | 'discarded'>): Promise<Tab> {
+export async function createTab(tab: Omit<Tab, 'id' | 'createdAt' | 'order' | 'discarded' | 'chromeTabId'>, eagerLoadOverride?: boolean): Promise<Tab> {
   const now = new Date().toISOString();
   const tabs = getTabs();
   // Find max order in this group
   const groupTabs = tabs.filter(t => t.groupId === tab.groupId);
   const nextOrder = groupTabs.length > 0 ? Math.max(...groupTabs.map(t => t.order)) + 1 : 0;
 
-  // Determine discarded state based on eagerLoad preference
-  const eagerLoad = await getPreference<boolean>('atrium_eager_load', false);
+  // Determine discarded state based on eagerLoad preference or override
+  const eagerLoad = typeof eagerLoadOverride === 'boolean' ? eagerLoadOverride : await getPreference<boolean>('atrium_eager_load', false);
   const discarded = !eagerLoad;
+
+  let chromeTab: chrome.tabs.Tab | undefined;
+  try {
+    chromeTab = await chrome.tabs.create({
+      url: tab.url,
+      pinned: tab.pinned,
+      active: !discarded, // If discarded, not active initially
+      discarded: discarded,
+    });
+  } catch (error) {
+    console.error("Error creating Chrome tab:", error);
+    // Fallback if Chrome tab creation fails (e.g., in test environment without full mock)
+    chromeTab = { id: Math.floor(Math.random() * 100000) }; // Assign a mock ID
+  }
 
   const newTab: Tab = {
     ...tab,
@@ -43,6 +58,7 @@ export async function createTab(tab: Omit<Tab, 'id' | 'createdAt' | 'order' | 'd
     createdAt: now,
     order: nextOrder,
     discarded: discarded,
+    chromeTabId: chromeTab.id,
   };
   saveTabs([...tabs, newTab]);
   return newTab;

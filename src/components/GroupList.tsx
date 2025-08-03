@@ -1,18 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { getGroups, Group, createGroup, updateGroup, softDeleteGroup, restoreGroup, deleteGroup, saveGroups } from '../group';
+import { getGroups, Group, createGroup, updateGroup, softDeleteGroup, restoreGroup, deleteGroup, saveGroups, updateActiveGroup } from '../group';
 import { getTabs, createTab, updateTab, deleteTab, saveTabs } from '../tab';
-import { 
-  ChevronDown, 
-  ChevronRight, 
-  Folder, 
-  Book, 
-  Home, 
-  Briefcase, 
-  Star, 
-  Heart, 
-  Settings, 
-  Bell, 
-  Flag, 
+import { FixedSizeList as List } from 'react-window'; // Import FixedSizeList
+import {
+  ChevronDown,
+  ChevronRight,
+  Folder,
+  Book,
+  Home,
+  Briefcase,
+  Star,
+  Heart,
+  Settings,
+  Bell,
+  Flag,
   Globe,
   Pencil,
   Trash2,
@@ -68,7 +69,11 @@ function isGroupActiveElsewhere(groupId: string, currentWindowId = 'window-1'): 
   return groupId.endsWith('2') || groupId.endsWith('4');
 }
 
-export default function GroupList() {
+interface GroupListProps {
+  eagerLoad: boolean;
+}
+
+export default function GroupList({ eagerLoad }: GroupListProps) {
   const [groups, setGroups] = useState<Group[]>(getGroups());
   const [tabs, setTabs] = useState(getTabs());
   const [expandedGroups, setExpandedGroups] = useState<string[]>(() => {
@@ -274,11 +279,11 @@ export default function GroupList() {
     if (!tab) return;
     if (copy) {
       // Copy: create new tab in target group with new id/order
-      await createTab({ 
-        url: tab.url, 
-        title: tab.title, 
-        pinned: tab.pinned, 
-        groupId: toGroupId, 
+      await createTab({
+        url: tab.url,
+        title: tab.title,
+        pinned: tab.pinned,
+        groupId: toGroupId,
         favicon: tab.favicon,
       });
     } else {
@@ -370,7 +375,15 @@ export default function GroupList() {
         <select
           id="active-group-select"
           value={activeGroupId || ''}
-          onChange={e => setActiveGroupId(e.target.value)}
+          onChange={async e => {
+            const newGroupId = e.target.value;
+            setActiveGroupId(newGroupId);
+            // In a real extension, you would get the actual current window ID
+            const currentWindowId = 1; // Mocking for development
+            await updateActiveGroup(newGroupId, currentWindowId, eagerLoad);
+            setGroups(getGroups()); // Refresh groups to reflect updated active state/lastActiveAt
+            setTabs(getTabs()); // Refresh tabs to reflect discarded state
+          }}
           style={{ marginRight: 8 }}
         >
           <option value="" disabled>Select group</option>
@@ -397,8 +410,15 @@ export default function GroupList() {
           Include pinned tabs in groups
         </label>
       </div>
-      <Accordion.Root type="multiple" value={expandedGroups} onValueChange={setExpandedGroups}>
-        {sortedGroups.map((group, idx) => {
+      {/* Use FixedSizeList for virtualization */}
+      <List
+        height={400} // Fixed height for the scrollable area (adjust as needed)
+        itemCount={sortedGroups.length}
+        itemSize={50} // Approximate height of each group item (adjust based on actual styling)
+        width="100%"
+      >
+        {({ index, style }) => {
+          const group = sortedGroups[index];
           const IconComponent = group.icon ? LucideIcons[group.icon.toLowerCase()] : Folder;
           const isEditing = editingId === group.id;
           const isSelecting = selectorId === group.id;
@@ -408,110 +428,137 @@ export default function GroupList() {
           const shapeBadge = SHAPE_BADGES[shapeIndex];
 
           return (
-            <Accordion.Item value={group.id} key={group.id}>
-              <Accordion.Trigger asChild>
-                <li
-                  draggable
-                  onDragStart={() => handleDragStart(idx)}
-                  onDragEnter={() => handleDragEnter(idx)}
-                  onDragEnd={handleDragEnd}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    marginBottom: 8,
-                    cursor: isPendingDelete ? 'not-allowed' : 'grab',
-                    opacity: isPendingDelete || isActiveElsewhere ? 0.5 : 1,
-                    textDecoration: isPendingDelete ? 'line-through' : 'none',
-                    background: dragOverItem.current === idx ? '#f0f0f0' : undefined,
-                    pointerEvents: isActiveElsewhere ? 'none' : undefined,
-                  }}
-                  title={isActiveElsewhere ? 'This group is active in another window' : undefined}
-                  aria-label={group.name} // Add aria-label for accessibility
-                >
-                  <Tooltip.Root>
-                    <Tooltip.Trigger asChild>
-                      <span role="button" aria-label="Drag to reorder" style={{ marginRight: 8, cursor: 'grab' }} tabIndex={0}>
-                        ☰
-                      </span>
-                    </Tooltip.Trigger>
-                    <Tooltip.Content>Drag to reorder</Tooltip.Content>
-                  </Tooltip.Root>
-                  <span style={{ marginRight: 8 }} onClick={e => { e.stopPropagation(); openSelector(group); }}>
-                    {IconComponent ? <IconComponent size={16} style={{ color: group.color }} data-testid={(group.icon ? group.icon.toLowerCase() : 'folder') + '-icon'} /> : group.icon || '📁'}
-                  </span>
-                  {/* Color-blind accessibility shape badge */}
-                  <span style={{ marginRight: 8 }} aria-label="shape marker">
-                    {shapeBadge}
-                  </span>
-                  <span style={{ flex: 1 }}>
-                    {isEditing ? (
-                      <input
-                        type="text"
-                        value={editName}
-                        onChange={e => setEditName(e.target.value)}
-                        onBlur={() => saveEdit(group)}
-                        onKeyDown={e => {
-                          if (e.key === 'Enter') saveEdit(group);
-                          if (e.key === 'Escape') {
-                            setEditingId(null);
-                            setEditName(group.name);
-                          }
-                        }}
-                        style={{ width: '100%', padding: '4px 8px', border: '1px solid #ccc', borderRadius: 4 }}
-                      />
-                    ) : (
-                      <span style={{ cursor: 'pointer' }} onClick={() => startEditing(group)}>
-                        {group.name}
-                      </span>
-                    )}
-                  </span>
-                  <span style={{ marginLeft: 8 }}>
+            <div style={style}> {/* Apply style from react-window */}
+              <Accordion.Item value={group.id} key={group.id} style={{ marginBottom: 8 }}>
+                <Accordion.Trigger asChild>
+                  <li
+                    draggable={sortOrder === 'manual'} // Only draggable in manual sort mode
+                    onDragStart={() => handleDragStart(index)}
+                    onDragEnter={() => handleDragEnter(index)}
+                    onDragEnd={handleDragEnd}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      cursor: isPendingDelete || sortOrder !== 'manual' ? 'not-allowed' : 'grab',
+                      opacity: isPendingDelete || isActiveElsewhere ? 0.5 : 1,
+                      textDecoration: isPendingDelete ? 'line-through' : 'none',
+                      background: dragOverItem.current === index ? '#f0f0f0' : undefined,
+                      pointerEvents: isActiveElsewhere ? 'none' : undefined,
+                      // height: '100%', // Ensure li takes full height of the row
+                      // width: '100%',
+                    }}
+                    title={isActiveElsewhere ? 'This group is active in another window' : undefined}
+                    aria-label={group.name}
+                  >
                     <Tooltip.Root>
                       <Tooltip.Trigger asChild>
-                        <span style={{ cursor: 'pointer' }} onClick={() => openSelector(group)}>
-                          <Pencil size={16} />
+                        <span role="button" aria-label="Drag to reorder" style={{ marginRight: 8, cursor: 'grab' }} tabIndex={0}>
+                          ☰
                         </span>
                       </Tooltip.Trigger>
-                      <Tooltip.Content>Edit Group</Tooltip.Content>
+                      <Tooltip.Content>Drag to reorder</Tooltip.Content>
                     </Tooltip.Root>
-                    <Tooltip.Root>
-                      <Tooltip.Trigger asChild>
-                        <span style={{ cursor: 'pointer', marginLeft: 8 }} onClick={() => {
-                          if (isPendingDelete) {
-                            restoreGroup(group.id);
-                            setGroups(getGroups());
-                            setPendingDeleteId(null);
-                          } else {
-                            softDeleteGroup(group.id);
-                            setGroups(getGroups());
-                            setPendingDeleteId(group.id);
-                          }
-                        }}>
-                          {isPendingDelete ? <RotateCcw size={16} /> : <Trash2 size={16} />}
+                    <span style={{ marginRight: 8 }} onClick={e => { e.stopPropagation(); openSelector(group); }}>
+                      {IconComponent ? <IconComponent size={16} style={{ color: group.color }} data-testid={(group.icon ? group.icon.toLowerCase() : 'folder') + '-icon'} /> : group.icon || '📁'}
+                    </span>
+                    {/* Color-blind accessibility shape badge */}
+                    <span style={{ marginRight: 8 }} aria-label="shape marker">
+                      {shapeBadge}
+                    </span>
+                    <span style={{ flex: 1 }}>
+                      {isEditing ? (
+                        <input
+                          type="text"
+                          value={editName}
+                          onChange={e => setEditName(e.target.value)}
+                          onBlur={() => saveEdit(group)}
+                          onKeyDown={e => {
+                            if (e.key === 'Enter') saveEdit(group);
+                            if (e.key === 'Escape') {
+                              setEditingId(null);
+                              setEditName(group.name);
+                            }
+                          }}
+                          style={{ width: '100%', padding: '4px 8px', border: '1px solid #ccc', borderRadius: 4 }}
+                        />
+                      ) : (
+                        <span style={{ cursor: 'pointer' }} onClick={() => updateActiveGroup(group.id, 1, eagerLoad)}>
+                          {group.name}
                         </span>
-                      </Tooltip.Trigger>
-                      <Tooltip.Content>{isPendingDelete ? 'Restore' : 'Delete'}</Tooltip.Content>
-                    </Tooltip.Root>
-                    {isActiveElsewhere && <LockIcon />}
-                  </span>
-                </li>
-              </Accordion.Trigger>
-              <Accordion.Content>
-                <TabList
-                  groupId={group.id}
-                  tabs={(tabsByGroupId[group.id] || []).filter(t => includePinned || !t.pinned)}
-                  lastActiveTabId={lastActiveTabIdByGroup[group.id]}
-                  onTabClick={tabId => setLastActiveTabIdByGroup(prev => ({ ...prev, [group.id]: tabId }))}
-                  onRemoveTab={handleRemoveTab}
-                  onReorderTabs={handleReorderTabs}
-                  onTabDrop={handleTabDrop}
-                  includePinned={includePinned}
-                />
-              </Accordion.Content>
-            </Accordion.Item>
+                      )}
+                    </span>
+                    <span style={{ marginLeft: 8 }}>
+                      {group.windowId === 1 && <LockIcon />}
+                      {/* Mocked lock icon visibility: only show if group.windowId is current window */}
+                      <Tooltip.Root>
+                        <Tooltip.Trigger asChild>
+                          <span style={{ cursor: 'pointer' }} onClick={() => openSelector(group)}>
+                            <Pencil size={16} />
+                          </span>
+                        </Tooltip.Trigger>
+                        <Tooltip.Content>Edit Group</Tooltip.Content>
+                      </Tooltip.Root>
+                      {isPendingDelete ? (
+                        <Tooltip.Root>
+                          <Tooltip.Trigger asChild>
+                            <span style={{ cursor: 'pointer', marginLeft: 8 }} onClick={() => {
+                              restoreGroup(group.id);
+                              setGroups(getGroups());
+                              setPendingDeleteId(null);
+                            }}>
+                              <RotateCcw size={16} />
+                            </span>
+                          </Tooltip.Trigger>
+                          <Tooltip.Content>Restore</Tooltip.Content>
+                        </Tooltip.Root>
+                      ) : (
+                        <Tooltip.Root>
+                          <Tooltip.Trigger asChild>
+                            <span style={{ cursor: 'pointer', marginLeft: 8 }} onClick={() => {
+                              softDeleteGroup(group.id);
+                              setGroups(getGroups());
+                              setPendingDeleteId(group.id);
+                            }}>
+                              <Trash2 size={16} />
+                            </span>
+                          </Tooltip.Trigger>
+                          <Tooltip.Content>Delete</Tooltip.Content>
+                        </Tooltip.Root>
+                      )}
+                      {expandedGroups.includes(group.id) ? (
+                        <ChevronDown size={16} style={{ marginLeft: 8, cursor: 'pointer' }} onClick={() => toggleExpand(group.id)} />
+                      ) : (
+                        <ChevronRight size={16} style={{ marginLeft: 8, cursor: 'pointer' }} onClick={() => toggleExpand(group.id)} />
+                      )}
+                      <Tooltip.Root>
+                        <Tooltip.Trigger asChild>
+                          <span style={{ cursor: 'pointer', marginLeft: 8 }} onClick={() => handleOpenInNewWindow(group)}>
+                            <ExternalLink size={16} />
+                          </span>
+                        </Tooltip.Trigger>
+                        <Tooltip.Content>Open in new window</Tooltip.Content>
+                      </Tooltip.Root>
+                    </span>
+                  </li>
+                </Accordion.Trigger>
+                <Accordion.Content>
+                  <TabList
+                    groupId={group.id}
+                    tabs={(tabsByGroupId[group.id] || []).filter(t => includePinned || !t.pinned)}
+                    lastActiveTabId={lastActiveTabIdByGroup[group.id]}
+                    onTabClick={tabId => setLastActiveTabIdByGroup(prev => ({ ...prev, [group.id]: tabId }))}
+                    onRemoveTab={handleRemoveTab}
+                    onReorderTabs={handleReorderTabs}
+                    onTabDrop={handleTabDrop}
+                    includePinned={includePinned}
+                    eagerLoad={eagerLoad}
+                  />
+                </Accordion.Content>
+              </Accordion.Item>
+            </div>
           );
         })}
-      </Accordion.Root>
+      </List>
       <Dialog.Root open={!!selectorId} onOpenChange={setSelectorId}>
         <Dialog.Content>
           <Dialog.Header>Edit Group</Dialog.Header>

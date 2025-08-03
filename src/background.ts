@@ -1,6 +1,8 @@
 import { sendHeartbeat } from './utils/telemetry';
 import { getAllData, checkDataIntegrity, saveData } from './utils/storage';
 import { createGroup } from './group';
+import { getTabs } from './tab'; // Import getTabs
+import { getPreference } from './utils/preferences';
 
 const ALARM_NAME = 'dailyHeartbeat';
 
@@ -40,7 +42,7 @@ chrome.runtime.onInstalled.addListener(async (details) => {
       // For MVP, just saving name and tabs
     });
 
-    const tabsToSave = currentTabs.map(tab => ({
+    const tabsToSave = await Promise.all(currentTabs.map(async tab => ({
       id: String(tab.id),
       url: tab.url || '',
       title: tab.title || '',
@@ -49,7 +51,9 @@ chrome.runtime.onInstalled.addListener(async (details) => {
       order: tab.index || 0,
       favicon: tab.favIconUrl || '',
       createdAt: now,
-    }));
+      discarded: !(await getPreference<boolean>('atrium_eager_load', false)), // Set discarded based on preference
+      chromeTabId: tab.id, // Store the actual Chrome tab ID
+    })));
 
     // Get existing data, add new group and tabs, then save
     const existingData = await getAllData();
@@ -94,3 +98,25 @@ chrome.runtime.onStartup.addListener(async () => {
     await handleDailyHeartbeat();
   });
 });
+
+export async function discardTabs(tabIds: number[]) {
+  if (chrome.tabs && chrome.tabs.discard) {
+    await chrome.tabs.discard(tabIds);
+    console.log('Discarded tabs:', tabIds);
+  }
+}
+
+export async function undiscardTab(internalTabId: string) {
+  const allTabs = getTabs(); // Retrieve all tabs
+  const tabToUndiscard = allTabs.find(t => t.id === internalTabId);
+
+  if (tabToUndiscard && tabToUndiscard.chromeTabId) {
+    if (chrome.tabs && chrome.tabs.get) {
+      const tab = await chrome.tabs.get(tabToUndiscard.chromeTabId);
+      if (tab && tab.discarded) {
+        await chrome.tabs.update(tabToUndiscard.chromeTabId, { active: true });
+        console.log('Undiscarded tab:', tabToUndiscard.chromeTabId);
+      }
+    }
+  }
+}
