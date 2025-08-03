@@ -203,4 +203,19 @@ describe('Popup Component', () => {
       expect(chrome.runtime.reload).toHaveBeenCalledTimes(1);
     });
   });
+
+  test('all buttons are actionable via click', async () => {
+    render(<Popup />);
+
+    const openSettingsButton = screen.getByRole('button', { name: 'Open Settings' });
+    const showToastButton = screen.getByRole('button', { name: 'Show Toast' });
+
+    // Test click action on buttons
+    fireEvent.click(openSettingsButton);
+    expect(chrome.tabs.create).toHaveBeenCalledWith({ url: 'chrome://extension-id/settings.html' });
+
+    vi.clearAllMocks();
+    fireEvent.click(showToastButton);
+    expect(toast.success).toHaveBeenCalledWith('Hello from Atrium Tabs!');
+  });
 });
