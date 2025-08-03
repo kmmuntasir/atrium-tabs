@@ -13,7 +13,7 @@ alwaysApply: true
 - When implementation is done, write the listed unit and integration tests from the task description or acceptance criteria.
 - The unit and integration tests are parts of the task. Until the tests are written and passed, the task is not complete.
 - After writing the tests, always run the tests to ensure they are passing.
-- When the tests pass, run the build process.
+- When the tests pass, you MUST run the build process.
 - If the build succeeds, the task is complete.
 
 ## After the task is complete, follow this sequence:
