@@ -77,10 +77,10 @@ describe('Settings Component', () => {
     mockChromeStorage.local.set.mockImplementation((_data, callback) => {
       if (typeof callback === 'function') callback();
     });
-    mockChromeStorage.local.getBytesInUse.mockImplementation((_keys, callback) => {
-      if (typeof callback === 'function') callback(0);
+    (global.chrome.storage.local.getBytesInUse as vi.Mock).mockImplementation((keys, callback) => {
+      if (typeof callback === 'function') callback(0); // Ensure callback is called
     });
-    mockChromeCommands.getAll.mockImplementation((callback) => callback([]));
+    (global.chrome.commands.getAll as vi.Mock).mockImplementation((callback) => callback([]));
     mockCreateObjectURL.mockReturnValue('blob:http://localhost/mock-blob');
   });
 
@@ -91,9 +91,13 @@ describe('Settings Component', () => {
 
   test('sort order radio buttons are present and interactive', () => {
     render(<Settings />);
-    const alphabeticalRadio = screen.getByRole('radio', { name: 'Alphabetical' });
-    const lastUsageRadio = screen.getByRole('radio', { name: 'Last Usage' });
-    const manualRadio = screen.getByRole('radio', { name: 'Manual (Drag & Drop)' });
+    const radios = screen.getAllByRole('radio');
+    radios.forEach(radio => {
+      console.log('Radio name:', radio.getAttribute('name'), 'value:', radio.getAttribute('value'), 'text:', radio.textContent);
+    });
+    const alphabeticalRadio = screen.getByRole('radio', { name: /Alphabetical/i });
+    const lastUsageRadio = screen.getByRole('radio', { name: /Last Usage/i });
+    const manualRadio = screen.getByRole('radio', { name: /Manual \(Drag & Drop\)/i });
     expect(alphabeticalRadio).toHaveAttribute('aria-checked', 'true');
     expect(lastUsageRadio).toHaveAttribute('aria-checked', 'false');
     expect(manualRadio).toHaveAttribute('aria-checked', 'false');
@@ -107,9 +111,13 @@ describe('Settings Component', () => {
 
   test('theme radio buttons are present and interactive', () => {
     render(<Settings />);
-    const systemThemeRadio = screen.getByRole('radio', { name: 'System' });
-    const lightThemeRadio = screen.getByRole('radio', { name: 'Light' });
-    const darkThemeRadio = screen.getByRole('radio', { name: 'Dark' });
+    const radios = screen.getAllByRole('radio');
+    radios.forEach(radio => {
+      console.log('Radio name:', radio.getAttribute('name'), 'value:', radio.getAttribute('value'), 'text:', radio.textContent);
+    });
+    const systemThemeRadio = screen.getByRole('radio', { name: /System/i });
+    const lightThemeRadio = screen.getByRole('radio', { name: /Light/i });
+    const darkThemeRadio = screen.getByRole('radio', { name: /Dark/i });
     expect(systemThemeRadio).toHaveAttribute('aria-checked', 'true');
     expect(lightThemeRadio).toHaveAttribute('aria-checked', 'false');
     expect(darkThemeRadio).toHaveAttribute('aria-checked', 'false');
@@ -231,7 +239,9 @@ describe('Settings Component', () => {
         hotkeys: { foo: 'bar' },
       },
     };
-    mockChromeStorage.local.get.mockImplementation((_keys, callback) => { if (typeof callback === 'function') callback(mockData); });
+    mockChromeStorage.local.get.mockImplementation((_keys, callback) => {
+      if (typeof callback === 'function') callback(mockData);
+    });
     // Mock Blob with a text() method
     const jsonString = JSON.stringify(mockData, null, 2);
     const mockBlob = { type: 'application/json', text: () => Promise.resolve(jsonString) };
@@ -241,7 +251,7 @@ describe('Settings Component', () => {
     const exportButton = await screen.findByRole('button', { name: 'Export Data' }, { timeout: 5000 });
     fireEvent.click(exportButton);
     await waitFor(async () => {
-      expect(mockChromeStorage.local.get).toHaveBeenCalledWith([
+      expect(global.chrome.storage.local.get).toHaveBeenCalledWith([
         'atrium_groups',
         'atrium_tabs',
         'atrium_theme',
@@ -264,7 +274,7 @@ describe('Settings Component', () => {
   });
 
   test('export data button shows error toast on failure', async () => {
-    mockChromeStorage.local.get.mockImplementation((_keys, callback) => {
+    (global.chrome.storage.local.get as vi.Mock).mockImplementation((_keys, callback) => {
       if (typeof callback === 'function') callback({ message: 'Export failed' });
     });
     render(<Settings />);
@@ -297,7 +307,7 @@ describe('Settings Component', () => {
       target: { files: [file] },
     });
     await waitFor(() => {
-      expect(mockChromeStorage.local.set).toHaveBeenCalledWith(mockImportedData, expect.any(Function));
+      expect(global.chrome.storage.local.set).toHaveBeenCalledWith(mockImportedData, expect.any(Function));
       expect(toast.success).toHaveBeenCalledWith('Data imported successfully!');
     });
   });
@@ -318,7 +328,7 @@ describe('Settings Component', () => {
 
   test('shows quota exceeded modal when importing too much data', async () => {
     // Mock chrome.storage.local.getBytesInUse to return a high value that would trigger quota exceeded
-    mockChromeStorage.local.getBytesInUse.mockImplementation((keys, callback) => {
+    (global.chrome.storage.local.getBytesInUse as vi.Mock).mockImplementation((keys, callback) => {
       if (typeof callback === 'function') callback(4.9 * 1024 * 1024); // Nearly full quota
     });
     render(<Settings />);
@@ -343,7 +353,7 @@ describe('Settings Component', () => {
       { name: '_execute_action', description: 'Open Atrium Tabs Popup', shortcut: 'Ctrl+Shift+F' },
       { name: 'jump-to-group-1', description: 'Jump to Group 1', shortcut: 'Ctrl+Shift+1' },
     ];
-    mockChromeCommands.getAll.mockImplementation((callback) => callback(mockCommands));
+    (global.chrome.commands.getAll as vi.Mock).mockImplementation((callback) => callback(mockCommands));
 
     render(<Settings />);
 
