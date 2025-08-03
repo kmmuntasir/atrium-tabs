@@ -81,6 +81,7 @@ export default function Popup({ eagerLoad }: PopupProps) {
         } else if (usagePercentage >= 50) {
           toast.success('Storage at 50% capacity.', { id: 'storage-warning', duration: Infinity });
         } else {
+          console.log('Dismissing storage warning toast. Usage percentage:', usagePercentage);
           toast.dismiss('storage-warning');
         }
       }
@@ -88,6 +89,7 @@ export default function Popup({ eagerLoad }: PopupProps) {
     runInitialChecks();
 
     const handleMessages = (message: any, sender: chrome.runtime.MessageSender, sendResponse: (response?: any) => void) => {
+      console.log('Received message in Popup:', message);
       if (message.type === 'STORAGE_WARNING') {
         const { message: msg, level } = message.payload;
         if (level === 'critical') {

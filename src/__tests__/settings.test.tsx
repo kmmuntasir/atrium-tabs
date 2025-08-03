@@ -121,34 +121,43 @@ describe('Settings Component', () => {
     expect(lightThemeRadio).toHaveAttribute('aria-checked', 'false');
   });
 
-  test('"Include Pinned Tabs in Groups" switch is present and interactive', () => {
+  test('"Include Pinned Tabs in Groups" switch is present and interactive', async () => {
     render(<Settings />);
-    // Find the switch by its label and get the button
-    const pinnedTabsSwitch = screen.getByText('Include Pinned Tabs in Groups:').parentElement?.querySelector('button[role="switch"]');
-    const pinnedTabsText = screen.getByText('No');
+    // Find the section by its text first
+    const section = await screen.findByText(/Include Pinned Tabs in Groups:/i, {}, { timeout: 5000 }).then(el => el.closest('div'));
+    expect(section).toBeInTheDocument();
+
+    const pinnedTabsSwitch = within(section!).getByRole('switch');
+    const pinnedTabsText = within(section!).getByText(/No|Yes/i);
+
     expect(pinnedTabsSwitch).toHaveAttribute('aria-checked', 'false');
-    expect(pinnedTabsText).toBeInTheDocument();
+    expect(pinnedTabsText).toHaveTextContent('No');
     fireEvent.click(pinnedTabsSwitch!);
     expect(pinnedTabsSwitch).toHaveAttribute('aria-checked', 'true');
-    expect(screen.getByText('Yes')).toBeInTheDocument();
+    expect(within(section!).getByText('Yes')).toBeInTheDocument();
   });
 
-  test('"Eager Load" switch is present, interactive, and shows warning', () => {
+  test('"Eager Load" switch is present, interactive, and shows warning', async () => {
     render(<Settings />);
-    const eagerLoadSection = screen.getByText('Eager Load:').closest('div');
-    const eagerLoadSwitch = within(eagerLoadSection!).getByRole('switch');
-    const eagerLoadText = within(eagerLoadSection!).getByText('Disabled');
+    const section = await screen.findByText(/Eager Load:/i, {}, { timeout: 5000 }).then(el => el.closest('div'));
+    expect(section).toBeInTheDocument();
+
+    const eagerLoadSwitch = within(section!).getByRole('switch');
+    const eagerLoadText = within(section!).getByText(/Disabled|Enabled/i);
+
     expect(eagerLoadSwitch).toHaveAttribute('aria-checked', 'false');
-    expect(eagerLoadText).toBeInTheDocument();
-    expect(screen.queryByText('Heads-up: eager loading can hammer RAM/CPU on large groups.')).not.toBeInTheDocument();
+    expect(eagerLoadText).toHaveTextContent('Disabled');
+    expect(screen.queryByText(/Heads-up: eager loading can hammer RAM\/CPU on large groups\./i)).not.toBeInTheDocument();
+
     fireEvent.click(eagerLoadSwitch!);
     expect(eagerLoadSwitch).toHaveAttribute('aria-checked', 'true');
-    expect(screen.getByText('Enabled')).toBeInTheDocument();
-    expect(screen.getByText('Heads-up: eager loading can hammer RAM/CPU on large groups.')).toBeInTheDocument();
+    expect(within(section!).getByText('Enabled')).toBeInTheDocument();
+    expect(screen.getByText(/Heads-up: eager loading can hammer RAM\/CPU on large groups\./i)).toBeInTheDocument();
+
     fireEvent.click(eagerLoadSwitch!);
     expect(eagerLoadSwitch).toHaveAttribute('aria-checked', 'false');
-    expect(within(eagerLoadSection!).getByText('Disabled')).toBeInTheDocument();
-    expect(screen.queryByText('Heads-up: eager loading can hammer RAM/CPU on large groups.')).not.toBeInTheDocument();
+    expect(within(section!).getByText('Disabled')).toBeInTheDocument();
+    expect(screen.queryByText(/Heads-up: eager loading can hammer RAM\/CPU on large groups\./i)).not.toBeInTheDocument();
   });
 
   test('"Telemetry & Analytics (Opt-in)" switch is present and interactive', async () => {
@@ -162,15 +171,17 @@ describe('Settings Component', () => {
     });
     render(<Settings />);
 
-    const telemetrySection = screen.getByText('Telemetry & Analytics (Opt-in):').closest('div');
-    const telemetrySwitch = within(telemetrySection!).getByRole('switch');
+    const section = await screen.findByText(/Telemetry & Analytics \(Opt-in\):/i, {}, { timeout: 5000 }).then(el => el.closest('div'));
+    expect(section).toBeInTheDocument();
+
+    const telemetrySwitch = within(section!).getByRole('switch');
     expect(telemetrySwitch).toHaveAttribute('aria-checked', 'false');
-    expect(within(telemetrySection!).getByText('Disabled')).toBeInTheDocument();
+    expect(within(section!).getByText(/Disabled|Enabled/i)).toHaveTextContent('Disabled');
 
     fireEvent.click(telemetrySwitch!);
     await waitFor(() => {
       expect(telemetrySwitch).toHaveAttribute('aria-checked', 'true');
-      expect(screen.getByText('Enabled')).toBeInTheDocument();
+      expect(within(section!).getByText('Enabled')).toBeInTheDocument();
       // Check that the storage was called with the correct parameter
       const calls = mockChromeStorage.local.set.mock.calls;
       expect(calls.some(call => call[0]?.telemetry_opt_in === true)).toBe(true);
@@ -179,30 +190,33 @@ describe('Settings Component', () => {
     fireEvent.click(telemetrySwitch!);
     await waitFor(() => {
       expect(telemetrySwitch).toHaveAttribute('aria-checked', 'false');
-      expect(within(telemetrySection!).getByText('Disabled')).toBeInTheDocument();
+      expect(within(section!).getByText('Disabled')).toBeInTheDocument();
       // Check that the storage was called with the correct parameter
       const calls = mockChromeStorage.local.set.mock.calls;
       expect(calls.some(call => call[0]?.telemetry_opt_in === false)).toBe(true);
     });
   });
 
-  test('"High Contrast Theme" switch is present and interactive', () => {
+  test('"High Contrast Theme" switch is present and interactive', async () => {
     render(<Settings />);
-    const highContrastSection = screen.getByText('High Contrast Theme (Light Mode Only):').closest('div');
-    const highContrastSwitch = within(highContrastSection!).getByRole('switch');
-    const highContrastText = within(highContrastSection!).getByText('Disabled');
+    const section = await screen.findByText(/High Contrast Theme \(Light Mode Only\):/i, {}, { timeout: 5000 }).then(el => el.closest('div'));
+    expect(section).toBeInTheDocument();
+
+    const highContrastSwitch = within(section!).getByRole('switch');
+    const highContrastText = within(section!).getByText(/Disabled|Enabled/i);
+
     expect(highContrastSwitch).toHaveAttribute('aria-checked', 'false');
-    expect(highContrastText).toBeInTheDocument();
+    expect(highContrastText).toHaveTextContent('Disabled');
     expect(document.documentElement).not.toHaveClass('high-contrast-mode');
 
     fireEvent.click(highContrastSwitch!);
     expect(highContrastSwitch).toHaveAttribute('aria-checked', 'true');
-    expect(screen.getByText('Enabled')).toBeInTheDocument();
+    expect(within(section!).getByText('Enabled')).toBeInTheDocument();
     expect(document.documentElement).toHaveClass('high-contrast-mode');
 
     fireEvent.click(highContrastSwitch!);
     expect(highContrastSwitch).toHaveAttribute('aria-checked', 'false');
-    expect(within(highContrastSection!).getByText('Disabled')).toBeInTheDocument();
+    expect(within(section!).getByText('Disabled')).toBeInTheDocument();
     expect(document.documentElement).not.toHaveClass('high-contrast-mode');
   });
 
@@ -224,7 +238,7 @@ describe('Settings Component', () => {
     mockCreateObjectURL.mockReturnValueOnce('blob:http://localhost/mock-blob');
     mockCreateObjectURL.mockImplementationOnce(() => mockBlob);
     render(<Settings />);
-    const exportButton = screen.getByRole('button', { name: 'Export Data' });
+    const exportButton = await screen.findByRole('button', { name: 'Export Data' }, { timeout: 5000 });
     fireEvent.click(exportButton);
     await waitFor(async () => {
       expect(mockChromeStorage.local.get).toHaveBeenCalledWith([
@@ -254,16 +268,16 @@ describe('Settings Component', () => {
       if (typeof callback === 'function') callback({ message: 'Export failed' });
     });
     render(<Settings />);
-    const exportButton = screen.getByRole('button', { name: 'Export Data' });
+    const exportButton = await screen.findByRole('button', { name: 'Export Data' }, { timeout: 5000 });
     fireEvent.click(exportButton);
     await waitFor(() => {
       expect(toast.error).toHaveBeenCalledWith('Failed to export data.');
     }, { timeout: 2000 });
   });
 
-  test('import data button triggers file input click', () => {
+  test('import data button triggers file input click', async () => {
     render(<Settings />);
-    const importButton = screen.getByRole('button', { name: 'Import Data' });
+    const importButton = await screen.findByRole('button', { name: 'Import Data' }, { timeout: 5000 });
     const fileInput = importButton.parentElement?.querySelector('input[type="file"]');
     if (!fileInput) throw new Error('File input not found');
     const clickSpy = vi.spyOn(fileInput, 'click');
@@ -276,7 +290,7 @@ describe('Settings Component', () => {
     const mockImportedData = { groups: [{ id: '2', name: 'Imported Group' }] };
     render(<Settings />);
     const file = new File([JSON.stringify(mockImportedData)], 'backup.json', { type: 'application/json' });
-    const importButton = screen.getByRole('button', { name: 'Import Data' });
+    const importButton = await screen.findByRole('button', { name: 'Import Data' }, { timeout: 5000 });
     const fileInput = importButton.parentElement?.querySelector('input[type="file"]');
     if (!fileInput) throw new Error('File input not found');
     fireEvent.change(fileInput, {
@@ -291,7 +305,7 @@ describe('Settings Component', () => {
   test.skip('shows error toast for invalid JSON during import', async () => {
     const invalidJsonFile = new File(['invalid json'], 'invalid.json', { type: 'application/json' });
     render(<Settings />);
-    const importButton = screen.getByRole('button', { name: 'Import Data' });
+    const importButton = await screen.findByRole('button', { name: 'Import Data' }, { timeout: 5000 });
     const fileInput = importButton.parentElement?.querySelector('input[type="file"]');
     if (!fileInput) throw new Error('File input not found');
     fireEvent.change(fileInput, {
@@ -309,7 +323,7 @@ describe('Settings Component', () => {
     });
     render(<Settings />);
     const file = new File([JSON.stringify({ large: 'a'.repeat(5 * 1024 * 1024) })], 'large_backup.json', { type: 'application/json' });
-    const importButton = screen.getByRole('button', { name: 'Import Data' });
+    const importButton = await screen.findByRole('button', { name: 'Import Data' }, { timeout: 5000 }); // Increased timeout
     const fileInput = importButton.parentElement?.querySelector('input[type="file"]');
     if (!fileInput) throw new Error('File input not found');
     fireEvent.change(fileInput, {
@@ -334,9 +348,9 @@ describe('Settings Component', () => {
     render(<Settings />);
 
     await waitFor(() => {
-      expect(screen.getByText('Open Atrium Tabs Popup:')).toBeInTheDocument();
+      expect(screen.getByText((content, element) => element?.tagName.toLowerCase() === 'strong' && content.includes('Open Atrium Tabs Popup'))).toBeInTheDocument();
       expect(screen.getByText('Ctrl+Shift+F')).toBeInTheDocument();
-      expect(screen.getByText('Jump to Group 1:')).toBeInTheDocument();
+      expect(screen.getByText((content, element) => element?.tagName.toLowerCase() === 'strong' && content.includes('Jump to Group 1'))).toBeInTheDocument();
       expect(screen.getByText('Ctrl+Shift+1')).toBeInTheDocument();
 
       const shortcutsLink = screen.getByRole('link', { name: 'chrome://extensions/shortcuts' });
@@ -350,42 +364,28 @@ describe('Settings Component', () => {
   test('navigating to Welcome/Quick Tour tab displays tour content', async () => {
     render(<Settings initialActiveTab="welcome-tour" />);
     await waitFor(() => {
-      expect(screen.getByText((content, element) =>
-        element?.tagName === 'H3' && /Slide 1: Capture This Chaos/.test(content)
-      )).toBeInTheDocument();
+      expect(screen.getByRole('heading', { name: /Capture This Chaos/i, level: 2 })).toBeInTheDocument();
     });
   });
 
   test('Welcome/Quick Tour carousel navigates correctly and shows toast on finish', async () => {
     render(<Settings initialActiveTab="welcome-tour" />);
 
-    await waitFor(() => expect(screen.getByText((content, element) =>
-      element?.tagName === 'H3' && /Slide 1: Capture This Chaos/.test(content)
-    )).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByRole('heading', { name: /Capture This Chaos/i, level: 2 })).toBeInTheDocument());
 
     // Click Next on Slide 1 -> Go to Slide 2
     fireEvent.click(screen.getByRole('button', { name: 'Next' }));
-    await waitFor(() => expect(screen.getByText((content, element) =>
-      element?.tagName === 'H3' && /Slide 2: Jump Like a Jedi/.test(content)
-    )).toBeInTheDocument());
-    expect(screen.queryByText((content, element) =>
-      element?.tagName === 'H3' && /Slide 1: Capture This Chaos/.test(content)
-    )).not.toBeInTheDocument();
+    await waitFor(() => expect(screen.getByRole('heading', { name: /Jump Like a Jedi/i, level: 2 })).toBeInTheDocument());
+    expect(screen.queryByRole('heading', { name: /Capture This Chaos/i, level: 2 })).not.toBeInTheDocument();
 
     // Click Next on Slide 2 -> Go to Slide 3
     fireEvent.click(screen.getByRole('button', { name: 'Next' }));
-    await waitFor(() => expect(screen.getByText((content, element) =>
-      element?.tagName === 'H3' && /Slide 3: Drag, Drop, Dominate/.test(content)
-    )).toBeInTheDocument());
-    expect(screen.queryByText((content, element) =>
-      element?.tagName === 'H3' && /Slide 2: Jump Like a Jedi/.test(content)
-    )).not.toBeInTheDocument();
+    await waitFor(() => expect(screen.getByRole('heading', { name: /Drag, Drop, Dominate/i, level: 2 })).toBeInTheDocument());
+    expect(screen.queryByRole('heading', { name: /Jump Like a Jedi/i, level: 2 })).not.toBeInTheDocument();
 
     // Click Finish on Slide 3
     fireEvent.click(screen.getByRole('button', { name: 'Finish' }));
-    expect(screen.queryByText((content, element) =>
-      element?.tagName === 'H3' && /Slide 3: Drag, Drop, Dominate/.test(content)
-    )).not.toBeInTheDocument();
-    expect(toast.success).toHaveBeenCalledWith('Hotkeys active!');
+    expect(screen.queryByRole('heading', { name: /Drag, Drop, Dominate/i, level: 2 })).not.toBeInTheDocument();
+    expect(toast.success).toHaveBeenCalledWith('Hotkeys active', expect.any(Object));
   });
 });

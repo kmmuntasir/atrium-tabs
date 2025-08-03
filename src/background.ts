@@ -1,8 +1,7 @@
 import { sendHeartbeat } from './utils/telemetry';
-import { getAllData, checkDataIntegrity, saveData } from './utils/storage';
+import { getAllData, checkDataIntegrity, saveData, getPreference } from './utils/storage';
 import { createGroup } from './group';
 import { getTabs } from './tab'; // Import getTabs
-import { getPreference } from './utils/preferences';
 
 const ALARM_NAME = 'dailyHeartbeat';
 
