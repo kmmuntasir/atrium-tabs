@@ -13,10 +13,10 @@
 - [x] [ATRIUM-0003] Vite & React Project Bootstrap ([tasks_list/01_project_structure_and_setup.md](tasks_list/01_project_structure_and_setup.md))
 
 ## Deployment & CI/CD
-- [ ] [ATRIUM-0004] GitHub Actions CI Pipeline ([tasks_list/02_deployment_and_ci_cd.md](tasks_list/02_deployment_and_ci_cd.md))
-- [ ] [ATRIUM-0005] Semantic Release & Changelog Automation ([tasks_list/02_deployment_and_ci_cd.md](tasks_list/02_deployment_and_ci_cd.md))
-- [ ] [ATRIUM-0006] Chrome Web Store Draft Upload Automation ([tasks_list/02_deployment_and_ci_cd.md](tasks_list/02_deployment_and_ci_cd.md))
-- [ ] [ATRIUM-0007] Community Health Files ([tasks_list/02_deployment_and_ci_cd.md](tasks_list/02_deployment_and_ci_cd.md))
+- [~] [ATRIUM-0004] GitHub Actions CI Pipeline ([tasks_list/02_deployment_and_ci_cd.md](tasks_list/02_deployment_and_ci_cd.md))
+- [~] [ATRIUM-0005] Semantic Release & Changelog Automation ([tasks_list/02_deployment_and_ci_cd.md](tasks_list/02_deployment_and_ci_cd.md))
+- [~] [ATRIUM-0006] Chrome Web Store Draft Upload Automation ([tasks_list/02_deployment_and_ci_cd.md](tasks_list/02_deployment_and_ci_cd.md))
+- [~] [ATRIUM-0007] Community Health Files ([tasks_list/02_deployment_and_ci_cd.md](tasks_list/02_deployment_and_ci_cd.md))
 
 ## Data Model
 - [ ] [ATRIUM-0008] Group Data Model Implementation ([tasks_list/03_data_model.md](tasks_list/03_data_model.md))

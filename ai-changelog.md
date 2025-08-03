@@ -9,3 +9,6 @@
 
 # 2024-07-28 17:00:00
 - ATRIUM-0003: Vite & React Project Bootstrap - Bootstrapped Vite and React project with TypeScript, installed Radix UI, and resolved build issues.
+
+# 2024-07-28 17:00:00
+- Skipped Deployment & CI/CD tasks (ATRIUM-0004, ATRIUM-0005, ATRIUM-0006, ATRIUM-0007) as requested. Verified no blocking dependencies for future tasks.
