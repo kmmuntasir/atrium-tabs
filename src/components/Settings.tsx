@@ -40,12 +40,19 @@ const Settings: React.FC<SettingsProps> = ({ initialActiveTab = 'general' }) => 
       'atrium_include_pinned_tabs',
       'telemetry_opt_in',
       'atrium_high_contrast',
+      'has_run_before',
     ], (items) => {
       if (items.atrium_theme) setTheme(items.atrium_theme);
       if (items.atrium_sort_order) setSortOrder(items.atrium_sort_order);
       if (typeof items.atrium_include_pinned_tabs === 'boolean') setIncludePinnedTabs(items.atrium_include_pinned_tabs);
       if (typeof items.telemetry_opt_in === 'boolean') setTelemetryOptIn(items.telemetry_opt_in);
       if (typeof items.atrium_high_contrast === 'boolean') setHighContrast(items.atrium_high_contrast);
+
+      // Set active tab to welcome-tour if it's the first run
+      if (!items.has_run_before) {
+        setActiveTab('welcome-tour');
+        chrome.storage.local.set({ has_run_before: true });
+      }
     });
   }, []);
 
@@ -68,20 +75,15 @@ const Settings: React.FC<SettingsProps> = ({ initialActiveTab = 'general' }) => 
   useEffect(() => {
     chrome.storage.local.set({ atrium_high_contrast: highContrast });
     // Apply/remove a class to the body or root element to trigger CSS changes
-    if (highContrast) {
+    if (highContrast && theme === 'light') {
       document.documentElement.classList.add('high-contrast-mode');
     } else {
       document.documentElement.classList.remove('high-contrast-mode');
     }
-  }, [highContrast]);
+  }, [highContrast, theme]);
 
-  const handleSkipTour = () => {
+  const handleTourComplete = () => {
     setActiveTab('general');
-  };
-
-  const handleFinishTour = () => {
-    setActiveTab('general');
-    // Optionally, perform other actions on finish, e.g., show a toast from WelcomeTour
   };
 
   const handleExportData = async () => {
@@ -278,7 +280,7 @@ const Settings: React.FC<SettingsProps> = ({ initialActiveTab = 'general' }) => 
         </Tabs.Content>
 
         <Tabs.Content value="welcome-tour">
-          <WelcomeTour onSkip={handleSkipTour} onFinish={handleFinishTour} />
+          <WelcomeTour onTourComplete={handleTourComplete} />
         </Tabs.Content>
       </Tabs.Root>
 

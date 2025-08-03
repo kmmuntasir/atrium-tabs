@@ -66,6 +66,16 @@ export async function sendGAEvent(eventName: string, eventParams: Record<string,
   const user_pseudo_id = await getOrCreateUserPseudoId();
   const session_id = Date.now().toString(); // Simple session ID for now
 
+  // Filter out sensitive data as per PRD: no URLs/hostnames, no user identifiers
+  const filteredEventParams = { ...eventParams };
+  if (filteredEventParams.url) {
+    delete filteredEventParams.url;
+  }
+  if (filteredEventParams.username) {
+    delete filteredEventParams.username;
+  }
+  // Add more sensitive data filters as needed based on PRD
+
   try {
     const response = await fetch(GA4_ENDPOINT, {
       method: 'POST',
@@ -78,7 +88,7 @@ export async function sendGAEvent(eventName: string, eventParams: Record<string,
           {
             name: eventName,
             params: {
-              ...eventParams,
+              ...filteredEventParams,
               session_id: session_id,
               engagement_time_msec: 100, // Placeholder
             },

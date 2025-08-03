@@ -1,76 +1,83 @@
 import React, { useState } from 'react';
-import { Flex, Button, Text } from '@radix-ui/themes';
+import { Button, Flex, Heading, Text, Card } from '@radix-ui/themes';
 import toast from 'react-hot-toast';
 
 interface WelcomeTourProps {
-  onSkip: () => void;
-  onFinish: () => void;
+  onTourComplete: () => void;
 }
 
-const WelcomeTour: React.FC<WelcomeTourProps> = ({ onSkip, onFinish }) => {
-  const [slide, setSlide] = useState(1);
+const WelcomeTour: React.FC<WelcomeTourProps> = ({ onTourComplete }) => {
+  const [step, setStep] = useState(0);
 
-  const handleFinish = () => {
-    onFinish();
-    toast.success('Hotkeys active!');
+  const slides = [
+    {
+      title: "Capture This Chaos",
+      caption: "Click the Atrium icon once-bam! Your mess becomes 'New Group 0'.",
+      image: "/path/to/screenshot1.gif", // Placeholder
+    },
+    {
+      title: "Jump Like a Jedi",
+      caption: "Smash Ctrl/⌘‑Shift‑1.9 to swap groups; your old tabs vanish, the new set pops in.",
+      image: "/path/to/screenshot2.gif", // Placeholder
+    },
+    {
+      title: "Drag, Drop, Dominate",
+      caption: "Open Group Management to shuffle tabs between groups-goodbye clutter.",
+      image: "/path/to/screenshot3.gif", // Placeholder
+    },
+  ];
+
+  const handleNext = () => {
+    if (step < slides.length - 1) {
+      setStep(step + 1);
+    } else {
+      handleFinish();
+    }
   };
 
+  const handleBack = () => {
+    if (step > 0) {
+      setStep(step - 1);
+    }
+  };
+
+  const handleFinish = () => {
+    toast.success('Hotkeys active', {
+      duration: 2000,
+      position: 'bottom-center',
+    });
+    onTourComplete();
+  };
+
+  const handleSkip = () => {
+    toast.success('Hotkeys active', {
+      duration: 2000,
+      position: 'bottom-center',
+    });
+    onTourComplete();
+  };
+
+  const currentSlide = slides[step];
+
   return (
-    <Flex direction="column" gap="4" align="center" style={{ padding: '20px' }}>
-      <h2>Welcome/Quick Tour</h2>
-
-      {slide === 1 && (
-        <Flex direction="column" gap="2" align="center">
-          <h3>Slide 1: Capture This Chaos</h3>
-          <Text align="center">
-            Click the Atrium icon once-bam! Your mess becomes 'New Group 0'.
-          </Text>
-          {/* TODO: Add screenshot/GIF of cursor hitting toolbar icon -> popup flashes, "+ Save window" clicked -> popup shows newly added "New Group 0" row. */}
-          <div style={{ width: '100%', height: '200px', backgroundColor: '#eee', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-            Image/GIF for Slide 1 (Manually add media here)
-          </div>
-          <Flex gap="2" mt="3">
-            <Button onClick={() => setSlide(2)}>Next</Button>
-            <Button variant="outline" onClick={onSkip}>Skip Tour</Button>
-          </Flex>
+    <Card size="2" style={{ maxWidth: 500, margin: 'auto', padding: '20px' }}>
+      <Flex direction="column" gap="3">
+        <Heading as="h2" size="6" style={{ textAlign: 'center' }}>{currentSlide.title}</Heading>
+        <Text as="p" size="2" style={{ textAlign: 'center' }}>{currentSlide.caption}</Text>
+        {/* Placeholder for image/GIF */}
+        <div style={{ backgroundColor: '#eee', height: '200px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <Text size="3">{`Image/GIF for ${currentSlide.title}`}</Text>
+        </div>
+        <Flex justify="between" mt="4">
+          {step > 0 ? (
+            <Button onClick={handleBack} variant="soft">Back</Button>
+          ) : (
+            <Button onClick={handleSkip} variant="soft">Skip Tour</Button>
+          )}
+          <Button onClick={handleNext} variant="solid">{step < slides.length - 1 ? 'Next' : 'Finish'}</Button>
         </Flex>
-      )}
-
-      {slide === 2 && (
-        <Flex direction="column" gap="2" align="center">
-          <h3>Slide 2: Jump Like a Jedi</h3>
-          <Text align="center">
-            Smash Ctrl/⌘‑Shift‑1.9 to swap groups; your old tabs vanish, the new set pops in.
-          </Text>
-          {/* TODO: Add screenshot/GIF of animated key-combo overlay -> instant tab-swap in the same window; badge shows tab count updating. */}
-          <div style={{ width: '100%', height: '200px', backgroundColor: '#eee', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-            Image/GIF for Slide 2 (Manually add media here)
-          </div>
-          <Flex gap="2" mt="3">
-            <Button onClick={() => setSlide(1)} variant="outline">Back</Button>
-            <Button onClick={() => setSlide(3)}>Next</Button>
-            <Button variant="outline" onClick={onSkip}>Skip Tour</Button>
-          </Flex>
-        </Flex>
-      )}
-
-      {slide === 3 && (
-        <Flex direction="column" gap="2" align="center">
-          <h3>Slide 3: Drag, Drop, Dominate</h3>
-          <Text align="center">
-            Open Group Management to shuffle tabs between groups-goodbye clutter.
-          </Text>
-          {/* TODO: Add screenshot/GIF of Management page in side-by-side mode; user drags a tab from left column's Dev group into right column's Research group, row count updates. */}
-          <div style={{ width: '100%', height: '200px', backgroundColor: '#eee', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-            Image/GIF for Slide 3 (Manually add media here)
-          </div>
-          <Flex gap="2" mt="3">
-            <Button onClick={() => setSlide(2)} variant="outline">Back</Button>
-            <Button onClick={handleFinish}>Finish</Button>
-          </Flex>
-        </Flex>
-      )}
-    </Flex>
+      </Flex>
+    </Card>
   );
 };
 
