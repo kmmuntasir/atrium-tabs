@@ -8,7 +8,7 @@
 # Atrium Tabs – Full Task Sequence (Dependency-Resolved)
 
 ## Project Structure & Setup
-- [ ] [ATRIUM-0001] Project Repository Initialization ([tasks_list/01_project_structure_and_setup.md](tasks_list/01_project_structure_and_setup.md))
+- [x] [ATRIUM-0001] Project Repository Initialization ([tasks_list/01_project_structure_and_setup.md](tasks_list/01_project_structure_and_setup.md))
 - [ ] [ATRIUM-0002] Tooling & Linting Setup ([tasks_list/01_project_structure_and_setup.md](tasks_list/01_project_structure_and_setup.md))
 - [ ] [ATRIUM-0003] Vite & React Project Bootstrap ([tasks_list/01_project_structure_and_setup.md](tasks_list/01_project_structure_and_setup.md))
 
