@@ -1,4 +1,4 @@
-import { sendGAEvent } from './utils/telemetry';
+import { sendHeartbeat } from './utils/telemetry';
 import { getAllData, checkDataIntegrity } from './utils/storage';
 
 const ALARM_NAME = 'dailyHeartbeat';
@@ -8,10 +8,7 @@ async function handleDailyHeartbeat() {
   const groupCount = allData.groups.length;
   const tabCount = allData.tabs.length;
 
-  sendGAEvent('heartbeat', {
-    group_count: groupCount,
-    tab_count: tabCount,
-  });
+  await sendHeartbeat(groupCount, tabCount);
   console.log('Daily heartbeat sent.', { groupCount, tabCount });
 }
 
@@ -34,7 +31,7 @@ chrome.runtime.onInstalled.addListener(() => {
     periodInMinutes: 24 * 60, // Daily
   });
   // Send an initial heartbeat right away
-  handleDailyHeartbeat();
+  await handleDailyHeartbeat();
 });
 
 chrome.alarms.onAlarm.addListener((alarm) => {
@@ -56,6 +53,6 @@ chrome.runtime.onStartup.addListener(() => {
       });
     }
     // Send heartbeat on startup regardless, as per PRD "First time the extension's background wakes up each calendar day."
-    handleDailyHeartbeat();
+    await handleDailyHeartbeat();
   });
 });
