@@ -1,25 +1,27 @@
-# 2025-08-03 13:53:40
+# AI Changelog
+
+### 2025-08-03 13:53:40
 - Updated documentation
 
-# 2024-07-28 17:00:00
+### 2024-07-28 17:00:00
 - ATRIUM-0001: Project Repository Initialization - Created src, public, and test directories, updated task sequence.
 
-# 2024-07-28 17:00:00
+### 2024-07-28 17:00:00
 - ATRIUM-0002: Tooling & Linting Setup - Configured ESLint, Prettier, TypeScript, and Husky.
 
-# 2024-07-28 17:00:00
+### 2024-07-28 17:00:00
 - ATRIUM-0003: Vite & React Project Bootstrap - Bootstrapped Vite and React project with TypeScript, installed Radix UI, and resolved build issues.
 
-# 2024-07-28 17:00:00
+### 2024-07-28 17:00:00
 - Skipped Deployment & CI/CD tasks (ATRIUM-0004, ATRIUM-0005, ATRIUM-0006, ATRIUM-0007) as requested. Verified no blocking dependencies for future tasks.
 
-## 2024-07-30 15:30:00
+### 2024-07-30 15:30:00
 - Started ATRIUM-0008: Implemented Group data model and CRUD operations. (In Progress)
 
-## 2024-07-30 15:35:00
+### 2024-07-30 15:35:00
 - Completed ATRIUM-0008: Implemented Group data model, CRUD operations, and all associated unit and integration tests.
 
-## 2024-07-30 15:40:00
+### 2024-07-30 15:40:00
 - Created new rule: edit-file-guidelines.mdc.
 
 ### 2024-08-03 14:08:58
@@ -32,11 +34,13 @@
 
 ### 2024-08-03 14:09:00
 - Created new rule: `.cursor/rules/run-terminal-cmd-guidelines.mdc`.
-2024-07-30 10:30:00 - Modified `npm test` script to exit automatically after tests complete.
-2024-07-30 10:30:00 - Fixed build errors by:
-- Updating type imports to 'import type' for Group and Tab models.
-- Installing @types/chrome to resolve 'chrome' object errors.
-- Correctly integrating Vitest with Vite in vite.config.ts by merging configurations.
+
+### 2024-07-30 10:30:00
+- Modified `npm test` script to exit automatically after tests complete.
+- Fixed build errors by:
+  - Updating type imports to 'import type' for Group and Tab models.
+  - Installing @types/chrome to resolve 'chrome' object errors.
+  - Correctly integrating Vitest with Vite in vite.config.ts by merging configurations.
 
 ### 2024-08-03 14:21:00
 - Implemented ATRIUM-0010: Basic Popup UI Scaffold.
@@ -59,8 +63,13 @@
 - test/unit/App.test.tsx
 - vite.config.ts
 - src/storage/GroupStorage.ts
-**Reason for update:** Ensured successful build by exporting `getGroups` from `src/storage/GroupStorage.ts`.2025-08-03 14:44:31 - Started ATRIUM-0012: Implemented expand/collapse group to show tabs.
-2025-08-03 14:45:44 - Completed ATRIUM-0012: Implemented expand/collapse group to show tabs.
+**Reason for update:** Ensured successful build by exporting `getGroups` from `src/storage/GroupStorage.ts`.
+
+### 2025-08-03 14:44:31
+- Started ATRIUM-0012: Implemented expand/collapse group to show tabs.
+
+### 2025-08-03 14:45:44
+- Completed ATRIUM-0012: Implemented expand/collapse group to show tabs.
 
 ### 2024-08-03 15:00:00
 - Implemented ATRIUM-0014: UI Polish: Color Palette, Icon Rendering, Toast Positioning.
@@ -79,4 +88,6 @@
 
 ### 2024-07-30 10:08:00
 - Fixed build error in `src/storage/TabStorage.ts` by removing duplicate `saveTabs` method and refactoring other methods to use `getAllTabs` and `saveAllTabs`. Also changed `id` to `uuid` in `src/types/Tab.ts` to align with `uuid` usage.
-2024-07-30 10:10:00 - Implemented ATRIUM-0017: Added inline editing for group names in `src/components/GroupList.tsx`, using `updateGroup` from `GroupStorage.ts` for persistence.
+
+### 2024-07-30 10:10:00
+- Implemented ATRIUM-0017: Added inline editing for group names in `src/components/GroupList.tsx`, using `updateGroup` from `GroupStorage.ts` for persistence.
