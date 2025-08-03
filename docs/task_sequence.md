@@ -31,7 +31,7 @@
 ## Group Management
 - [x] [ATRIUM-0015] Create New Group (Manual Name Input) ([tasks_list/05_group_management.md](tasks_list/05_group_management.md))
 - [x] [ATRIUM-0016] Save Current Window as New Group ([tasks_list/05_group_management.md](tasks_list/05_group_management.md))
-- [ ] [ATRIUM-0017] Edit Group Name (Inline Editing) ([tasks_list/05_group_management.md](tasks_list/05_group_management.md))
+- [x] [ATRIUM-0017] Edit Group Name (Inline Editing) ([tasks_list/05_group_management.md](tasks_list/05_group_management.md))
 - [ ] [ATRIUM-0018] Assign Color and Icon to Group (Selector UI) ([tasks_list/05_group_management.md](tasks_list/05_group_management.md))
 - [ ] [ATRIUM-0019] Delete Group (Soft Delete, Confirmation) ([tasks_list/05_group_management.md](tasks_list/05_group_management.md))
 - [ ] [ATRIUM-0020] Restore Closed Group ([tasks_list/05_group_management.md](tasks_list/05_group_management.md))

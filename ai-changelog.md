@@ -79,3 +79,4 @@
 
 ### 2024-07-30 10:08:00
 - Fixed build error in `src/storage/TabStorage.ts` by removing duplicate `saveTabs` method and refactoring other methods to use `getAllTabs` and `saveAllTabs`. Also changed `id` to `uuid` in `src/types/Tab.ts` to align with `uuid` usage.
+2024-07-30 10:10:00 - Implemented ATRIUM-0017: Added inline editing for group names in `src/components/GroupList.tsx`, using `updateGroup` from `GroupStorage.ts` for persistence.

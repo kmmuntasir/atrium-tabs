@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { getGroups } from '../storage/GroupStorage';
 import { TabStorage } from '../storage/TabStorage'; // Import the class
-import { createGroup } from '../storage/GroupStorage'; // Import createGroup
+import { createGroup, updateGroup } from '../storage/GroupStorage'; // Import updateGroup
 import type { Group } from '../types/Group';
 import type { Tab } from '../types/Tab';
 import { v4 as uuidv4 } from 'uuid'; // Import uuid
@@ -12,6 +12,8 @@ const GroupList: React.FC = () => {
   const [groups, setGroups] = useState<Group[]>([]);
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
   const [newGroupName, setNewGroupName] = useState<string>(''); // State for new group name
+  const [editingGroupId, setEditingGroupId] = useState<string | null>(null); // State for inline editing
+  const [editedGroupName, setEditedGroupName] = useState<string>(''); // State for edited group name
 
   useEffect(() => {
     setGroups(getGroups());
@@ -94,6 +96,28 @@ const GroupList: React.FC = () => {
     }
   };
 
+  const handleEditGroupName = (group: Group) => {
+    setEditingGroupId(group.uuid);
+    setEditedGroupName(group.name);
+  };
+
+  const handleSaveEditedGroupName = (group: Group) => {
+    if (editedGroupName.trim() === '') {
+      alert('Group name cannot be empty!');
+      return;
+    }
+    const updatedGroup = { ...group, name: editedGroupName.trim(), updatedAt: Date.now() };
+    updateGroup(updatedGroup);
+    setGroups(getGroups()); // Refresh groups
+    setEditingGroupId(null); // Exit editing mode
+    setEditedGroupName('');
+  };
+
+  const handleCancelEdit = () => {
+    setEditingGroupId(null);
+    setEditedGroupName('');
+  };
+
   return (
     <div className="group-list">
       <div className="create-group-section">
@@ -113,10 +137,29 @@ const GroupList: React.FC = () => {
       ) : (
         groups.map(group => (
           <div key={group.uuid} className="group-item" style={{ borderLeft: `5px solid ${group.color}` }}>
-            <h3 onClick={() => toggleGroupExpansion(group.uuid)} style={{ cursor: 'pointer' }}>
+            <h3 onDoubleClick={() => handleEditGroupName(group)} style={{ cursor: 'pointer' }}>
               <span className="group-icon" style={{ marginRight: '8px' }}>{group.icon}</span>
-              {group.name} ({TabStorage.getTabsByGroupId(group.uuid).length})
-              {expandedGroups.has(group.uuid) ? ' ▼' : ' ▶'}
+              {editingGroupId === group.uuid ? (
+                <input
+                  type="text"
+                  value={editedGroupName}
+                  onChange={(e) => setEditedGroupName(e.target.value)}
+                  onBlur={() => handleSaveEditedGroupName(group)}
+                  onKeyPress={(e) => {
+                    if (e.key === 'Enter') {
+                      handleSaveEditedGroupName(group);
+                    }
+                  }}
+                  autoFocus
+                />
+              ) : (
+                <>
+                  {group.name} ({TabStorage.getTabsByGroupId(group.uuid).length})
+                  <span onClick={() => toggleGroupExpansion(group.uuid)}>
+                    {expandedGroups.has(group.uuid) ? ' ▼' : ' ▶'}
+                  </span>
+                </>
+              )}
             </h3>
             {expandedGroups.has(group.uuid) && (
               <div className="tab-list">
