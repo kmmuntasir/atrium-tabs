@@ -41,4 +41,4 @@ TBD — link will be updated once published.
 
 1. Clone this repository:
    ```bash
-   git clone https://github.com/yourusername/atrium-tabs.git
+   git clone https://github.com/kmmuntasir/atrium-tabs.git
