@@ -187,3 +187,53 @@ export async function checkDataIntegrity(): Promise<boolean> {
     return false;
   }
 }
+
+// Utility for generating mock data for testing performance with large datasets
+export async function generateMockData(numGroups: number, tabsPerGroup: number): Promise<void> {
+  const mockGroups: Group[] = [];
+  const mockTabs: Tab[] = [];
+  const now = new Date().toISOString();
+  const colors = ['#1976d2', '#388e3c', '#fbc02d', '#d32f2f', '#7b1fa2']; // Sample colors
+  const icons = ['folder', 'book', 'home', 'star']; // Sample icons
+
+  for (let i = 0; i < numGroups; i++) {
+    const groupId = uuidv4();
+    mockGroups.push({
+      id: groupId,
+      name: `Mock Group ${i + 1}`,
+      createdAt: now,
+      updatedAt: now,
+      color: colors[i % colors.length],
+      icon: icons[i % icons.length],
+      order: i,
+      lastActiveAt: now,
+    });
+
+    for (let j = 0; j < tabsPerGroup; j++) {
+      const tabId = uuidv4();
+      mockTabs.push({
+        id: tabId,
+        url: `https://mock.example.com/${i + 1}/${j + 1}`,
+        title: `Mock Tab ${j + 1} for Group ${i + 1}`,
+        pinned: false,
+        groupId: groupId,
+        order: j,
+        favicon: '',
+        createdAt: now,
+        discarded: false, // Start as not discarded
+        chromeTabId: Math.floor(Math.random() * 100000), // Mock Chrome Tab ID
+      });
+    }
+  }
+
+  await saveData({
+    atrium_groups: mockGroups,
+    atrium_tabs: mockTabs,
+    // Ensure other preferences are saved to avoid overwriting
+    atrium_theme: await getPreference('atrium_theme', 'system'),
+    atrium_sort_order: await getPreference('atrium_sort_order', 'manual'),
+    atrium_include_pinned_tabs: await getPreference('atrium_include_pinned_tabs', false),
+    atrium_eager_load: await getPreference('atrium_eager_load', false),
+  });
+  console.log(`Generated ${numGroups} groups and ${numGroups * tabsPerGroup} tabs.`);
+}

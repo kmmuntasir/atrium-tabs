@@ -28,6 +28,7 @@ import * as Select from '@radix-ui/react-select';
 import * as Accordion from '@radix-ui/react-accordion';
 import * as Tooltip from '@radix-ui/react-tooltip';
 import { Button } from '@radix-ui/themes';
+import { generateMockData } from '../utils/storage'; // Import generateMockData
 
 // Shapes for color-blind accessibility
 const SHAPE_BADGES = ['●', '■', '▲', '◆', '★', '⬟'];
@@ -410,6 +411,13 @@ export default function GroupList({ eagerLoad }: GroupListProps) {
           Include pinned tabs in groups
         </label>
       </div>
+      <Button onClick={async () => {
+        await generateMockData(100, 5);
+        setGroups(getGroups());
+        setTabs(getTabs());
+      }} style={{ marginBottom: 16, width: '100%' }}>
+        Generate 100 Mock Groups (5 tabs each)
+      </Button>
       {/* Use FixedSizeList for virtualization */}
       <List
         height={400} // Fixed height for the scrollable area (adjust as needed)
