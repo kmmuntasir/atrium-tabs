@@ -1,6 +1,6 @@
 
 export interface Tab {
-  id: string;
+  uuid: string;
   groupId: string;
   url: string;
   title: string;

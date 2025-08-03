@@ -8,39 +8,27 @@ function saveAllTabs(tabs: Tab[]): void {
 }
 
 export class TabStorage {
-  private static getTabs(): Tab[] {
-    // For the purpose of ATRIUM-0012, this is simplified to a synchronous mock.
-    // In a real scenario, this would involve async storage operations.
-    return JSON.parse(localStorage.getItem(TabStorage.TAB_STORAGE_KEY) || '[]');
-  }
-
-  private static saveTabs(tabs: Tab[]): void {
-    // For the purpose of ATRIUM-0012, this is simplified to a synchronous mock.
-    // In a real scenario, this would involve async storage operations.
-    localStorage.setItem(TabStorage.TAB_STORAGE_KEY, JSON.stringify(tabs));
-  }
-
   static createTab(tab: Tab): void {
-    const tabs = TabStorage.getTabs();
+    const tabs = TabStorage.getAllTabs();
     tabs.push(tab);
-    TabStorage.saveTabs(tabs);
+    saveAllTabs(tabs);
   }
 
-  static getTab(id: string): Tab | undefined {
-    const tabs = TabStorage.getTabs();
-    return tabs.find(tab => tab.id === id);
+  static getTab(uuid: string): Tab | undefined {
+    const tabs = TabStorage.getAllTabs();
+    return tabs.find(tab => tab.uuid === uuid);
   }
 
   static updateTab(updatedTab: Tab): void {
-    let tabs = TabStorage.getTabs();
-    tabs = tabs.map(tab => tab.id === updatedTab.id ? updatedTab : tab);
-    TabStorage.saveTabs(tabs);
+    let tabs = TabStorage.getAllTabs();
+    tabs = tabs.map(tab => tab.uuid === updatedTab.uuid ? updatedTab : tab);
+    saveAllTabs(tabs);
   }
 
-  static deleteTab(id: string): void {
-    let tabs = TabStorage.getTabs();
-    tabs = tabs.filter(tab => tab.id !== id);
-    TabStorage.saveTabs(tabs);
+  static deleteTab(uuid: string): void {
+    let tabs = TabStorage.getAllTabs();
+    tabs = tabs.filter(tab => tab.uuid !== uuid);
+    saveAllTabs(tabs);
   }
 
   static getTabsByGroupId(groupId: string): Tab[] {
