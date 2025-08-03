@@ -1,69 +1,44 @@
-# React + TypeScript + Vite
+# Atrium Tabs
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+**Atrium Tabs** is a minimalist Chrome extension that brings back real-time tab group switching — allowing you to isolate, manage, and switch between tab workspaces effortlessly, without the clutter of session history or bloated UI.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## ✨ Inspiration
 
-## Expanding the ESLint configuration
+I was a long-time user of the now-abandoned **Sync Tab Groups** extension. It offered the perfect way to organize my tabs into isolated groups and switch between them in real time. But as Chrome evolved and the extension became outdated, no modern alternative matched its simplicity and power — most options today are bloated with session backups, cloud sync, or UI-heavy dashboards.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+So I built **Atrium Tabs** to bring back that experience — but cleaner, faster, and built for the present.
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+---
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
+## 🔧 What Atrium Tabs Does
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+- 🔄 **Real-Time Group Tracking**: When you're in a tab group, any new tabs you open or close are automatically tracked.
+- 🔁 **Instant Group Switching**: Switch between saved tab groups. Tabs from the current group close, and the new group opens — instantly.
+- 📌 **Pinned Tabs Control**: Choose whether pinned tabs should belong to groups or persist across all.
+- 💾 **Persistent Groups**: All tab groups are stored locally and restored on browser restart.
+- 🧘 **Minimal UI**: A lightweight popup and clean UX — no dashboards, no sync prompts.
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+---
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## 📸 Demo (Coming Soon)
 
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+A short GIF or video will go here showing:
+- Creating a group
+- Switching between two groups
+- Behavior with pinned tabs
+
+---
+
+## 🚀 Installation
+
+### From Chrome Web Store (Coming Soon)
+
+TBD — link will be updated once published.
+
+### For Developers
+
+1. Clone this repository:
+   ```bash
+   git clone https://github.com/yourusername/atrium-tabs.git
