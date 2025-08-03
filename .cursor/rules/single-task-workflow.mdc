@@ -1,0 +1,43 @@
+---
+description: Defines the process for working on a single task, from analysis and implementation to testing and completion.
+globs:
+alwaysApply: true
+---
+# Process of working on a single task
+
+## During the task
+- Analyze the task before starting.
+- Always Reference the PRD and task details to get a clear idea of what to do.
+- Implement small parts of the task at once.
+- When implementation is done, write the listed unit and integration tests from the task description or acceptance criteria.
+- The unit and integration tests are parts of the task. Until the tests are written and passed, the task is not complete.
+- After writing the tests, always run the tests to ensure they are passing.
+- When the tests pass, run the build process.
+- If the build succeeds, the task is complete.
+
+## After the task is complete, follow this sequence:
+- After the task is complete, update the task sequence to mark the task as done.
+- Update ai-changelog.md to log the change.
+- Commit all changes (use git add .), use appropriate commit message structure (See @git-guidelines.mdc)
+- Push the commit to the remote 
+
+## Incorrect Pattern
+```sh
+# Bad: Finish a task but do not update the todo list
+# Bad: Update todo list but forget to update ai-changelog.md
+# Bad: Make changes but do not commit and push
+# Bad: Not referencing ticket number
+```
+
+## Correct Pattern
+```sh
+# Good: After finishing a task, update todo, changelog, commit, and push
+# (Assume ATRIUM-0005 is the ticket)
+# 1. Mark item as done in docs/todo.md
+# 2. Log in ai-changelog.md
+# 3. Commit and push
+
+git add .
+git commit -m "ATRIUM-0005: Mark semantic release as done in todo, update changelog"
+git push
+```
