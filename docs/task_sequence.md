@@ -20,7 +20,7 @@
 
 ## Data Model
 - [x] [ATRIUM-0008] Group Data Model Implementation ([tasks_list/03_data_model.md](tasks_list/03_data_model.md))
-- [ ] [ATRIUM-0009] Tab Data Model Implementation ([tasks_list/03_data_model.md](tasks_list/03_data_model.md))
+- [x] [ATRIUM-0009] Tab Data Model Implementation ([tasks_list/03_data_model.md](tasks_list/03_data_model.md))
 
 ## UI
 - [ ] [ATRIUM-0010] Basic Popup UI Scaffold ([tasks_list/04_ui.md](tasks_list/04_ui.md))
