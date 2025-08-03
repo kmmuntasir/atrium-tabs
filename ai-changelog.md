@@ -135,3 +135,10 @@
 - src/components/GroupList.tsx
 - docs/task_sequence.md
 **Reason for update:** Completed task ATRIUM-0024.
+
+### 2024-08-03 17:00:00 - Task Completed
+**Task:** [ATRIUM-0025]: Keep/Display Groups with Zero Tabs
+**Description:** Confirmed that existing functionality in `src/components/GroupList.tsx` already correctly displays groups with zero tabs. No code changes were required for this task.
+**Files Modified:**
+- docs/task_sequence.md
+**Reason for update:** Completed task ATRIUM-0025.

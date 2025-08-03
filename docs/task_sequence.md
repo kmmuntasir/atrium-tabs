@@ -37,7 +37,7 @@
 - [x] [ATRIUM-0020] Restore Closed Group ([tasks_list/05_group_management.md](tasks_list/05_group_management.md))
 - [x] [ATRIUM-0023] Multi-Window Support ([tasks_list/05_group_management.md](tasks_list/05_group_management.md))
 - [x] [ATRIUM-0024] Open Group in New Window ([tasks_list/05_group_management.md](tasks_list/05_group_management.md))
-- [ ] [ATRIUM-0025] Keep/Display Groups with Zero Tabs ([tasks_list/05_group_management.md](tasks_list/05_group_management.md))
+- [x] [ATRIUM-0025] Keep/Display Groups with Zero Tabs ([tasks_list/05_group_management.md](tasks_list/05_group_management.md))
 - [ ] [ATRIUM-0026] Show Lock Icon and Disable Group if Active in Another Window ([tasks_list/05_group_management.md](tasks_list/05_group_management.md))
 - [ ] [ATRIUM-0022] Group Sort Order Setting ([tasks_list/05_group_management.md](tasks_list/05_group_management.md))
 - [ ] [ATRIUM-0021] Manual Group Reordering (Drag-and-Drop) ([tasks_list/05_group_management.md](tasks_list/05_group_management.md))
