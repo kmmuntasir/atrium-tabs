@@ -32,3 +32,4 @@
 
 ### 2024-08-03 14:09:00
 - Created new rule: `.cursor/rules/run-terminal-cmd-guidelines.mdc`.
+2024-07-30 10:30:00 - Modified `npm test` script to exit automatically after tests complete.
