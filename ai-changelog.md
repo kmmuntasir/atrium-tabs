@@ -18,3 +18,6 @@
 
 ## 2024-07-30 15:35:00
 - Completed ATRIUM-0008: Implemented Group data model, CRUD operations, and all associated unit and integration tests.
+
+## 2024-07-30 15:40:00
+- Created new rule: edit-file-guidelines.mdc.

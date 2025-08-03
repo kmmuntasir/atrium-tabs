@@ -1,0 +1,60 @@
+---
+description: Guidelines for effectively using the 'edit_file' tool to make code modifications.
+globs:
+alwaysApply: true
+---
+# Edit File Command Guidelines
+
+## Overview
+This rule provides best practices and guidelines for using the `edit_file` command to ensure accurate and efficient code modifications. The `edit_file` command is powerful but requires careful usage to avoid unintended changes or errors.
+
+## When to Use This Rule
+Apply this rule when:
+- Making modifications to an existing file.
+- Creating a new file.
+- Proposing changes that need to be applied precisely.
+
+## Key Principles for `edit_file` Usage
+
+1.  **Provide Sufficient Context:**
+    - Always include enough surrounding lines of unchanged code (`// ... existing code ...`) to clearly indicate the exact location of the edit. This helps the apply model correctly identify where to make the changes, especially in cases of similar lines or multiple occurrences of the same code snippet.
+    - Avoid providing only the lines being changed if they lack unique context.
+
+2.  **Represent Unchanged Code Accurately:**
+    - Use the language-specific comment (`// ... existing code ...` for JavaScript/TypeScript, `# ... existing code ...` for Python, etc.) to represent spans of code that are not being modified. This prevents accidental deletion of lines.
+
+3.  **Minimize Unchanged Code in `code_edit`:**
+    - While providing context is crucial, strive to keep the `code_edit` argument concise by only including the necessary surrounding lines and the actual changes. Avoid writing out large blocks of code that remain unchanged.
+
+4.  **Clear and Concise `instructions`:**
+    - The `instructions` argument should be a single, clear sentence describing *what* you are going to do. This assists the apply model in understanding the intent of the edit. Use the first person (e.g., "I am adding...", "I am modifying...").
+
+5.  **Specify `target_file` First:**
+    - Always specify the `target_file` argument as the first argument in the `edit_file` tool call.
+
+## Incorrect Pattern
+```python
+# Bad: Insufficient context for the change
+print(default_api.edit_file(
+    target_file="src/components/MyComponent.tsx",
+    instructions="I am changing the component name.",
+    code_edit="export default function NewName() {"
+))
+```
+**Reasoning for Incorrectness:** If there are multiple `export default function` lines or similar function definitions, the model might apply the change incorrectly. The lack of surrounding context makes the target ambiguous.
+
+## Correct Pattern
+```python
+# Good: Sufficient context provided with '... existing code ...'
+print(default_api.edit_file(
+    target_file="src/components/MyComponent.tsx",
+    instructions="I am renaming the MyComponent function to NewName.",
+    code_edit="""// ... existing code ...
+export default function NewName() {
+  // ... existing code ..."""
+))
+```
+**Reasoning for Correctness:** The `// ... existing code ...` comments provide clear anchors, making the exact location of the `NewName` change unambiguous.
+
+## Related Rules
+- See: rule-self-learning-and-error-correction
