@@ -7,4 +7,5 @@ export interface Group {
   icon: string;
   order: number;
   lastActiveAt: number;
+  tabs: any[]; // Assuming tabs will be added later
 }

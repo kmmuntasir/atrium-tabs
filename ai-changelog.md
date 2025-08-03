@@ -91,3 +91,11 @@
 
 ### 2024-07-30 10:10:00
 - Implemented ATRIUM-0017: Added inline editing for group names in `src/components/GroupList.tsx`, using `updateGroup` from `GroupStorage.ts` for persistence.
+
+### 2024-07-30 10:00:00 - Task Completed
+**Task:** [ATRIUM-0018]: Assign Color and Icon to Group (Selector UI)
+**Description:** Implemented functionality to assign a color and an icon to a group using selector UIs. This involved updating the Group interface, adding state management for color and icon selection in GroupList.tsx, and integrating color and icon input fields for both new group creation and existing group editing. The selected color and icon are now persisted with group data.
+**Files Modified:**
+- src/types/Group.ts
+- src/components/GroupList.tsx
+**Reason for update:** Completed task ATRIUM-0018.

@@ -12,8 +12,12 @@ const GroupList: React.FC = () => {
   const [groups, setGroups] = useState<Group[]>([]);
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
   const [newGroupName, setNewGroupName] = useState<string>(''); // State for new group name
+  const [newGroupColor, setNewGroupColor] = useState<string>('#007bff'); // State for new group color
+  const [newGroupIcon, setNewGroupIcon] = useState<string>('Folder'); // State for new group icon
   const [editingGroupId, setEditingGroupId] = useState<string | null>(null); // State for inline editing
   const [editedGroupName, setEditedGroupName] = useState<string>(''); // State for edited group name
+  const [editedGroupColor, setEditedGroupColor] = useState<string>('#007bff'); // State for edited group color
+  const [editedGroupIcon, setEditedGroupIcon] = useState<string>('Folder'); // State for edited group icon
 
   useEffect(() => {
     setGroups(getGroups());
@@ -40,8 +44,8 @@ const GroupList: React.FC = () => {
     const newGroup: Group = {
       uuid: uuidv4(),
       name: newGroupName,
-      color: '#007bff', // Default color
-      icon: 'Folder', // Default icon
+      color: newGroupColor,
+      icon: newGroupIcon,
       tabs: [],
       createdAt: Date.now(),
     };
@@ -49,6 +53,8 @@ const GroupList: React.FC = () => {
     createGroup(newGroup);
     setGroups(getGroups()); // Refresh groups
     setNewGroupName(''); // Clear input
+    setNewGroupColor('#007bff'); // Reset color
+    setNewGroupIcon('Folder'); // Reset icon
   };
 
   const handleSaveCurrentWindowAsGroup = async () => {
@@ -99,6 +105,8 @@ const GroupList: React.FC = () => {
   const handleEditGroupName = (group: Group) => {
     setEditingGroupId(group.uuid);
     setEditedGroupName(group.name);
+    setEditedGroupColor(group.color);
+    setEditedGroupIcon(group.icon);
   };
 
   const handleSaveEditedGroupName = (group: Group) => {
@@ -106,16 +114,20 @@ const GroupList: React.FC = () => {
       alert('Group name cannot be empty!');
       return;
     }
-    const updatedGroup = { ...group, name: editedGroupName.trim(), updatedAt: Date.now() };
+    const updatedGroup = { ...group, name: editedGroupName.trim(), color: editedGroupColor, icon: editedGroupIcon, updatedAt: Date.now() };
     updateGroup(updatedGroup);
     setGroups(getGroups()); // Refresh groups
     setEditingGroupId(null); // Exit editing mode
     setEditedGroupName('');
+    setEditedGroupColor('#007bff'); // Reset color
+    setEditedGroupIcon('Folder'); // Reset icon
   };
 
   const handleCancelEdit = () => {
     setEditingGroupId(null);
     setEditedGroupName('');
+    setEditedGroupColor('#007bff'); // Reset color
+    setEditedGroupIcon('Folder'); // Reset icon
   };
 
   return (
@@ -127,6 +139,18 @@ const GroupList: React.FC = () => {
           value={newGroupName}
           onChange={(e) => setNewGroupName(e.target.value)}
         />
+        <input
+          type="color"
+          value={newGroupColor}
+          onChange={(e) => setNewGroupColor(e.target.value)}
+        />
+        <select value={newGroupIcon} onChange={(e) => setNewGroupIcon(e.target.value)}>
+          <option value="Folder">Folder</option>
+          <option value="Work">Work</option>
+          <option value="Personal">Personal</option>
+          <option value="Travel">Travel</option>
+          <option value="Education">Education</option>
+        </select>
         <button onClick={handleCreateGroup}>Create Group</button>
       </div>
       <div className="save-window-group-section">
@@ -140,18 +164,34 @@ const GroupList: React.FC = () => {
             <h3 onDoubleClick={() => handleEditGroupName(group)} style={{ cursor: 'pointer' }}>
               <span className="group-icon" style={{ marginRight: '8px' }}>{group.icon}</span>
               {editingGroupId === group.uuid ? (
-                <input
-                  type="text"
-                  value={editedGroupName}
-                  onChange={(e) => setEditedGroupName(e.target.value)}
-                  onBlur={() => handleSaveEditedGroupName(group)}
-                  onKeyPress={(e) => {
-                    if (e.key === 'Enter') {
-                      handleSaveEditedGroupName(group);
-                    }
-                  }}
-                  autoFocus
-                />
+                <>
+                  <input
+                    type="text"
+                    value={editedGroupName}
+                    onChange={(e) => setEditedGroupName(e.target.value)}
+                    onBlur={() => handleSaveEditedGroupName(group)}
+                    onKeyPress={(e) => {
+                      if (e.key === 'Enter') {
+                        handleSaveEditedGroupName(group);
+                      }
+                    }}
+                    autoFocus
+                  />
+                  <input
+                    type="color"
+                    value={editedGroupColor}
+                    onChange={(e) => setEditedGroupColor(e.target.value)}
+                  />
+                  <select value={editedGroupIcon} onChange={(e) => setEditedGroupIcon(e.target.value)}>
+                    <option value="Folder">Folder</option>
+                    <option value="Work">Work</option>
+                    <option value="Personal">Personal</option>
+                    <option value="Travel">Travel</option>
+                    <option value="Education">Education</option>
+                  </select>
+                  <button onClick={() => handleSaveEditedGroupName(group)}>Save</button>
+                  <button onClick={handleCancelEdit}>Cancel</button>
+                </>
               ) : (
                 <>
                   {group.name} ({TabStorage.getTabsByGroupId(group.uuid).length})
