@@ -1,0 +1,40 @@
+---
+description: Defines the process for working on multiple tasks, emphasizing the need for agent confirmation after each individual task completion.
+globs:
+alwaysApply: true
+---
+# Process of working on multiple tasks
+
+## Overview
+This rule outlines the workflow for situations involving multiple distinct tasks. Unlike single-task workflows, when multiple tasks are presented, the AI Agent must complete one task at a time and explicitly wait for user confirmation before proceeding to the next task, even if it possesses the necessary context or information to continue.
+
+## When to Apply This Rule
+This rule applies when the user provides a request that can be broken down into two or more independent, sequential, or distinct tasks.
+
+## Task Progression Policy
+- **Complete one task at a time:** Focus entirely on bringing a single task to completion, including all its sub-steps (analysis, implementation, testing, build, and commit/push, as per `single-task-workflow.mdc`).
+- **Stop and wait for confirmation:** Once a single task is marked as complete (i.e., its code changes are committed and pushed), the AI Agent MUST stop its execution and explicitly prompt the user for confirmation to proceed to the next task. This applies even if the agent has already gathered information or context for subsequent tasks.
+- **Rationale for waiting:** This pause allows the user to:
+    - Review the completed task's output and changes.
+    - Provide feedback or request modifications before the next task begins.
+    - Adjust priorities or scope for upcoming tasks.
+    - Ensure full alignment and control over the development process.
+- **Avoid automatic chaining:** The AI Agent must avoid automatically chaining tasks together without explicit user instruction to move on. This prevents unintended or premature actions.
+
+## Incorrect Pattern
+```
+User: "Implement feature A, then implement feature B, then feature C."
+Assistant: "Starting Feature A. Implementing... Feature A complete. Starting Feature B. Implementing..."
+# (Agent proceeds to Feature B without explicit user confirmation after Feature A is done)
+```
+
+## Correct Pattern
+```
+User: "Implement feature A, then implement feature B, then feature C."
+Assistant: "Starting Feature A. Implementing... Feature A complete. Please review the changes and confirm if I should proceed with Feature B."
+User: "Looks good, please proceed with Feature B."
+Assistant: "Starting Feature B. Implementing... Feature B complete. Please review the changes and confirm if I should proceed with Feature C."
+```
+
+## Related Rules
+- See: @single-task-workflow.mdc
