@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { getGroups } from '../storage/GroupStorage';
 import { TabStorage } from '../storage/TabStorage'; // Import the class
-import { createGroup, updateGroup } from '../storage/GroupStorage'; // Import updateGroup
+import { createGroup, updateGroup, deleteGroup } from '../storage/GroupStorage'; // Import updateGroup
 import type { Group } from '../types/Group';
 import type { Tab } from '../types/Tab';
 import { v4 as uuidv4 } from 'uuid'; // Import uuid
@@ -130,6 +130,13 @@ const GroupList: React.FC = () => {
     setEditedGroupIcon('Folder'); // Reset icon
   };
 
+  const handleDeleteGroup = (groupId: string) => {
+    if (window.confirm('Are you sure you want to delete this group? All associated tabs will also be lost.')) {
+      deleteGroup(groupId);
+      setGroups(getGroups()); // Refresh groups
+    }
+  };
+
   return (
     <div className="group-list">
       <div className="create-group-section">
@@ -198,6 +205,7 @@ const GroupList: React.FC = () => {
                   <span onClick={() => toggleGroupExpansion(group.uuid)}>
                     {expandedGroups.has(group.uuid) ? ' ▼' : ' ▶'}
                   </span>
+                  <button onClick={() => handleDeleteGroup(group.uuid)}>Delete</button>
                 </>
               )}
             </h3>

@@ -99,3 +99,12 @@
 - src/types/Group.ts
 - src/components/GroupList.tsx
 **Reason for update:** Completed task ATRIUM-0018.
+
+### 2024-07-30 10:05:00 - Task Completed
+**Task:** [ATRIUM-0019]: Delete Group (Soft Delete, Confirmation)
+**Description:** Implemented soft delete functionality for groups. This involved adding `isDeleted` and `deletedAt` properties to the `Group` interface, modifying `getGroups` and `deleteGroup` in `GroupStorage.ts` to handle soft deletions, and adding a delete button with a confirmation dialog to `GroupList.tsx`.
+**Files Modified:**
+- src/types/Group.ts
+- src/storage/GroupStorage.ts
+- src/components/GroupList.tsx
+**Reason for update:** Completed task ATRIUM-0019.
