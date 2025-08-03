@@ -1,4 +1,4 @@
-import { Tab } from '../types/Tab';
+import type { Tab } from '../types/Tab';
 
 export class TabStorage {
   private static readonly TAB_STORAGE_KEY = 'atrium_tabs';

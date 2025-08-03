@@ -1,4 +1,4 @@
-import { Group } from '../types/Group';
+import type { Group } from '../types/Group';
 
 const STORAGE_KEY = 'atrium_groups';
 

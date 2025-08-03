@@ -33,3 +33,7 @@
 ### 2024-08-03 14:09:00
 - Created new rule: `.cursor/rules/run-terminal-cmd-guidelines.mdc`.
 2024-07-30 10:30:00 - Modified `npm test` script to exit automatically after tests complete.
+2024-07-30 10:30:00 - Fixed build errors by:
+- Updating type imports to 'import type' for Group and Tab models.
+- Installing @types/chrome to resolve 'chrome' object errors.
+- Correctly integrating Vitest with Vite in vite.config.ts by merging configurations.
