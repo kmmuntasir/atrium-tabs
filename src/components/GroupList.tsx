@@ -217,6 +217,32 @@ const GroupList: React.FC = () => {
     setGroups(getGroups(true)); // Refresh groups, including deleted ones
   };
 
+  const handleOpenGroupInNewWindow = async (group: Group) => {
+    try {
+      const newWindow = await chrome.windows.create({
+        url: TabStorage.getTabsByGroupId(group.uuid).map(tab => tab.url).join(','),
+        incognito: false, // Or true for incognito
+        type: 'normal',
+      });
+
+      if (newWindow && newWindow.id) {
+        setActiveGroupForWindow(newWindow.id, group.uuid);
+        setActiveGroupInCurrentWindow(group.uuid);
+
+        const tabsToOpen = TabStorage.getTabsByGroupId(group.uuid);
+        for (const tab of tabsToOpen) {
+          await chrome.tabs.create({ url: tab.url, active: !tab.pinned });
+        }
+        alert(`Group \"${group.name}\" opened in a new window (Window ID: ${newWindow.id}).`);
+      } else {
+        alert('Failed to open group in a new window.');
+      }
+    } catch (error) {
+      console.error('Error opening group in new window:', error);
+      alert('Failed to open group in a new window. Please ensure the extension has necessary permissions.');
+    }
+  };
+
   return (
     <div className="group-list">
       <div className="create-group-section">
@@ -300,6 +326,7 @@ const GroupList: React.FC = () => {
                         Activate
                       </button>
                       <button onClick={() => handleDeleteGroup(group.uuid)} className="delete-button">Delete</button>
+                      <button onClick={() => handleOpenGroupInNewWindow(group)} className="open-new-window-button">Open in New Window</button>
                     </>
                   )}
                 </>

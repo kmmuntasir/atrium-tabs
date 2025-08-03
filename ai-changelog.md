@@ -127,3 +127,11 @@
 - src/components/GroupList.tsx
 - docs/task_sequence.md
 **Reason for update:** Completed task ATRIUM-0023.
+
+### 2024-08-03 16:55:00 - Task Completed
+**Task:** [ATRIUM-0024]: Open Group in New Window
+**Description:** Implemented the functionality to open a group in a new Chrome window. This involved adding a new button to `src/components/GroupList.tsx` that, when clicked, creates a new window and opens all tabs associated with the selected group within that new window. The active group state for the new window is also updated in `src/storage/GroupStorage.ts`.
+**Files Modified:**
+- src/components/GroupList.tsx
+- docs/task_sequence.md
+**Reason for update:** Completed task ATRIUM-0024.
