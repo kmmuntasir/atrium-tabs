@@ -1,3 +1,10 @@
+# Legends
+[ ] => ToDo
+[-] => In Progress
+[x] => Completed
+[~] => Skipped
+[!] => Blocked for Dependencies
+
 # Atrium Tabs – Full Task Sequence (Dependency-Resolved)
 
 ## Project Structure & Setup

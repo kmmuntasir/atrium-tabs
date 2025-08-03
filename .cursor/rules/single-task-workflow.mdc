@@ -8,6 +8,7 @@ alwaysApply: true
 ## During the task
 - Analyze the task before starting.
 - Always Reference the PRD and task details to get a clear idea of what to do.
+- Before staring the implementation, update the task sequence to mark the task as `In Progress`.
 - Implement small parts of the task at once.
 - When implementation is done, write the listed unit and integration tests from the task description or acceptance criteria.
 - The unit and integration tests are parts of the task. Until the tests are written and passed, the task is not complete.
