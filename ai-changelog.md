@@ -72,7 +72,10 @@
   - Added CSS for Toast component positioning in `src/App.css`.
 
 ### 2024-07-30 10:00:00
-
 - Implemented ATRIUM-0015: Added functionality to create new groups with manual name input in `src/components/GroupList.tsx` and integrated `uuid` for unique ID generation. Updated `GroupStorage.ts` for group persistence.
-2024-07-30 10:05:00 - Implemented ATRIUM-0016: Added functionality to save the current window's tabs as a new group in `src/components/GroupList.tsx`. Utilized `chrome.tabs` API and integrated with `TabStorage.ts` to persist tabs.
-2024-07-30 10:08:00 - Fixed build error in `src/storage/TabStorage.ts` by removing duplicate `saveTabs` method and refactoring other methods to use `getAllTabs` and `saveAllTabs`. Also changed `id` to `uuid` in `src/types/Tab.ts` to align with `uuid` usage.
+
+### 2024-07-30 10:05:00
+- Implemented ATRIUM-0016: Added functionality to save the current window's tabs as a new group in `src/components/GroupList.tsx`. Utilized `chrome.tabs` API and integrated with `TabStorage.ts` to persist tabs.
+
+### 2024-07-30 10:08:00
+- Fixed build error in `src/storage/TabStorage.ts` by removing duplicate `saveTabs` method and refactoring other methods to use `getAllTabs` and `saveAllTabs`. Also changed `id` to `uuid` in `src/types/Tab.ts` to align with `uuid` usage.
