@@ -7,3 +7,4 @@ ATRIUM-0060: Implemented lazy/eager loading for tabs based on user preference, i
 ATRIUM-0060: Integrated `react-window` for UI virtualization in `GroupList.tsx` to optimize performance for large numbers of groups.
 ATRIUM-0060: Added `generateMockData` utility in `src/utils/storage.ts` and a UI button in `GroupList.tsx` for manual performance testing with mock data.
 ATRIUM-0061: Added `tabs` and `activeTab` permissions to `manifest.json` for core tab and group management functionality.
+ATRIUM-0061: Implemented Content Security Policy (`CSP`) with `default-src 'self'` in `manifest.json`.

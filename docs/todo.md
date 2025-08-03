@@ -21,4 +21,4 @@
 - [x] Error handling & storage ([tasks_list/09_error_handling_and_storage.md](tasks_list/09_error_handling_and_storage.md))
 - [x] Telemetry & metrics ([tasks_list/10_telemetry_and_metrics.md](tasks_list/10_telemetry_and_metrics.md))
 - [x] Accessibility & onboarding (now includes Radix UI for onboarding carousel) ([tasks_list/11_accessibility_and_onboarding.md](tasks_list/11_accessibility_and_onboarding.md))
-- [x] Non-functional requirements ([tasks_list/12_non_functional.md](tasks_list/12_non_functional.md)) <!-- Partial: Lazy/Eager load, GroupList virtualization, and core permissions implemented, further performance testing and security review pending -->
+- [x] Non-functional requirements ([tasks_list/12_non_functional.md](tasks_list/12_non_functional.md)) <!-- Partial: Lazy/Eager load, GroupList virtualization, core permissions, and CSP implemented, further performance testing and security review pending -->
