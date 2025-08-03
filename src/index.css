@@ -4,8 +4,12 @@
   font-weight: 400;
 
   color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  --color-text-primary: rgba(255, 255, 255, 0.87);
+  --color-background-primary: #242424;
+  --color-link: #646cff;
+  --color-link-hover: #535bf2;
+  --color-button-background: #1a1a1a;
+  --color-button-border-hover: #646cff;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -20,14 +24,6 @@ a {
 }
 a:hover {
   color: #535bf2;
-}
-
-body {
-  margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
 }
 
 h1 {
@@ -56,8 +52,10 @@ button:focus-visible {
 
 @media (prefers-color-scheme: light) {
   :root {
-    color: #213547;
-    background-color: #ffffff;
+    --color-text-primary: #213547;
+    --color-background-primary: #ffffff;
+    --color-link-hover: #747bff;
+    --color-button-background: #f9f9f9;
   }
   a:hover {
     color: #747bff;

@@ -30,8 +30,9 @@ const GroupList: React.FC = () => {
         <p>No groups found. Create a new one!</p>
       ) : (
         groups.map(group => (
-          <div key={group.uuid} className="group-item">
+          <div key={group.uuid} className="group-item" style={{ borderLeft: `5px solid ${group.color}` }}>
             <h3 onClick={() => toggleGroupExpansion(group.uuid)} style={{ cursor: 'pointer' }}>
+              <span className="group-icon" style={{ marginRight: '8px' }}>{group.icon}</span>
               {group.name} ({TabStorage.getTabsByGroupId(group.uuid).length})
               {expandedGroups.has(group.uuid) ? ' ▼' : ' ▶'}
             </h3>
