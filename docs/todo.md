@@ -19,6 +19,6 @@
 - [x] Settings & customization (now includes Radix UI accessibility features) ([tasks_list/07_settings_and_customization.md](tasks_list/07_settings_and_customization.md))
 - [x] Import/export & backup ([tasks_list/08_import_export_and_backup.md](tasks_list/08_import_export_and_backup.md))
 - [x] Error handling & storage ([tasks_list/09_error_handling_and_storage.md](tasks_list/09_error_handling_and_storage.md))
-- [ ] Telemetry & metrics ([tasks_list/10_telemetry_and_metrics.md](tasks_list/10_telemetry_and_metrics.md))
+- [x] Telemetry & metrics ([tasks_list/10_telemetry_and_metrics.md](tasks_list/10_telemetry_and_metrics.md))
 - [ ] Accessibility & onboarding (now includes Radix UI for onboarding carousel) ([tasks_list/11_accessibility_and_onboarding.md](tasks_list/11_accessibility_and_onboarding.md))
 - [ ] Non-functional requirements ([tasks_list/12_non_functional.md](tasks_list/12_non_functional.md))
