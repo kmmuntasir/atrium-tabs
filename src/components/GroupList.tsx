@@ -1,13 +1,28 @@
 import React, { useEffect, useState } from 'react';
 import { getGroups } from '../storage/GroupStorage';
+import { getTabsByGroup } from '../storage/TabStorage';
 import type { Group } from '../types/Group';
+import type { Tab } from '../types/Tab';
 
 const GroupList: React.FC = () => {
   const [groups, setGroups] = useState<Group[]>([]);
+  const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     setGroups(getGroups());
   }, []);
+
+  const toggleGroupExpansion = (groupId: string) => {
+    setExpandedGroups(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(groupId)) {
+        newSet.delete(groupId);
+      } else {
+        newSet.add(groupId);
+      }
+      return newSet;
+    });
+  };
 
   return (
     <div className="group-list">
@@ -16,8 +31,20 @@ const GroupList: React.FC = () => {
       ) : (
         groups.map(group => (
           <div key={group.uuid} className="group-item">
-            <h3>{group.name}</h3>
-            {/* Tabs for this group will be displayed here later */}
+            <h3 onClick={() => toggleGroupExpansion(group.uuid)} style={{ cursor: 'pointer' }}>
+              {group.name} ({getTabsByGroup(group.uuid).length})
+              {expandedGroups.has(group.uuid) ? ' ▼' : ' ▶'}
+            </h3>
+            {expandedGroups.has(group.uuid) && (
+              <div className="tab-list">
+                {getTabsByGroup(group.uuid).map(tab => (
+                  <div key={tab.uuid} className="tab-item">
+                    <img src={tab.faviconUrl} alt="favicon" style={{ width: '16px', height: '16px', marginRight: '8px' }} />
+                    <span>{tab.title}</span>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         ))
       )}
