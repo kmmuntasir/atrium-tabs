@@ -1,0 +1,44 @@
+---
+description: Defines the syntax and best practices for entries in the ai-changelog.md file.
+globs:
+  - ai-changelog.md
+alwaysApply: true
+---
+# AI Changelog Syntax Guidelines
+
+## Overview
+This rule dictates the structured format for entries within the `ai-changelog.md` file, ensuring consistency and clarity for all recorded changes.
+
+## Structure
+The `ai-changelog.md` file should adhere to the following hierarchical structure:
+
+-   **Major Date Heading:** Use `# YYYY-MM-dd HH:mm:ss` for top-level date entries.
+-   **Minor Date Heading:** Use `## YYYY-MM-dd HH:mm:ss` for sub-level date entries, typically for a more specific time within a day.
+-   **Fine-grained Date Heading:** Use `### YYYY-MM-dd HH:mm:ss` for even more granular time-based entries.
+
+### Change Entry Format
+Each change should be listed as a bullet point under the appropriate date heading:
+
+-   `- [Change Description]: [Detailed explanation of the change]`
+
+### Task Completion Entry Format (Optional, for detailed tasks)
+For tasks that require more detailed logging (e.g., completed ATRIUM tasks), use the following extended format:
+
+```markdown
+### YYYY-MM-dd HH:mm:ss - Task Completed
+**Task:** [ATRIUM-XXXX]: [Task Name]
+**Description:** [Detailed description of the task implementation and its outcomes.]
+**Files Modified:**
+- [file/path/1.ext]
+- [file/path/2.ext]
+**Reason for update:** [Brief explanation if the entry is an update to a previous log, or specific context for the completion.]
+```
+
+## Date and Time Format
+All date and time entries must strictly follow the `YYYY-MM-dd HH:mm:ss` format.
+
+## Best Practices
+-   Ensure each entry is concise yet informative.
+-   Group related changes under a single date heading.
+-   Always include the ATRIUM ticket number where applicable.
+-   Prioritize clarity and readability.
