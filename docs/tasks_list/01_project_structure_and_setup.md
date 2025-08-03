@@ -7,7 +7,7 @@ Initialize the git repository, set up the base directory structure, and add esse
 **Acceptance Criteria:**
 - Repository exists on GitHub with correct name and description.
 - README, LICENSE, and .gitignore present and populated.
-- Directory structure for `extension/src/`, `extension/public/`, `extension/docs/`, and `extension/test/` exists.
+- Directory structure for `src/`, `public/`, `docs/`, and `test/` exists.
 - Unit test: N/A
 - Integration test: N/A
 

@@ -1,0 +1,18 @@
+# Editor directories and files
+.vscode
+.idea
+.cursor
+.cursorignore
+
+# Node.js
+node_modules
+
+# Build
+dist
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
