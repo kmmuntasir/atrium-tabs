@@ -1,0 +1,50 @@
+---
+description: Guidelines for effectively using the 'run_terminal_cmd' tool to execute terminal commands.
+globs:
+alwaysApply: true
+---
+# Run Terminal Command Guidelines
+
+## Overview
+This rule provides best practices and guidelines for using the `run_terminal_cmd` command to ensure correct and efficient execution of terminal commands. This tool allows direct interaction with the user's system.
+
+## When to Use This Rule
+Apply this rule when:
+- Executing any terminal command via `run_terminal_cmd`.
+- Ensuring all required parameters are provided for the command.
+
+## Key Principles for `run_terminal_cmd` Usage
+
+1.  **Always Provide All Required Parameters:**
+    - Ensure all mandatory parameters, such as `command` and `is_background`, are explicitly provided in every `run_terminal_cmd` call. Omitting required parameters will lead to tool call failures.
+
+2.  **Clear and Concise `explanation`:**
+    - The `explanation` argument should be a single, clear sentence describing *why* the command needs to be run and *how* it contributes to the overall goal. Use the first person (e.g., "I am running...", "I am executing...").
+
+3.  **Use `is_background` Appropriately:**
+    - Set `is_background` to `true` for long-running or indefinite commands (e.g., starting a server, continuous watch tasks).
+    - Set `is_background` to `false` for commands that are expected to complete and return control to the agent (e.g., `npm install`, `git status`).
+
+## Incorrect Pattern
+```python
+# Bad: Missing required parameter 'is_background'
+print(default_api.run_terminal_cmd(
+    command="npm test",
+    explanation="Running tests."
+))
+```
+**Reasoning for Incorrectness:** The `is_background` parameter is mandatory for the `run_terminal_cmd` tool. Its omission causes the tool call to fail.
+
+## Correct Pattern
+```python
+# Good: All required parameters provided
+print(default_api.run_terminal_cmd(
+    command="npm test",
+    explanation="Running tests to verify functionality.",
+    is_background=False
+))
+```
+**Reasoning for Correctness:** Both `command` and `is_background` are provided, allowing the tool to execute correctly.
+
+## Related Rules
+- See: rule-self-learning-and-error-correction

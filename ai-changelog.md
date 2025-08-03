@@ -29,3 +29,6 @@
   - Added unit tests in `test/unit/Tab.test.ts`.
   - Added integration tests in `test/integration/TabPersistence.test.ts`.
   - Added 'test' script to `package.json`.
+
+### 2024-08-03 14:09:00
+- Created new rule: `.cursor/rules/run-terminal-cmd-guidelines.mdc`.
