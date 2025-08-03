@@ -70,3 +70,5 @@
   - Installed `@radix-ui/react-toast`.
   - Integrated Radix UI Toast into `src/App.tsx` with a trigger button.
   - Added CSS for Toast component positioning in `src/App.css`.
+
+2024-07-30 10:00:00 - Implemented ATRIUM-0015: Added functionality to create new groups with manual name input in `src/components/GroupList.tsx` and integrated `uuid` for unique ID generation. Updated `GroupStorage.ts` for group persistence.

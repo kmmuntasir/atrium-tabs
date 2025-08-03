@@ -1,12 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { getGroups } from '../storage/GroupStorage';
 import { TabStorage } from '../storage/TabStorage'; // Import the class
+import { createGroup } from '../storage/GroupStorage'; // Import createGroup
 import type { Group } from '../types/Group';
 import type { Tab } from '../types/Tab';
+import { v4 as uuidv4 } from 'uuid'; // Import uuid
 
 const GroupList: React.FC = () => {
   const [groups, setGroups] = useState<Group[]>([]);
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
+  const [newGroupName, setNewGroupName] = useState<string>(''); // State for new group name
 
   useEffect(() => {
     setGroups(getGroups());
@@ -24,8 +27,37 @@ const GroupList: React.FC = () => {
     });
   };
 
+  const handleCreateGroup = () => {
+    if (newGroupName.trim() === '') {
+      alert('Group name cannot be empty!');
+      return;
+    }
+
+    const newGroup: Group = {
+      uuid: uuidv4(),
+      name: newGroupName,
+      color: '#007bff', // Default color
+      icon: 'Folder', // Default icon
+      tabs: [],
+      createdAt: Date.now(),
+    };
+
+    createGroup(newGroup);
+    setGroups(getGroups()); // Refresh groups
+    setNewGroupName(''); // Clear input
+  };
+
   return (
     <div className="group-list">
+      <div className="create-group-section">
+        <input
+          type="text"
+          placeholder="New group name"
+          value={newGroupName}
+          onChange={(e) => setNewGroupName(e.target.value)}
+        />
+        <button onClick={handleCreateGroup}>Create Group</button>
+      </div>
       {groups.length === 0 ? (
         <p>No groups found. Create a new one!</p>
       ) : (
