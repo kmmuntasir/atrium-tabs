@@ -1,8 +1,13 @@
 import type { Tab } from '../types/Tab';
 
-export class TabStorage {
-  private static readonly TAB_STORAGE_KEY = 'atrium_tabs';
+const STORAGE_KEY = 'atrium_tabs';
 
+// Helper to save the entire tabs array to local storage
+function saveAllTabs(tabs: Tab[]): void {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(tabs));
+}
+
+export class TabStorage {
   private static getTabs(): Tab[] {
     // For the purpose of ATRIUM-0012, this is simplified to a synchronous mock.
     // In a real scenario, this would involve async storage operations.
@@ -39,7 +44,23 @@ export class TabStorage {
   }
 
   static getTabsByGroupId(groupId: string): Tab[] {
-    const tabs = TabStorage.getTabs();
-    return tabs.filter(tab => tab.groupId === groupId);
+    const tabsJson = localStorage.getItem(STORAGE_KEY);
+    const allTabs: Tab[] = tabsJson ? JSON.parse(tabsJson) : [];
+    return allTabs.filter(tab => tab.groupId === groupId);
+  }
+
+  static saveTabs(tabsToSave: Tab[]): void {
+    let allTabs = TabStorage.getAllTabs();
+    // Remove existing tabs with the same UUIDs as tabsToSave to avoid duplicates
+    const uuidsToSave = new Set(tabsToSave.map(tab => tab.uuid));
+    allTabs = allTabs.filter(tab => !uuidsToSave.has(tab.uuid));
+    // Add the new/updated tabs
+    allTabs.push(...tabsToSave);
+    saveAllTabs(allTabs);
+  }
+
+  static getAllTabs(): Tab[] {
+    const tabsJson = localStorage.getItem(STORAGE_KEY);
+    return tabsJson ? JSON.parse(tabsJson) : [];
   }
 }

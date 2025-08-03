@@ -6,6 +6,8 @@ import type { Group } from '../types/Group';
 import type { Tab } from '../types/Tab';
 import { v4 as uuidv4 } from 'uuid'; // Import uuid
 
+declare const chrome: any; // Declare chrome for TypeScript
+
 const GroupList: React.FC = () => {
   const [groups, setGroups] = useState<Group[]>([]);
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
@@ -47,6 +49,51 @@ const GroupList: React.FC = () => {
     setNewGroupName(''); // Clear input
   };
 
+  const handleSaveCurrentWindowAsGroup = async () => {
+    try {
+      const currentWindowTabs = await chrome.tabs.query({ currentWindow: true });
+
+      if (currentWindowTabs.length === 0) {
+        alert('No tabs found in the current window.');
+        return;
+      }
+
+      const newGroupNamePrompt = prompt('Enter a name for the new group:', 'My New Group');
+      if (!newGroupNamePrompt || newGroupNamePrompt.trim() === '') {
+        alert('Group name cannot be empty.');
+        return;
+      }
+
+      const newGroup: Group = {
+        uuid: uuidv4(),
+        name: newGroupNamePrompt.trim(),
+        color: '#ffc107', // Another default color
+        icon: 'Window', // Another default icon
+        tabs: [],
+        createdAt: Date.now(),
+      };
+
+      const tabsToSave: Tab[] = currentWindowTabs.map((chromeTab: any) => ({
+        uuid: uuidv4(),
+        groupId: newGroup.uuid,
+        url: chromeTab.url,
+        title: chromeTab.title,
+        pinned: chromeTab.pinned,
+        faviconUrl: chromeTab.favIconUrl,
+        createdAt: Date.now(),
+      }));
+
+      createGroup(newGroup);
+      TabStorage.saveTabs(tabsToSave); // Save all associated tabs
+      setGroups(getGroups()); // Refresh groups
+
+      alert(`Group \"${newGroup.name}\" saved successfully with ${tabsToSave.length} tabs!`);
+    } catch (error) {
+      console.error('Error saving current window as group:', error);
+      alert('Failed to save current window as group. Please ensure the extension has necessary permissions.');
+    }
+  };
+
   return (
     <div className="group-list">
       <div className="create-group-section">
@@ -57,6 +104,9 @@ const GroupList: React.FC = () => {
           onChange={(e) => setNewGroupName(e.target.value)}
         />
         <button onClick={handleCreateGroup}>Create Group</button>
+      </div>
+      <div className="save-window-group-section">
+        <button onClick={handleSaveCurrentWindowAsGroup}>Save Current Window as New Group</button>
       </div>
       {groups.length === 0 ? (
         <p>No groups found. Create a new one!</p>
