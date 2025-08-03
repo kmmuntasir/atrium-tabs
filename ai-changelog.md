@@ -6,3 +6,6 @@
 
 # 2024-07-28 17:00:00
 - ATRIUM-0002: Tooling & Linting Setup - Configured ESLint, Prettier, TypeScript, and Husky.
+
+# 2024-07-28 17:00:00
+- ATRIUM-0003: Vite & React Project Bootstrap - Bootstrapped Vite and React project with TypeScript, installed Radix UI, and resolved build issues.

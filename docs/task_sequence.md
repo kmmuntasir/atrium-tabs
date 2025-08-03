@@ -10,7 +10,7 @@
 ## Project Structure & Setup
 - [x] [ATRIUM-0001] Project Repository Initialization ([tasks_list/01_project_structure_and_setup.md](tasks_list/01_project_structure_and_setup.md))
 - [x] [ATRIUM-0002] Tooling & Linting Setup ([tasks_list/01_project_structure_and_setup.md](tasks_list/01_project_structure_and_setup.md))
-- [ ] [ATRIUM-0003] Vite & React Project Bootstrap ([tasks_list/01_project_structure_and_setup.md](tasks_list/01_project_structure_and_setup.md))
+- [x] [ATRIUM-0003] Vite & React Project Bootstrap ([tasks_list/01_project_structure_and_setup.md](tasks_list/01_project_structure_and_setup.md))
 
 ## Deployment & CI/CD
 - [ ] [ATRIUM-0004] GitHub Actions CI Pipeline ([tasks_list/02_deployment_and_ci_cd.md](tasks_list/02_deployment_and_ci_cd.md))
