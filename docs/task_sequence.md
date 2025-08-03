@@ -19,7 +19,7 @@
 - [~] [ATRIUM-0007] Community Health Files ([tasks_list/02_deployment_and_ci_cd.md](tasks_list/02_deployment_and_ci_cd.md))
 
 ## Data Model
-- [ ] [ATRIUM-0008] Group Data Model Implementation ([tasks_list/03_data_model.md](tasks_list/03_data_model.md))
+- [x] [ATRIUM-0008] Group Data Model Implementation ([tasks_list/03_data_model.md](tasks_list/03_data_model.md))
 - [ ] [ATRIUM-0009] Tab Data Model Implementation ([tasks_list/03_data_model.md](tasks_list/03_data_model.md))
 
 ## UI

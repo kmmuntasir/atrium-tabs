@@ -12,3 +12,9 @@
 
 # 2024-07-28 17:00:00
 - Skipped Deployment & CI/CD tasks (ATRIUM-0004, ATRIUM-0005, ATRIUM-0006, ATRIUM-0007) as requested. Verified no blocking dependencies for future tasks.
+
+## 2024-07-30 15:30:00
+- Started ATRIUM-0008: Implemented Group data model and CRUD operations. (In Progress)
+
+## 2024-07-30 15:35:00
+- Completed ATRIUM-0008: Implemented Group data model, CRUD operations, and all associated unit and integration tests.
