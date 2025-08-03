@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { getGroups } from '../storage/GroupStorage';
 import { TabStorage } from '../storage/TabStorage'; // Import the class
-import { createGroup, updateGroup, deleteGroup } from '../storage/GroupStorage'; // Import updateGroup
+import { createGroup, updateGroup, deleteGroup, restoreGroup } from '../storage/GroupStorage'; // Import updateGroup
 import type { Group } from '../types/Group';
 import type { Tab } from '../types/Tab';
 import { v4 as uuidv4 } from 'uuid'; // Import uuid
@@ -20,7 +20,16 @@ const GroupList: React.FC = () => {
   const [editedGroupIcon, setEditedGroupIcon] = useState<string>('Folder'); // State for edited group icon
 
   useEffect(() => {
-    setGroups(getGroups());
+    const fetchGroups = () => {
+      setGroups(getGroups(true));
+    };
+
+    fetchGroups(); // Initial fetch
+
+    window.addEventListener('storage', fetchGroups);
+    return () => {
+      window.removeEventListener('storage', fetchGroups);
+    };
   }, []);
 
   const toggleGroupExpansion = (groupId: string) => {
@@ -51,7 +60,7 @@ const GroupList: React.FC = () => {
     };
 
     createGroup(newGroup);
-    setGroups(getGroups()); // Refresh groups
+    setGroups(getGroups(true)); // Refresh groups
     setNewGroupName(''); // Clear input
     setNewGroupColor('#007bff'); // Reset color
     setNewGroupIcon('Folder'); // Reset icon
@@ -93,7 +102,7 @@ const GroupList: React.FC = () => {
 
       createGroup(newGroup);
       TabStorage.saveTabs(tabsToSave); // Save all associated tabs
-      setGroups(getGroups()); // Refresh groups
+      setGroups(getGroups(true)); // Refresh groups
 
       alert(`Group \"${newGroup.name}\" saved successfully with ${tabsToSave.length} tabs!`);
     } catch (error) {
@@ -116,7 +125,7 @@ const GroupList: React.FC = () => {
     }
     const updatedGroup = { ...group, name: editedGroupName.trim(), color: editedGroupColor, icon: editedGroupIcon, updatedAt: Date.now() };
     updateGroup(updatedGroup);
-    setGroups(getGroups()); // Refresh groups
+    setGroups(getGroups(true)); // Refresh groups
     setEditingGroupId(null); // Exit editing mode
     setEditedGroupName('');
     setEditedGroupColor('#007bff'); // Reset color
@@ -133,8 +142,13 @@ const GroupList: React.FC = () => {
   const handleDeleteGroup = (groupId: string) => {
     if (window.confirm('Are you sure you want to delete this group? All associated tabs will also be lost.')) {
       deleteGroup(groupId);
-      setGroups(getGroups()); // Refresh groups
+      setGroups(getGroups(true)); // Refresh groups, including deleted ones
     }
+  };
+
+  const handleRestoreGroup = (groupId: string) => {
+    restoreGroup(groupId);
+    setGroups(getGroups(true)); // Refresh groups, including deleted ones
   };
 
   return (
@@ -167,7 +181,7 @@ const GroupList: React.FC = () => {
         <p>No groups found. Create a new one!</p>
       ) : (
         groups.map(group => (
-          <div key={group.uuid} className="group-item" style={{ borderLeft: `5px solid ${group.color}` }}>
+          <div key={group.uuid} className={`group-item ${group.isDeleted ? 'deleted' : ''}`} style={{ borderLeft: `5px solid ${group.color}` }}>
             <h3 onDoubleClick={() => handleEditGroupName(group)} style={{ cursor: 'pointer' }}>
               <span className="group-icon" style={{ marginRight: '8px' }}>{group.icon}</span>
               {editingGroupId === group.uuid ? (
@@ -205,7 +219,11 @@ const GroupList: React.FC = () => {
                   <span onClick={() => toggleGroupExpansion(group.uuid)}>
                     {expandedGroups.has(group.uuid) ? ' ▼' : ' ▶'}
                   </span>
-                  <button onClick={() => handleDeleteGroup(group.uuid)}>Delete</button>
+                  {group.isDeleted ? (
+                    <button onClick={() => handleRestoreGroup(group.uuid)}>Restore</button>
+                  ) : (
+                    <button onClick={() => handleDeleteGroup(group.uuid)}>Delete</button>
+                  )}
                 </>
               )}
             </h3>

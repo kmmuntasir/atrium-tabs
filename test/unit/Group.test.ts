@@ -1,5 +1,5 @@
 import { Group } from '../../src/types/Group';
-import { createGroup, getGroup, updateGroup, deleteGroup } from '../../src/storage/GroupStorage';
+import { createGroup, getGroup, updateGroup, deleteGroup, restoreGroup, getGroups } from '../../src/storage/GroupStorage';
 
 describe('Group Model and Storage', () => {
   const MOCK_GROUP: Group = {
@@ -44,11 +44,24 @@ describe('Group Model and Storage', () => {
     expect(groups[0].name).toBe('Updated Group Name');
   });
 
-  it('should delete a group by UUID', () => {
+  it('should delete a group by UUID (soft delete)', () => {
     createGroup(MOCK_GROUP);
     deleteGroup(MOCK_GROUP.uuid);
     const groups = JSON.parse(localStorage.getItem('atrium_groups') || '[]');
-    expect(groups.length).toBe(0);
+    expect(groups.length).toBe(1); // Still exists but marked as deleted
+    expect(groups[0].isDeleted).toBe(true);
+    expect(groups[0].deletedAt).toBeDefined();
+  });
+
+  it('should restore a soft-deleted group', () => {
+    createGroup(MOCK_GROUP);
+    deleteGroup(MOCK_GROUP.uuid);
+    restoreGroup(MOCK_GROUP.uuid);
+    const groups = getGroups(); // Should not include deleted ones by default
+    expect(groups.length).toBe(1);
+    expect(groups[0].uuid).toBe(MOCK_GROUP.uuid);
+    expect(groups[0].isDeleted).toBe(false); // Expect false, not undefined
+    expect(groups[0].deletedAt).toBeUndefined();
   });
 
   it('should handle multiple groups correctly', () => {
@@ -66,11 +79,12 @@ describe('Group Model and Storage', () => {
     createGroup(group2);
 
     let groups = JSON.parse(localStorage.getItem('atrium_groups') || '[]');
-    expect(groups.length).toBe(2);
+    expect(groups.length).toBe(2); // Still 2 because of soft delete
 
     deleteGroup(MOCK_GROUP.uuid);
-    groups = JSON.parse(localStorage.getItem('atrium_groups') || '[]');
-    expect(groups.length).toBe(1);
-    expect(groups[0].uuid).toBe(group2.uuid);
+    groups = getGroups(true); // Get all groups including deleted ones
+    expect(groups.length).toBe(2); // Still 2 because it's a soft delete
+    expect(groups.find(group => group.uuid === MOCK_GROUP.uuid)?.isDeleted).toBe(true);
+    expect(groups.find(group => group.uuid === group2.uuid)).toEqual(group2);
   });
 });

@@ -96,8 +96,16 @@ h1 {
   flex-grow: 1;
 }
 
+.group-item.deleted {
+  opacity: 0.6;
+  text-decoration: line-through;
+}
+
 .group-icon {
-  font-size: 1.2em; /* Adjust as needed */
+  display: inline-block;
+  margin-right: 5px;
+  /* Basic styling for icons, you might replace this with an actual icon font or SVG */
+  font-size: 1.2em;
 }
 
 .tab-list {

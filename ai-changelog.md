@@ -108,3 +108,13 @@
 - src/storage/GroupStorage.ts
 - src/components/GroupList.tsx
 **Reason for update:** Completed task ATRIUM-0019.
+
+### 2024-08-03 16:03:00 - Task Completed
+**Task:** [ATRIUM-0020]: Restore Closed Group
+**Description:** Implemented the ability to restore soft-deleted groups. This involved adding a `restoreGroup` function to `src/storage/GroupStorage.ts`, updating `src/components/GroupList.tsx` to display a restore button for deleted groups and apply a 'deleted' CSS class, and adding unit tests for the restore logic.
+**Files Modified:**
+- src/storage/GroupStorage.ts
+- src/components/GroupList.tsx
+- src/App.css
+- test/unit/Group.test.ts
+**Reason for update:** Completed task ATRIUM-0020, and removed integration tests as requested.
