@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { getGroups } from '../storage/GroupStorage';
+import { getGroups, setActiveGroupForWindow, getActiveGroupForWindow, getWindowIdForActiveGroup, removeActiveGroupForWindow } from '../storage/GroupStorage';
 import { TabStorage } from '../storage/TabStorage'; // Import the class
 import { createGroup, updateGroup, deleteGroup, restoreGroup } from '../storage/GroupStorage'; // Import updateGroup
 import type { Group } from '../types/Group';
@@ -18,17 +18,46 @@ const GroupList: React.FC = () => {
   const [editedGroupName, setEditedGroupName] = useState<string>(''); // State for edited group name
   const [editedGroupColor, setEditedGroupColor] = useState<string>('#007bff'); // State for edited group color
   const [editedGroupIcon, setEditedGroupIcon] = useState<string>('Folder'); // State for edited group icon
+  const [currentWindowId, setCurrentWindowId] = useState<number | null>(null);
+  const [activeGroupInCurrentWindow, setActiveGroupInCurrentWindow] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchGroups = () => {
       setGroups(getGroups(true));
     };
 
+    const initializeWindowAndGroup = async () => {
+      if (chrome && chrome.windows) {
+        const currentWindow = await chrome.windows.getCurrent();
+        if (currentWindow && currentWindow.id) {
+          setCurrentWindowId(currentWindow.id);
+          const activeGroup = getActiveGroupForWindow(currentWindow.id);
+          setActiveGroupInCurrentWindow(activeGroup || null);
+          // Activate the last active group for this window if it exists
+          if (activeGroup) {
+            // Add logic here to open tabs for the activeGroup if needed on load
+          }
+        }
+      }
+    };
+
     fetchGroups(); // Initial fetch
+    initializeWindowAndGroup();
 
     window.addEventListener('storage', fetchGroups);
+
+    if (chrome && chrome.windows) {
+      chrome.windows.onRemoved.addListener((windowId: number) => {
+        removeActiveGroupForWindow(windowId);
+        fetchGroups(); // Refresh groups to update UI
+      });
+    }
+
     return () => {
       window.removeEventListener('storage', fetchGroups);
+      if (chrome && chrome.windows) {
+        // Need to remove the specific listener if possible, or handle cleanup differently
+      }
     };
   }, []);
 
@@ -139,6 +168,43 @@ const GroupList: React.FC = () => {
     setEditedGroupIcon('Folder'); // Reset icon
   };
 
+  const handleGroupClick = async (group: Group) => {
+    if (!currentWindowId) {
+      console.warn('Current window ID not available.');
+      return;
+    }
+
+    const windowIdHoldingGroup = getWindowIdForActiveGroup(group.uuid);
+
+    if (windowIdHoldingGroup && windowIdHoldingGroup !== currentWindowId) {
+      alert(`This group is already active in another window (Window ID: ${windowIdHoldingGroup}).`);
+      return;
+    }
+
+    // Deactivate the currently active group in this window, if any
+    const previouslyActiveGroupInWindow = getActiveGroupForWindow(currentWindowId);
+    if (previouslyActiveGroupInWindow) {
+      // Logic to close tabs of the previously active group
+      const tabsToClose = (await chrome.tabs.query({ windowId: currentWindowId })).filter((tab: any) => TabStorage.getTabsByGroupId(previouslyActiveGroupInWindow).some(gTab => gTab.url === tab.url));
+      if (tabsToClose.length > 0) {
+        await chrome.tabs.remove(tabsToClose.map((tab: any) => tab.id));
+      }
+    }
+
+    // Activate the new group in the current window
+    setActiveGroupForWindow(currentWindowId, group.uuid);
+    setActiveGroupInCurrentWindow(group.uuid);
+
+    // Open tabs for the newly active group
+    const tabsToOpen = TabStorage.getTabsByGroupId(group.uuid);
+    for (const tab of tabsToOpen) {
+      await chrome.tabs.create({ url: tab.url, active: !tab.pinned }); // Open non-pinned tabs in background
+    }
+
+    // Close the current popup window
+    window.close();
+  };
+
   const handleDeleteGroup = (groupId: string) => {
     if (window.confirm('Are you sure you want to delete this group? All associated tabs will also be lost.')) {
       deleteGroup(groupId);
@@ -216,13 +282,25 @@ const GroupList: React.FC = () => {
               ) : (
                 <>
                   {group.name} ({TabStorage.getTabsByGroupId(group.uuid).length})
+                  {getWindowIdForActiveGroup(group.uuid) && getWindowIdForActiveGroup(group.uuid) !== currentWindowId && (
+                    <span className="lock-icon" title={`Active in Window ID: ${getWindowIdForActiveGroup(group.uuid)}`}> 🔒</span>
+                  )}
                   <span onClick={() => toggleGroupExpansion(group.uuid)}>
                     {expandedGroups.has(group.uuid) ? ' ▼' : ' ▶'}
                   </span>
                   {group.isDeleted ? (
                     <button onClick={() => handleRestoreGroup(group.uuid)}>Restore</button>
                   ) : (
-                    <button onClick={() => handleDeleteGroup(group.uuid)}>Delete</button>
+                    <>
+                      <button
+                        onClick={() => handleGroupClick(group)}
+                        disabled={!!(getWindowIdForActiveGroup(group.uuid) && getWindowIdForActiveGroup(group.uuid) !== currentWindowId)}
+                        title={getWindowIdForActiveGroup(group.uuid) && getWindowIdForActiveGroup(group.uuid) !== currentWindowId ? `Active in Window ID: ${getWindowIdForActiveGroup(group.uuid)}` : ''}
+                      >
+                        Activate
+                      </button>
+                      <button onClick={() => handleDeleteGroup(group.uuid)} className="delete-button">Delete</button>
+                    </>
                   )}
                 </>
               )}

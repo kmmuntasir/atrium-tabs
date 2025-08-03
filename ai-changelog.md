@@ -118,3 +118,12 @@
 - src/App.css
 - test/unit/Group.test.ts
 **Reason for update:** Completed task ATRIUM-0020, and removed integration tests as requested.
+
+### 2024-08-03 16:50:00 - Task Completed
+**Task:** [ATRIUM-0023]: Multi-Window Support
+**Description:** Implemented multi-window support by tracking active groups per window. This involved adding functions to `src/storage/GroupStorage.ts` to manage active groups by window ID, and updating `src/components/GroupList.tsx` to display a lock icon and disable activation for groups already active in other windows. The UI now prevents a group from being active in two windows simultaneously, and allows switching active groups within a window, closing previous tabs and opening new ones.
+**Files Modified:**
+- src/storage/GroupStorage.ts
+- src/components/GroupList.tsx
+- docs/task_sequence.md
+**Reason for update:** Completed task ATRIUM-0023.
