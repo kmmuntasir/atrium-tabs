@@ -23,7 +23,7 @@
 - [x] [ATRIUM-0009] Tab Data Model Implementation ([tasks_list/03_data_model.md](tasks_list/03_data_model.md))
 
 ## UI
-- [ ] [ATRIUM-0010] Basic Popup UI Scaffold ([tasks_list/04_ui.md](tasks_list/04_ui.md))
+- [x] [ATRIUM-0010] Basic Popup UI Scaffold ([tasks_list/04_ui.md](tasks_list/04_ui.md))
 - [ ] [ATRIUM-0011] Group List in Popup ([tasks_list/04_ui.md](tasks_list/04_ui.md))
 - [ ] [ATRIUM-0012] Expand/Collapse Group to Show Tabs ([tasks_list/04_ui.md](tasks_list/04_ui.md))
 - [ ] [ATRIUM-0014] UI Polish: Color Palette, Icon Rendering, Toast Positioning ([tasks_list/04_ui.md](tasks_list/04_ui.md))
