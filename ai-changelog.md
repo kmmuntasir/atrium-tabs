@@ -8,3 +8,4 @@ ATRIUM-0060: Integrated `react-window` for UI virtualization in `GroupList.tsx` 
 ATRIUM-0060: Added `generateMockData` utility in `src/utils/storage.ts` and a UI button in `GroupList.tsx` for manual performance testing with mock data.
 ATRIUM-0061: Added `tabs` and `activeTab` permissions to `manifest.json` for core tab and group management functionality.
 ATRIUM-0061: Implemented Content Security Policy (`CSP`) with `default-src 'self'` in `manifest.json`.
+ATRIUM-0061: Completed security review, including input sanitization, data handling, third-party dependencies, and content script usage. Documented findings in `docs/security_review.md`.
