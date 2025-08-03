@@ -47,3 +47,16 @@
   - Added build script to `package.json` and built the project.
   - Created placeholder integration test `test/integration/PopupLoading.test.ts`.
   - Created `public/manifest.json` for extension configuration and updated `package.json` and `index.html` to support extension loading.
+
+### 2024-07-30 14:30:40 - Task Completed
+**Task:** ATRIUM-0011: Group List in Popup
+**Description:** Implemented the GroupList component to display a list of user groups in the main popup UI. This includes fetching groups from storage, rendering them, and adding basic styling.
+**Files Modified:**
+- src/App.tsx
+- src/components/GroupList.tsx
+- src/App.css
+- test/unit/GroupList.test.tsx
+- test/unit/App.test.tsx
+- vite.config.ts
+- src/storage/GroupStorage.ts
+**Reason for update:** Ensured successful build by exporting `getGroups` from `src/storage/GroupStorage.ts`.

@@ -2,7 +2,7 @@ import type { Group } from '../types/Group';
 
 const STORAGE_KEY = 'atrium_groups';
 
-function getGroups(): Group[] {
+export function getGroups(): Group[] {
   const groupsJson = localStorage.getItem(STORAGE_KEY);
   return groupsJson ? JSON.parse(groupsJson) : [];
 }

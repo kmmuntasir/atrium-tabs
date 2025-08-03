@@ -24,7 +24,7 @@
 
 ## UI
 - [x] [ATRIUM-0010] Basic Popup UI Scaffold ([tasks_list/04_ui.md](tasks_list/04_ui.md))
-- [ ] [ATRIUM-0011] Group List in Popup ([tasks_list/04_ui.md](tasks_list/04_ui.md))
+- [x] [ATRIUM-0011] Group List in Popup ([tasks_list/04_ui.md](tasks_list/04_ui.md))
 - [ ] [ATRIUM-0012] Expand/Collapse Group to Show Tabs ([tasks_list/04_ui.md](tasks_list/04_ui.md))
 - [ ] [ATRIUM-0014] UI Polish: Color Palette, Icon Rendering, Toast Positioning ([tasks_list/04_ui.md](tasks_list/04_ui.md))
 

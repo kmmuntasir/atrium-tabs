@@ -40,3 +40,34 @@
 .read-the-docs {
   color: #888;
 }
+
+.App {
+  display: flex;
+  flex-direction: column;
+  height: 100vh; /* Make the app fill the viewport height */
+}
+
+.App-header {
+  background-color: #282c34;
+  padding: 1rem;
+  color: white;
+}
+
+.App-content {
+  flex-grow: 1; /* Allow content to take available space */
+  padding: 1rem;
+  overflow-y: auto; /* Enable scrolling for content */
+}
+
+.group-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.group-item {
+  border: 1px solid #ccc;
+  padding: 10px;
+  border-radius: 5px;
+  text-align: left;
+}

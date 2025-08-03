@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useState } from 'react';
+import GroupList from './components/GroupList';
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
@@ -12,10 +13,7 @@ function App() {
         <h1>Atrium Tabs</h1>
       </header>
       <main className="App-content">
-        <div className="group-list-placeholder">
-          {/* Placeholder for group list */}
-          <p>Your groups will appear here.</p>
-        </div>
+        <GroupList />
       </main>
     </div>
   )
