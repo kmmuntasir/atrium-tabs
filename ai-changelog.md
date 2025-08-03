@@ -142,3 +142,14 @@
 **Files Modified:**
 - docs/task_sequence.md
 **Reason for update:** Completed task ATRIUM-0025.
+
+### 2024-07-30 16:22:00 - Task Completed
+**Task:** [ATRIUM-0026]: Show Lock Icon and Disable Group if Active in Another Window
+**Description:** Implemented functionality to display a lock icon next to groups that are active in another browser window and disable interaction with these locked groups. This included updating the Group interface with `activeInWindowId`, modifying `GroupStorage.ts` to manage this new property, and updating `GroupList.tsx` to reflect the UI changes and disable relevant buttons.
+**Files Modified:**
+- src/types/Group.ts
+- src/storage/GroupStorage.ts
+- src/components/GroupList.tsx
+- test/unit/GroupList.test.tsx
+- docs/task_sequence.md
+**Reason for update:** Completion of ATRIUM-0026, including unit tests.

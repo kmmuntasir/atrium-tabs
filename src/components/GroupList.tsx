@@ -5,6 +5,7 @@ import { createGroup, updateGroup, deleteGroup, restoreGroup } from '../storage/
 import type { Group } from '../types/Group';
 import type { Tab } from '../types/Tab';
 import { v4 as uuidv4 } from 'uuid'; // Import uuid
+import { Lock } from 'lucide-react'; // Import the Lock icon
 
 declare const chrome: any; // Declare chrome for TypeScript
 
@@ -20,27 +21,40 @@ const GroupList: React.FC = () => {
   const [editedGroupIcon, setEditedGroupIcon] = useState<string>('Folder'); // State for edited group icon
   const [currentWindowId, setCurrentWindowId] = useState<number | null>(null);
   const [activeGroupInCurrentWindow, setActiveGroupInCurrentWindow] = useState<string | null>(null);
+  const [activeGroupsInOtherWindows, setActiveGroupsInOtherWindows] = useState<Set<string>>(new Set());
+
+  const fetchGroups = () => {
+    const allGroups = getGroups(true);
+    setGroups(allGroups);
+    if (currentWindowId !== null) {
+      const activeInOtherWindows = new Set<string>();
+      allGroups.forEach(group => {
+        if (group.activeInWindowId !== undefined && group.activeInWindowId !== currentWindowId) {
+          activeInOtherWindows.add(group.uuid);
+        }
+      });
+      setActiveGroupsInOtherWindows(activeInOtherWindows);
+    }
+  };
+
+  const initializeWindowAndGroup = async () => {
+    if (chrome && chrome.windows) {
+      const currentWindow = await chrome.windows.getCurrent();
+      if (currentWindow && currentWindow.id) {
+        setCurrentWindowId(currentWindow.id);
+        const activeGroup = getActiveGroupForWindow(currentWindow.id);
+        setActiveGroupInCurrentWindow(activeGroup || null);
+        // Activate the last active group for this window if it exists
+        if (activeGroup) {
+          // Additional logic if needed when a group is already active
+        }
+        // After setting currentWindowId, fetch groups to update activeGroupsInOtherWindows
+        fetchGroups(); 
+      }
+    }
+  };
 
   useEffect(() => {
-    const fetchGroups = () => {
-      setGroups(getGroups(true));
-    };
-
-    const initializeWindowAndGroup = async () => {
-      if (chrome && chrome.windows) {
-        const currentWindow = await chrome.windows.getCurrent();
-        if (currentWindow && currentWindow.id) {
-          setCurrentWindowId(currentWindow.id);
-          const activeGroup = getActiveGroupForWindow(currentWindow.id);
-          setActiveGroupInCurrentWindow(activeGroup || null);
-          // Activate the last active group for this window if it exists
-          if (activeGroup) {
-            // Add logic here to open tabs for the activeGroup if needed on load
-          }
-        }
-      }
-    };
-
     fetchGroups(); // Initial fetch
     initializeWindowAndGroup();
 
@@ -51,17 +65,26 @@ const GroupList: React.FC = () => {
         removeActiveGroupForWindow(windowId);
         fetchGroups(); // Refresh groups to update UI
       });
+      chrome.tabs.onActivated.addListener(fetchGroups); // Listen for tab changes
+      chrome.tabs.onRemoved.addListener(fetchGroups); // Listen for tab removal
+      chrome.tabs.onUpdated.addListener(fetchGroups); // Listen for tab updates
     }
 
     return () => {
       window.removeEventListener('storage', fetchGroups);
       if (chrome && chrome.windows) {
-        // Need to remove the specific listener if possible, or handle cleanup differently
+        chrome.tabs.onActivated.removeListener(fetchGroups);
+        chrome.tabs.onRemoved.removeListener(fetchGroups);
+        chrome.tabs.onUpdated.removeListener(fetchGroups);
+        // Need to remove the specific listener if possible, or handle cleanup differently for windows.onRemoved
       }
     };
-  }, []);
+  }, [currentWindowId]); // Rerun effect when currentWindowId is set
 
   const toggleGroupExpansion = (groupId: string) => {
+    if (activeGroupsInOtherWindows.has(groupId)) {
+      return; // Do not allow expansion if group is active in another window
+    }
     setExpandedGroups(prev => {
       const newSet = new Set(prev);
       if (newSet.has(groupId)) {
@@ -86,6 +109,10 @@ const GroupList: React.FC = () => {
       icon: newGroupIcon,
       tabs: [],
       createdAt: Date.now(),
+      updatedAt: Date.now(),
+      order: groups.length,
+      lastActiveAt: Date.now(),
+      isDeleted: false,
     };
 
     createGroup(newGroup);
@@ -100,250 +127,335 @@ const GroupList: React.FC = () => {
       const currentWindowTabs = await chrome.tabs.query({ currentWindow: true });
 
       if (currentWindowTabs.length === 0) {
-        alert('No tabs found in the current window.');
+        alert('Current window has no tabs to save!');
         return;
       }
 
-      const newGroupNamePrompt = prompt('Enter a name for the new group:', 'My New Group');
-      if (!newGroupNamePrompt || newGroupNamePrompt.trim() === '') {
-        alert('Group name cannot be empty.');
-        return;
-      }
+      const newGroupTabs: Tab[] = currentWindowTabs.map((tab: any) => ({
+        uuid: uuidv4(),
+        groupId: '', // Will be set after group creation
+        title: tab.title || 'Untitled',
+        url: tab.url || '',
+        favIconUrl: tab.favIconUrl || '',
+        createdAt: Date.now(),
+        lastAccessedAt: Date.now(),
+        order: 0,
+        isPinned: tab.pinned,
+        isOpen: true,
+      }));
 
       const newGroup: Group = {
         uuid: uuidv4(),
-        name: newGroupNamePrompt.trim(),
-        color: '#ffc107', // Another default color
-        icon: 'Window', // Another default icon
-        tabs: [],
+        name: `Window ${currentWindowId} (${newGroupTabs.length} tabs)`,
+        color: '#007bff', // Default color
+        icon: 'Folder', // Default icon
+        tabs: newGroupTabs,
         createdAt: Date.now(),
+        updatedAt: Date.now(),
+        order: groups.length,
+        lastActiveAt: Date.now(),
+        isDeleted: false,
       };
 
-      const tabsToSave: Tab[] = currentWindowTabs.map((chromeTab: any) => ({
-        uuid: uuidv4(),
-        groupId: newGroup.uuid,
-        url: chromeTab.url,
-        title: chromeTab.title,
-        pinned: chromeTab.pinned,
-        faviconUrl: chromeTab.favIconUrl,
-        createdAt: Date.now(),
-      }));
-
       createGroup(newGroup);
-      TabStorage.saveTabs(tabsToSave); // Save all associated tabs
       setGroups(getGroups(true)); // Refresh groups
-
-      alert(`Group \"${newGroup.name}\" saved successfully with ${tabsToSave.length} tabs!`);
+      alert('Current window saved as a new group!');
     } catch (error) {
       console.error('Error saving current window as group:', error);
-      alert('Failed to save current window as group. Please ensure the extension has necessary permissions.');
+      alert('Failed to save current window as a group.');
     }
   };
 
-  const handleEditGroupName = (group: Group) => {
+  const handleEditGroup = (group: Group) => {
+    if (activeGroupsInOtherWindows.has(group.uuid)) {
+      return; // Do not allow editing if group is active in another window
+    }
     setEditingGroupId(group.uuid);
     setEditedGroupName(group.name);
     setEditedGroupColor(group.color);
     setEditedGroupIcon(group.icon);
   };
 
-  const handleSaveEditedGroupName = (group: Group) => {
+  const handleSaveEditedGroup = (group: Group) => {
     if (editedGroupName.trim() === '') {
       alert('Group name cannot be empty!');
       return;
     }
-    const updatedGroup = { ...group, name: editedGroupName.trim(), color: editedGroupColor, icon: editedGroupIcon, updatedAt: Date.now() };
+    const updatedGroup: Group = {
+      ...group,
+      name: editedGroupName,
+      color: editedGroupColor,
+      icon: editedGroupIcon,
+    };
     updateGroup(updatedGroup);
     setGroups(getGroups(true)); // Refresh groups
     setEditingGroupId(null); // Exit editing mode
-    setEditedGroupName('');
-    setEditedGroupColor('#007bff'); // Reset color
-    setEditedGroupIcon('Folder'); // Reset icon
   };
 
-  const handleCancelEdit = () => {
-    setEditingGroupId(null);
-    setEditedGroupName('');
-    setEditedGroupColor('#007bff'); // Reset color
-    setEditedGroupIcon('Folder'); // Reset icon
-  };
-
-  const handleGroupClick = async (group: Group) => {
-    if (!currentWindowId) {
-      console.warn('Current window ID not available.');
-      return;
+  const handleDeleteGroup = (uuid: string) => {
+    if (activeGroupsInOtherWindows.has(uuid)) {
+      alert('Cannot delete a group that is active in another window.');
+      return; // Do not allow deletion if group is active in another window
     }
-
-    const windowIdHoldingGroup = getWindowIdForActiveGroup(group.uuid);
-
-    if (windowIdHoldingGroup && windowIdHoldingGroup !== currentWindowId) {
-      alert(`This group is already active in another window (Window ID: ${windowIdHoldingGroup}).`);
-      return;
-    }
-
-    // Deactivate the currently active group in this window, if any
-    const previouslyActiveGroupInWindow = getActiveGroupForWindow(currentWindowId);
-    if (previouslyActiveGroupInWindow) {
-      // Logic to close tabs of the previously active group
-      const tabsToClose = (await chrome.tabs.query({ windowId: currentWindowId })).filter((tab: any) => TabStorage.getTabsByGroupId(previouslyActiveGroupInWindow).some(gTab => gTab.url === tab.url));
-      if (tabsToClose.length > 0) {
-        await chrome.tabs.remove(tabsToClose.map((tab: any) => tab.id));
-      }
-    }
-
-    // Activate the new group in the current window
-    setActiveGroupForWindow(currentWindowId, group.uuid);
-    setActiveGroupInCurrentWindow(group.uuid);
-
-    // Open tabs for the newly active group
-    const tabsToOpen = TabStorage.getTabsByGroupId(group.uuid);
-    for (const tab of tabsToOpen) {
-      await chrome.tabs.create({ url: tab.url, active: !tab.pinned }); // Open non-pinned tabs in background
-    }
-
-    // Close the current popup window
-    window.close();
-  };
-
-  const handleDeleteGroup = (groupId: string) => {
-    if (window.confirm('Are you sure you want to delete this group? All associated tabs will also be lost.')) {
-      deleteGroup(groupId);
-      setGroups(getGroups(true)); // Refresh groups, including deleted ones
+    if (window.confirm('Are you sure you want to delete this group?')) {
+      deleteGroup(uuid);
+      setGroups(getGroups(true)); // Refresh groups
     }
   };
 
-  const handleRestoreGroup = (groupId: string) => {
-    restoreGroup(groupId);
-    setGroups(getGroups(true)); // Refresh groups, including deleted ones
+  const handleRestoreGroup = (uuid: string) => {
+    restoreGroup(uuid);
+    setGroups(getGroups(true)); // Refresh groups
   };
 
   const handleOpenGroupInNewWindow = async (group: Group) => {
-    try {
-      const newWindow = await chrome.windows.create({
-        url: TabStorage.getTabsByGroupId(group.uuid).map(tab => tab.url).join(','),
-        incognito: false, // Or true for incognito
-        type: 'normal',
-      });
-
-      if (newWindow && newWindow.id) {
-        setActiveGroupForWindow(newWindow.id, group.uuid);
-        setActiveGroupInCurrentWindow(group.uuid);
-
-        const tabsToOpen = TabStorage.getTabsByGroupId(group.uuid);
-        for (const tab of tabsToOpen) {
-          await chrome.tabs.create({ url: tab.url, active: !tab.pinned });
+    if (activeGroupsInOtherWindows.has(group.uuid)) {
+      alert('This group is currently active in another window and cannot be opened.');
+      return; // Do not allow opening if group is active in another window
+    }
+    if (group.tabs && group.tabs.length > 0) {
+      const urls = group.tabs.map(tab => tab.url);
+      try {
+        const newWindow = await chrome.windows.create({ url: urls[0], focused: true });
+        if (newWindow && newWindow.id) {
+          setActiveGroupForWindow(newWindow.id, group.uuid);
+          // Open remaining tabs
+          for (let i = 1; i < urls.length; i++) {
+            await chrome.tabs.create({ windowId: newWindow.id, url: urls[i], pinned: group.tabs[i].isPinned });
+          }
+          alert(`Group "${group.name}" opened in a new window!`);
+          fetchGroups(); // Refresh groups to update UI
         }
-        alert(`Group \"${group.name}\" opened in a new window (Window ID: ${newWindow.id}).`);
-      } else {
+      } catch (error) {
+        console.error('Error opening group in new window:', error);
         alert('Failed to open group in a new window.');
       }
-    } catch (error) {
-      console.error('Error opening group in new window:', error);
-      alert('Failed to open group in a new window. Please ensure the extension has necessary permissions.');
+    } else {
+      alert('This group has no tabs to open!');
+    }
+  };
+
+  const handleActivateGroup = async (group: Group) => {
+    if (activeGroupsInOtherWindows.has(group.uuid)) {
+      alert('This group is currently active in another window and cannot be activated.');
+      return; // Do not allow activation if group is active in another window
+    }
+
+    if (currentWindowId === null) {
+      console.error('Current window ID is not set.');
+      alert('Cannot activate group: window ID not found.');
+      return;
+    }
+
+    // Deactivate the currently active group in this window if any
+    const currentlyActiveGroupInWindow = getActiveGroupForWindow(currentWindowId);
+    if (currentlyActiveGroupInWindow) {
+      setActiveGroupForWindow(currentWindowId, null);
+    }
+
+    // Set the selected group as active in the current window
+    setActiveGroupForWindow(currentWindowId, group.uuid);
+    setActiveGroupInCurrentWindow(group.uuid);
+    fetchGroups(); // Refresh groups to update UI
+
+    if (group.tabs && group.tabs.length > 0) {
+      try {
+        const currentWindowTabs = await chrome.tabs.query({ windowId: currentWindowId });
+
+        // Close all existing tabs in the current window except pinned ones
+        for (const tab of currentWindowTabs) {
+          if (!tab.pinned) {
+            await chrome.tabs.remove(tab.id);
+          }
+        }
+
+        // Open tabs from the selected group
+        for (const tab of group.tabs) {
+          await chrome.tabs.create({ url: tab.url, active: false, pinned: tab.isPinned });
+        }
+        alert(`Group "${group.name}" activated!`);
+      } catch (error) {
+        console.error('Error activating group:', error);
+        alert('Failed to activate group.');
+      }
+    } else {
+      // If the group has no tabs, open a new empty tab
+      try {
+        const currentWindowTabs = await chrome.tabs.query({ windowId: currentWindowId });
+        for (const tab of currentWindowTabs) {
+          if (!tab.pinned) {
+            await chrome.tabs.remove(tab.id);
+          }
+        }
+        await chrome.tabs.create({ active: true }); // Open a new blank tab
+        alert(`Group "${group.name}" activated with a new empty tab!`);
+      } catch (error) {
+        console.error('Error opening new tab for empty group:', error);
+        alert('Failed to open new tab.');
+      }
     }
   };
 
   return (
-    <div className="group-list">
-      <div className="create-group-section">
+    <div className="group-list-container p-4">
+      <h2 className="text-xl font-bold mb-4">Your Groups</h2>
+
+      {/* Input for new group */}
+      <div className="mb-4 flex items-center space-x-2">
         <input
           type="text"
           placeholder="New group name"
           value={newGroupName}
-          onChange={(e) => setNewGroupName(e.target.value)}
+          onChange={e => setNewGroupName(e.target.value)}
+          className="input input-bordered w-full max-w-xs"
         />
         <input
           type="color"
           value={newGroupColor}
-          onChange={(e) => setNewGroupColor(e.target.value)}
+          onChange={e => setNewGroupColor(e.target.value)}
+          className="input input-bordered w-16"
         />
-        <select value={newGroupIcon} onChange={(e) => setNewGroupIcon(e.target.value)}>
+        <select
+          value={newGroupIcon}
+          onChange={e => setNewGroupIcon(e.target.value)}
+          className="select select-bordered"
+        >
           <option value="Folder">Folder</option>
+          <option value="Home">Home</option>
           <option value="Work">Work</option>
-          <option value="Personal">Personal</option>
           <option value="Travel">Travel</option>
-          <option value="Education">Education</option>
+          <option value="Code">Code</option>
+          <option value="Game">Game</option>
+          <option value="Music">Music</option>
+          <option value="Read">Read</option>
         </select>
-        <button onClick={handleCreateGroup}>Create Group</button>
+        <button onClick={handleCreateGroup} className="btn btn-primary">
+          Create Group
+        </button>
       </div>
-      <div className="save-window-group-section">
-        <button onClick={handleSaveCurrentWindowAsGroup}>Save Current Window as New Group</button>
-      </div>
+      <button onClick={handleSaveCurrentWindowAsGroup} className="btn btn-secondary mb-4">
+        Save Current Window as Group
+      </button>
+
       {groups.length === 0 ? (
-        <p>No groups found. Create a new one!</p>
+        <p>No groups yet. Create one!</p>
       ) : (
-        groups.map(group => (
-          <div key={group.uuid} className={`group-item ${group.isDeleted ? 'deleted' : ''}`} style={{ borderLeft: `5px solid ${group.color}` }}>
-            <h3 onDoubleClick={() => handleEditGroupName(group)} style={{ cursor: 'pointer' }}>
-              <span className="group-icon" style={{ marginRight: '8px' }}>{group.icon}</span>
-              {editingGroupId === group.uuid ? (
-                <>
-                  <input
-                    type="text"
-                    value={editedGroupName}
-                    onChange={(e) => setEditedGroupName(e.target.value)}
-                    onBlur={() => handleSaveEditedGroupName(group)}
-                    onKeyPress={(e) => {
-                      if (e.key === 'Enter') {
-                        handleSaveEditedGroupName(group);
-                      }
-                    }}
-                    autoFocus
-                  />
-                  <input
-                    type="color"
-                    value={editedGroupColor}
-                    onChange={(e) => setEditedGroupColor(e.target.value)}
-                  />
-                  <select value={editedGroupIcon} onChange={(e) => setEditedGroupIcon(e.target.value)}>
-                    <option value="Folder">Folder</option>
-                    <option value="Work">Work</option>
-                    <option value="Personal">Personal</option>
-                    <option value="Travel">Travel</option>
-                    <option value="Education">Education</option>
-                  </select>
-                  <button onClick={() => handleSaveEditedGroupName(group)}>Save</button>
-                  <button onClick={handleCancelEdit}>Cancel</button>
-                </>
-              ) : (
-                <>
-                  {group.name} ({TabStorage.getTabsByGroupId(group.uuid).length})
-                  {getWindowIdForActiveGroup(group.uuid) && getWindowIdForActiveGroup(group.uuid) !== currentWindowId && (
-                    <span className="lock-icon" title={`Active in Window ID: ${getWindowIdForActiveGroup(group.uuid)}`}> 🔒</span>
-                  )}
-                  <span onClick={() => toggleGroupExpansion(group.uuid)}>
-                    {expandedGroups.has(group.uuid) ? ' ▼' : ' ▶'}
-                  </span>
-                  {group.isDeleted ? (
-                    <button onClick={() => handleRestoreGroup(group.uuid)}>Restore</button>
-                  ) : (
-                    <>
+        <ul className="space-y-2">
+          {groups.filter(group => !group.isDeleted).map(group => (
+            <li key={group.uuid} className="card bg-base-200 shadow-md">
+              <div className="card-body">
+                {editingGroupId === group.uuid ? (
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="text"
+                      value={editedGroupName}
+                      onChange={e => setEditedGroupName(e.target.value)}
+                      className="input input-bordered flex-grow"
+                    />
+                    <input
+                      type="color"
+                      value={editedGroupColor}
+                      onChange={e => setEditedGroupColor(e.target.value)}
+                      className="input input-bordered w-16"
+                    />
+                    <select
+                      value={editedGroupIcon}
+                      onChange={e => setEditedGroupIcon(e.target.value)}
+                      className="select select-bordered"
+                    >
+                      <option value="Folder">Folder</option>
+                      <option value="Home">Home</option>
+                      <option value="Work">Work</option>
+                      <option value="Travel">Travel</option>
+                      <option value="Code">Code</option>
+                      <option value="Game">Game</option>
+                      <option value="Music">Music</option>
+                      <option value="Read">Read</option>
+                    </select>
+                    <button onClick={() => handleSaveEditedGroup(group)} className="btn btn-success">
+                      Save
+                    </button>
+                    <button onClick={() => setEditingGroupId(null)} className="btn btn-ghost">
+                      Cancel
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-2">
                       <button
-                        onClick={() => handleGroupClick(group)}
-                        disabled={!!(getWindowIdForActiveGroup(group.uuid) && getWindowIdForActiveGroup(group.uuid) !== currentWindowId)}
-                        title={getWindowIdForActiveGroup(group.uuid) && getWindowIdForActiveGroup(group.uuid) !== currentWindowId ? `Active in Window ID: ${getWindowIdForActiveGroup(group.uuid)}` : ''}
+                        onClick={() => toggleGroupExpansion(group.uuid)}
+                        className={`btn btn-sm btn-circle ${activeGroupsInOtherWindows.has(group.uuid) ? 'btn-disabled' : ''}`}
+                        disabled={activeGroupsInOtherWindows.has(group.uuid)}
+                      >
+                        {expandedGroups.has(group.uuid) ? '-' : '+'}
+                      </button>
+                      <span className="text-lg font-semibold" style={{ color: group.color }}>
+                        {group.name} ({group.tabs.length} tabs)
+                      </span>
+                      {group.uuid === activeGroupInCurrentWindow && (
+                        <span className="badge badge-info ml-2">Active in this window</span>
+                      )}
+                      {activeGroupsInOtherWindows.has(group.uuid) && (
+                        <span data-testid="lock-icon"><Lock className="h-5 w-5 ml-2 text-warning" /></span>
+                      )}
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <button onClick={() => handleActivateGroup(group)} className="btn btn-sm btn-info"
+                        disabled={activeGroupsInOtherWindows.has(group.uuid)}
                       >
                         Activate
                       </button>
-                      <button onClick={() => handleDeleteGroup(group.uuid)} className="delete-button">Delete</button>
-                      <button onClick={() => handleOpenGroupInNewWindow(group)} className="open-new-window-button">Open in New Window</button>
-                    </>
-                  )}
-                </>
-              )}
-            </h3>
-            {expandedGroups.has(group.uuid) && (
-              <div className="tab-list">
-                {TabStorage.getTabsByGroupId(group.uuid).map(tab => (
-                  <div key={tab.uuid} className="tab-item">
-                    <img src={tab.faviconUrl} alt="favicon" style={{ width: '16px', height: '16px', marginRight: '8px' }} />
-                    <span>{tab.title}</span>
+                      <button onClick={() => handleOpenGroupInNewWindow(group)} className="btn btn-sm btn-accent"
+                        disabled={activeGroupsInOtherWindows.has(group.uuid)}
+                      >
+                        Open in New Window
+                      </button>
+                      <button onClick={() => handleEditGroup(group)} className="btn btn-sm btn-warning"
+                        disabled={activeGroupsInOtherWindows.has(group.uuid)}
+                      >
+                        Edit
+                      </button>
+                      <button onClick={() => handleDeleteGroup(group.uuid)} className="btn btn-sm btn-error"
+                        disabled={activeGroupsInOtherWindows.has(group.uuid)}
+                      >
+                        Delete
+                      </button>
+                    </div>
                   </div>
-                ))}
+                )}
+                {expandedGroups.has(group.uuid) && (
+                  <ul className="ml-8 mt-2 space-y-1">
+                    {group.tabs.map((tab, index) => (
+                      <li key={index} className="flex items-center space-x-2">
+                        {tab.favIconUrl && <img src={tab.favIconUrl} alt="Favicon" className="w-4 h-4" />}
+                        <a href={tab.url} target="_blank" rel="noopener noreferrer" className="link link-hover">
+                          {tab.title}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </div>
-            )}
-          </div>
-        ))
+            </li>
+          ))}
+          {groups.filter(group => group.isDeleted).length > 0 && (
+            <div className="border-t border-base-300 pt-4 mt-4">
+              <h3 className="text-lg font-bold mb-2">Deleted Groups</h3>
+              <ul className="space-y-2">
+                {groups.filter(group => group.isDeleted).map(group => (
+                  <li key={group.uuid} className="card bg-base-100 shadow-md">
+                    <div className="card-body flex-row items-center justify-between">
+                      <span className="text-lg line-through">{group.name}</span>
+                      <button onClick={() => handleRestoreGroup(group.uuid)} className="btn btn-sm btn-success">
+                        Restore
+                      </button>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </ul>
       )}
     </div>
   );

@@ -1,94 +1,88 @@
 import type { Group } from '../types/Group';
 
-const STORAGE_KEY = 'atrium_groups';
-const ACTIVE_GROUPS_STORAGE_KEY = 'atrium_active_groups_by_window';
+const STORAGE_KEY = 'atrium-groups';
 
-interface ActiveGroupMap {
-  [windowId: number]: string; // Maps windowId to groupId
-}
-
-let activeGroupsByWindow: ActiveGroupMap = {};
-
-function loadActiveGroups(): void {
-  const activeGroupsJson = localStorage.getItem(ACTIVE_GROUPS_STORAGE_KEY);
-  if (activeGroupsJson) {
-    activeGroupsByWindow = JSON.parse(activeGroupsJson);
+export const getGroups = (includeDeleted: boolean = false): Group[] => {
+  const storedGroups = localStorage.getItem(STORAGE_KEY);
+  if (storedGroups) {
+    const parsedGroups: Group[] = JSON.parse(storedGroups);
+    return includeDeleted ? parsedGroups : parsedGroups.filter(group => !group.isDeleted);
   }
-}
+  return [];
+};
 
-function saveActiveGroups(): void {
-  localStorage.setItem(ACTIVE_GROUPS_STORAGE_KEY, JSON.stringify(activeGroupsByWindow));
-}
+export const saveGroups = (groupsToSave: Group[]) => {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(groupsToSave));
+};
 
-// Load initial state when the module is loaded
-loadActiveGroups();
+export const getGroup = (uuid: string): Group | undefined => {
+  return getGroups(true).find(group => group.uuid === uuid);
+};
 
-export function getGroups(includeDeleted: boolean = false): Group[] {
-  const groupsJson = localStorage.getItem(STORAGE_KEY);
-  const allGroups: Group[] = groupsJson ? JSON.parse(groupsJson) : [];
-  return includeDeleted ? allGroups : allGroups.filter(group => !group.isDeleted);
-}
+export const createGroup = (newGroup: Group) => {
+  const currentGroups = getGroups(true);
+  saveGroups([...currentGroups, newGroup]);
+};
 
-function saveGroups(groups: Group[]): void {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(groups));
-}
+export const updateGroup = (updatedGroup: Group) => {
+  let currentGroups = getGroups(true);
+  currentGroups = currentGroups.map(group =>
+    group.uuid === updatedGroup.uuid ? { ...group, ...updatedGroup, updatedAt: Date.now() } : group
+  );
+  saveGroups(currentGroups);
+};
 
-export function createGroup(group: Group): void {
-  const groups = getGroups(true); // Get all groups including deleted ones
-  groups.push(group);
-  saveGroups(groups);
-}
+export const deleteGroup = (uuid: string) => {
+  let currentGroups = getGroups(true);
+  currentGroups = currentGroups.map(group =>
+    group.uuid === uuid ? { ...group, isDeleted: true, deletedAt: Date.now() } : group
+  );
+  saveGroups(currentGroups);
+};
 
-export function getGroup(uuid: string): Group | undefined {
-  const groups = getGroups(true); // Get all groups including deleted ones
-  return groups.find(group => group.uuid === uuid);
-}
+export const restoreGroup = (uuid: string) => {
+  let currentGroups = getGroups(true);
+  currentGroups = currentGroups.map(group =>
+    group.uuid === uuid ? { ...group, isDeleted: false, deletedAt: undefined } : group
+  );
+  saveGroups(currentGroups);
+};
 
-export function updateGroup(updatedGroup: Group): void {
-  let groups = getGroups(true); // Get all groups including deleted ones
-  groups = groups.map(group => group.uuid === updatedGroup.uuid ? updatedGroup : group);
-  saveGroups(groups);
-}
+const ACTIVE_GROUP_WINDOW_PREFIX = 'atrium-active-group-window-';
 
-export function deleteGroup(uuid: string): void {
-  let groups = getGroups(true); // Get all groups including deleted ones
-  const groupToDelete = groups.find(group => group.uuid === uuid);
-  if (groupToDelete) {
-    groupToDelete.isDeleted = true;
-    groupToDelete.deletedAt = Date.now();
-    saveGroups(groups);
-  }
-}
-
-export function restoreGroup(uuid: string): void {
-  let groups = getGroups(true); // Get all groups including deleted ones
-  const groupToRestore = groups.find(group => group.uuid === uuid);
-  if (groupToRestore) {
-    groupToRestore.isDeleted = false;
-    delete groupToRestore.deletedAt; // Remove the deletedAt property
-    saveGroups(groups);
-  }
-}
-
-export function setActiveGroupForWindow(windowId: number, groupId: string): void {
-  activeGroupsByWindow[windowId] = groupId;
-  saveActiveGroups();
-}
-
-export function getActiveGroupForWindow(windowId: number): string | undefined {
-  return activeGroupsByWindow[windowId];
-}
-
-export function getWindowIdForActiveGroup(groupId: string): number | undefined {
-  for (const windowId in activeGroupsByWindow) {
-    if (activeGroupsByWindow[windowId] === groupId) {
-      return parseInt(windowId, 10);
+export const setActiveGroupForWindow = (windowId: number, groupId: string | null) => {
+  const currentGroups = getGroups(true);
+  let groupsToSave = currentGroups.map(group => {
+    if (group.uuid === groupId) {
+      return { ...group, activeInWindowId: windowId };
+    } else if (group.activeInWindowId === windowId) {
+      // If another group was active in this window, clear its activeInWindowId
+      return { ...group, activeInWindowId: undefined };
     }
-  }
-  return undefined;
-}
+    return group;
+  });
+  saveGroups(groupsToSave);
+};
 
-export function removeActiveGroupForWindow(windowId: number): void {
-  delete activeGroupsByWindow[windowId];
-  saveActiveGroups();
-}
+export const getActiveGroupForWindow = (windowId: number): string | null => {
+  const groups = getGroups();
+  const activeGroup = groups.find(group => group.activeInWindowId === windowId);
+  return activeGroup ? activeGroup.uuid : null;
+};
+
+export const getWindowIdForActiveGroup = (groupId: string): number | null => {
+  const groups = getGroups();
+  const activeGroup = groups.find(group => group.uuid === groupId && group.activeInWindowId !== undefined);
+  return activeGroup ? activeGroup.activeInWindowId || null : null;
+};
+
+export const removeActiveGroupForWindow = (windowId: number) => {
+  const currentGroups = getGroups(true);
+  const groupsToSave = currentGroups.map(group => {
+    if (group.activeInWindowId === windowId) {
+      return { ...group, activeInWindowId: undefined };
+    }
+    return group;
+  });
+  saveGroups(groupsToSave);
+};
