@@ -426,6 +426,7 @@ export default function GroupList() {
                     pointerEvents: isActiveElsewhere ? 'none' : undefined,
                   }}
                   title={isActiveElsewhere ? 'This group is active in another window' : undefined}
+                  aria-label={group.name} // Add aria-label for accessibility
                 >
                   <Tooltip.Root>
                     <Tooltip.Trigger asChild>
