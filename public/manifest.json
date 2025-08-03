@@ -1,0 +1,18 @@
+{
+  "manifest_version": 3,
+  "name": "Atrium Tabs",
+  "version": "1.0.0",
+  "description": "A minimalist Chrome extension for real-time tab group switching.",
+  "action": {
+    "default_popup": "index.html",
+    "default_icon": {
+      "16": "vite.svg",
+      "48": "vite.svg",
+      "128": "vite.svg"
+    }
+  },
+  "permissions": [
+    "tabs",
+    "storage"
+  ]
+}

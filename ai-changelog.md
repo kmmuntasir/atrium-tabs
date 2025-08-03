@@ -46,3 +46,4 @@
   - Configured Vitest to use `jest-dom` matchers via `test/setupTests.ts` and `vite.config.ts`.
   - Added build script to `package.json` and built the project.
   - Created placeholder integration test `test/integration/PopupLoading.test.ts`.
+  - Created `public/manifest.json` for extension configuration and updated `package.json` and `index.html` to support extension loading.
