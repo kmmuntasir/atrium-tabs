@@ -193,6 +193,11 @@ const GroupList: React.FC = () => {
     }
   };
 
+  const handleDeleteGroupAndKeepTabs = (uuid: string) => {
+    // TODO: Implement this function
+    alert('Not implemented yet');
+  };
+
   const handleRestoreGroup = (uuid: string) => {
     restoreGroup(uuid);
     setGroups(getGroups(true)); // Refresh groups
@@ -303,17 +308,17 @@ const GroupList: React.FC = () => {
             <Accordion.Header>
               <Accordion.Trigger className={`w-full p-2 text-left flex justify-between items-center ${group.uuid === activeGroupInCurrentWindow ? 'bg-blue-200' : ''}`}>
                 <span>{group.name} ({group.tabs.length})</span>
-                <Toolbar.Root className="flex items-center">
-                  <Toolbar.Button className="p-1" onClick={() => handleEditGroup(group)}>
+                <div className="flex items-center">
+                  <button className="p-1" onClick={() => handleEditGroup(group)}>
                     <Pencil className="h-4 w-4" />
-                  </Toolbar.Button>
-                  <Toolbar.Button className="p-1" onClick={() => handleDeleteGroup(group.uuid)}>
+                  </button>
+                  <button className="p-1" onClick={() => handleDeleteGroup(group.uuid)}>
                     <Trash2 className="h-4 w-4" />
-                  </Toolbar.Button>
-                  <Toolbar.Button className="p-1">
+                  </button>
+                  <button className="p-1">
                     <X className="h-4 w-4" />
-                  </Toolbar.Button>
-                </Toolbar.Root>
+                  </button>
+                </div>
               </Accordion.Trigger>
             </Accordion.Header>
             <Accordion.Content className="p-2 bg-white">
@@ -389,17 +394,22 @@ const GroupList: React.FC = () => {
           </Dialog.Portal>
         </Dialog.Root>
       </div>
+      </Dialog.Root>
+      </div>
       <Toolbar.Root className="flex items-center justify-between mt-2 p-2 border-t border-gray-300">
-        <Toolbar.Button className="p-1">
-          <List className="h-4 w-4" />
-        </Toolbar.Button>
+        <button className="p-1" onClick={() => handleDeleteGroupAndKeepTabs(activeGroupInCurrentWindow || '')}>
+          Supprimer le groupe actuel en gardant les onglets ouverts
+        </button>
         <div className="flex items-center">
-          <Toolbar.Button className="p-1">
+          <button className="p-1">
+            <List className="h-4 w-4" />
+          </button>
+          <button className="p-1">
             <ArrowUpDown className="h-4 w-4" />
-          </Toolbar.Button>
-          <Toolbar.Button className="p-1">
+          </button>
+          <button className="p-1">
             <Settings className="h-4 w-4" />
-          </Toolbar.Button>
+          </button>
         </div>
       </Toolbar.Root>
     </div>
