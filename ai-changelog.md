@@ -160,3 +160,11 @@
 **Files Modified:**
 - src/App.tsx
 **Reason for update:** Completion of demo button removal.
+
+### 2024-07-30 14:30:00 - Task Completed
+**Task:** [ATRIUM-UI]: Remove hero section and fix double scrollbar
+**Description:** Removed the "Atrium Tabs" hero section from App.tsx and adjusted App.css to eliminate the inner scrollbar in GroupList by removing `overflow-y: auto` from `.App-content`.
+**Files Modified:**
+- src/App.tsx
+- src/App.css
+**Reason for update:** Implemented UI/UX improvements based on user feedback to streamline the popup window display and enhance scroll behavior.

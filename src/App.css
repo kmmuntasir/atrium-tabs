@@ -62,16 +62,11 @@ h1 {
   height: 100vh; /* Make the app fill the viewport height */
 }
 
-.App-header {
-  background-color: var(--color-background-primary);
-  padding: 1rem;
-  color: var(--color-text-primary);
-}
+/* No App-header styles needed as the header is removed */
 
 .App-content {
   flex-grow: 1; /* Allow content to take available space */
   padding: 1rem;
-  overflow-y: auto; /* Enable scrolling for content */
 }
 
 .group-list {
