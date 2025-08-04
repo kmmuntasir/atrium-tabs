@@ -11,6 +11,7 @@ declare const chrome: any; // Declare chrome for TypeScript
 
 import * as Accordion from '@radix-ui/react-accordion';
 import * as Toolbar from '@radix-ui/react-toolbar';
+import * as Dialog from '@radix-ui/react-dialog';
 import { X, Trash2, Pencil, MoveVertical, GripVertical } from 'lucide-react';
 
 const GroupList: React.FC = () => {
@@ -23,6 +24,7 @@ const GroupList: React.FC = () => {
   const [editedGroupColor, setEditedGroupColor] = useState<string>('#007bff'); // State for edited group color
   const [editedGroupIcon, setEditedGroupIcon] = useState<string>('Folder'); // State for edited group icon
   const [currentWindowId, setCurrentWindowId] = useState<number | null>(null);
+  const [searchTerm, setSearchTerm] = useState('');
   const [activeGroupInCurrentWindow, setActiveGroupInCurrentWindow] = useState<string | null>(null);
   const [activeGroupsInOtherWindows, setActiveGroupsInOtherWindows] = useState<Set<string>>(new Set());
 
@@ -291,19 +293,21 @@ const GroupList: React.FC = () => {
           type="text"
           placeholder="Recherche..."
           className="w-full p-1 border border-gray-300 rounded"
+          value={searchTerm}
+          onChange={e => setSearchTerm(e.target.value)}
         />
       </div>
       <Accordion.Root type="single" collapsible className="w-full">
-        {groups.filter(group => !group.isDeleted).map(group => (
+        {groups.filter(group => !group.isDeleted && group.name.toLowerCase().includes(searchTerm.toLowerCase())).map(group => (
           <Accordion.Item key={group.uuid} value={group.uuid} className="border-b border-gray-300">
             <Accordion.Header>
               <Accordion.Trigger className="w-full p-2 text-left flex justify-between items-center">
                 <span>{group.name} ({group.tabs.length})</span>
                 <Toolbar.Root className="flex items-center">
-                  <Toolbar.Button className="p-1">
+                  <Toolbar.Button className="p-1" onClick={() => handleEditGroup(group)}>
                     <Pencil className="h-4 w-4" />
                   </Toolbar.Button>
-                  <Toolbar.Button className="p-1">
+                  <Toolbar.Button className="p-1" onClick={() => handleDeleteGroup(group.uuid)}>
                     <Trash2 className="h-4 w-4" />
                   </Toolbar.Button>
                   <Toolbar.Button className="p-1">
@@ -333,6 +337,58 @@ const GroupList: React.FC = () => {
           </Accordion.Item>
         ))}
       </Accordion.Root>
+      <div className="mt-2">
+        <Dialog.Root>
+          <Dialog.Trigger asChild>
+            <button className="w-full p-2 border border-gray-300 rounded">
+              Créer un nouveau groupe
+            </button>
+          </Dialog.Trigger>
+          <Dialog.Portal>
+            <Dialog.Overlay className="fixed inset-0 bg-black/50" />
+            <Dialog.Content className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white p-4 rounded">
+              <Dialog.Title>Create New Group</Dialog.Title>
+              <div className="mt-4 flex flex-col space-y-2">
+                <input
+                  type="text"
+                  placeholder="New group name"
+                  value={newGroupName}
+                  onChange={e => setNewGroupName(e.target.value)}
+                  className="input input-bordered w-full max-w-xs"
+                />
+                <input
+                  type="color"
+                  value={newGroupColor}
+                  onChange={e => setNewGroupColor(e.target.value)}
+                  className="input input-bordered w-16"
+                />
+                <select
+                  value={newGroupIcon}
+                  onChange={e => setNewGroupIcon(e.target.value)}
+                  className="select select-bordered"
+                >
+                  <option value="Folder">Folder</option>
+                  <option value="Home">Home</option>
+                  <option value="Work">Work</option>
+                  <option value="Travel">Travel</option>
+                  <option value="Code">Code</option>
+                  <option value="Game">Game</option>
+                  <option value="Music">Music</option>
+                  <option value="Read">Read</option>
+                </select>
+                <button onClick={handleCreateGroup} className="btn btn-primary">
+                  Create Group
+                </button>
+              </div>
+              <Dialog.Close asChild>
+                <button className="absolute top-2 right-2">
+                  <X className="h-4 w-4" />
+                </button>
+              </Dialog.Close>
+            </Dialog.Content>
+          </Dialog.Portal>
+        </Dialog.Root>
+      </div>
     </div>
   );
 };
