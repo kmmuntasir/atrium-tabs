@@ -18,17 +18,6 @@ function App() {
     <div className="App">
       <header className="App-header">
         <h1>Atrium Tabs</h1>
-        <button
-          onClick={() => {
-            setOpenToast(false);
-            clearTimeout(timerRef.current);
-            timerRef.current = window.setTimeout(() => {
-              setOpenToast(true);
-            }, 100);
-          }}
-        >
-          Show Toast
-        </button>
       </header>
       <main className="App-content">
         <GroupList />
@@ -38,10 +27,10 @@ function App() {
         <Toast.Root className="ToastRoot" open={openToast} onOpenChange={setOpenToast}>
           <Toast.Title className="ToastTitle">Heads up!</Toast.Title>
           <Toast.Description asChild>
-            <p>This is a sample toast notification.</p>
+            <p>This is a toast notification.</p>
           </Toast.Description>
           <Toast.Action className="ToastAction" asChild altText="Goto schedule to undo">
-            <button className="Button green">Undo</button>
+            <button className="Button vanilla">Undo</button>
           </Toast.Action>
         </Toast.Root>
         <Toast.Viewport className="ToastViewport" />
