@@ -10,6 +10,8 @@ import { Lock } from 'lucide-react'; // Import the Lock icon
 declare const chrome: any; // Declare chrome for TypeScript
 
 import * as Accordion from '@radix-ui/react-accordion';
+import * as Toolbar from '@radix-ui/react-toolbar';
+import { X, Trash2, Pencil, MoveVertical, GripVertical } from 'lucide-react';
 
 const GroupList: React.FC = () => {
   const [groups, setGroups] = useState<Group[]>([]);
@@ -297,17 +299,33 @@ const GroupList: React.FC = () => {
             <Accordion.Header>
               <Accordion.Trigger className="w-full p-2 text-left flex justify-between items-center">
                 <span>{group.name} ({group.tabs.length})</span>
-                {/* Add group controls here */}
+                <Toolbar.Root className="flex items-center">
+                  <Toolbar.Button className="p-1">
+                    <Pencil className="h-4 w-4" />
+                  </Toolbar.Button>
+                  <Toolbar.Button className="p-1">
+                    <Trash2 className="h-4 w-4" />
+                  </Toolbar.Button>
+                  <Toolbar.Button className="p-1">
+                    <X className="h-4 w-4" />
+                  </Toolbar.Button>
+                </Toolbar.Root>
               </Accordion.Trigger>
             </Accordion.Header>
             <Accordion.Content className="p-2 bg-white">
               <ul className="space-y-1">
                 {group.tabs.map((tab, index) => (
-                  <li key={index} className="flex items-center space-x-2">
-                    {tab.favIconUrl && <img src={tab.favIconUrl} alt="Favicon" className="w-4 h-4" />}
-                    <a href={tab.url} target="_blank" rel="noopener noreferrer" className="link link-hover">
-                      {tab.title}
-                    </a>
+                  <li key={index} className="flex items-center justify-between">
+                    <div className="flex items-center space-x-2">
+                      <GripVertical className="h-4 w-4 cursor-move" />
+                      {tab.favIconUrl && <img src={tab.favIconUrl} alt="Favicon" className="w-4 h-4" />}
+                      <a href={tab.url} target="_blank" rel="noopener noreferrer" className="link link-hover">
+                        {tab.title}
+                      </a>
+                    </div>
+                    <button className="p-1">
+                      <X className="h-4 w-4" />
+                    </button>
                   </li>
                 ))}
               </ul>
