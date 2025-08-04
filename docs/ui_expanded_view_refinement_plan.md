@@ -6,13 +6,13 @@ The goal of this plan is to refine the UI of the expanded group view within the 
 
 ## 2. Refinement Checklist
 
-- [ ] **Phase 1: Tab List Spacing and Alignment**
-    - [ ] Reduce the vertical spacing between individual tabs within an expanded group.
-    - [ ] Ensure proper horizontal alignment of the favicon, tab title, and tab close button.
+- [x] **Phase 1: Tab List Spacing and Alignment**
+    - [x] Reduce the vertical spacing between individual tabs within an expanded group.
+    - [x] Ensure proper horizontal alignment of the favicon, tab title, and tab close button.
 
-- [ ] **Phase 2: Tab Close Button Restyling**
-    - [ ] Restyle the tab close "X" button to be smaller and positioned consistently to the right of the tab title, similar to the reference image.
+- [x] **Phase 2: Tab Close Button Restyling**
+    - [x] Restyle the tab close "X" button to be smaller and positioned consistently to the right of the tab title, similar to the reference image.
 
-- [ ] **Phase 3: Active Tab Highlight and Final Polish**
-    - [ ] Implement a blue highlight for the currently active tab within an expanded group.
-    - [ ] Conduct a final visual review to ensure pixel-perfect consistency with the reference image for expanded groups.
+- [x] **Phase 3: Active Tab Highlight and Final Polish**
+    - [x] Implement a blue highlight for the currently active tab within an expanded group.
+    - [x] Conduct a final visual review to ensure pixel-perfect consistency with the reference image for expanded groups.
