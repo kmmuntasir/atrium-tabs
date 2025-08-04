@@ -9,9 +9,10 @@ import { Lock } from 'lucide-react'; // Import the Lock icon
 
 declare const chrome: any; // Declare chrome for TypeScript
 
+import * as Accordion from '@radix-ui/react-accordion';
+
 const GroupList: React.FC = () => {
   const [groups, setGroups] = useState<Group[]>([]);
-  const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
   const [newGroupName, setNewGroupName] = useState<string>(''); // State for new group name
   const [newGroupColor, setNewGroupColor] = useState<string>('#007bff'); // State for new group color
   const [newGroupIcon, setNewGroupIcon] = useState<string>('Folder'); // State for new group icon
@@ -80,21 +81,6 @@ const GroupList: React.FC = () => {
       }
     };
   }, [currentWindowId]); // Rerun effect when currentWindowId is set
-
-  const toggleGroupExpansion = (groupId: string) => {
-    if (activeGroupsInOtherWindows.has(groupId)) {
-      return; // Do not allow expansion if group is active in another window
-    }
-    setExpandedGroups(prev => {
-      const newSet = new Set(prev);
-      if (newSet.has(groupId)) {
-        newSet.delete(groupId);
-      } else {
-        newSet.add(groupId);
-      }
-      return newSet;
-    });
-  };
 
   const handleCreateGroup = () => {
     if (newGroupName.trim() === '') {
@@ -297,169 +283,38 @@ const GroupList: React.FC = () => {
   };
 
   return (
-    <div className="group-list-container p-4">
-      <h2 className="text-xl font-bold mb-4">Your Groups</h2>
-
-      {groups.length === 0 ? (
-        <p>No groups yet. Create one!</p>
-      ) : (
-        <ul className="space-y-2">
-          {groups.filter(group => !group.isDeleted).map(group => (
-            <li key={group.uuid} className="card bg-base-200 shadow-md">
-              <div className="card-body">
-                {editingGroupId === group.uuid ? (
-                  <div className="flex items-center space-x-2">
-                    <input
-                      type="text"
-                      value={editedGroupName}
-                      onChange={e => setEditedGroupName(e.target.value)}
-                      className="input input-bordered flex-grow"
-                    />
-                    <input
-                      type="color"
-                      value={editedGroupColor}
-                      onChange={e => setEditedGroupColor(e.target.value)}
-                      className="input input-bordered w-16"
-                    />
-                    <select
-                      value={editedGroupIcon}
-                      onChange={e => setEditedGroupIcon(e.target.value)}
-                      className="select select-bordered"
-                    >
-                      <option value="Folder">Folder</option>
-                      <option value="Home">Home</option>
-                      <option value="Work">Work</option>
-                      <option value="Travel">Travel</option>
-                      <option value="Code">Code</option>
-                      <option value="Game">Game</option>
-                      <option value="Music">Music</option>
-                      <option value="Read">Read</option>
-                    </select>
-                    <button onClick={() => handleSaveEditedGroup(group)} className="btn btn-success">
-                      Save
-                    </button>
-                    <button onClick={() => setEditingGroupId(null)} className="btn btn-ghost">
-                      Cancel
-                    </button>
-                  </div>
-                ) : (
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-2">
-                      <button
-                        onClick={() => toggleGroupExpansion(group.uuid)}
-                        className={`btn btn-sm btn-circle ${activeGroupsInOtherWindows.has(group.uuid) ? 'btn-disabled' : ''}`}
-                        disabled={activeGroupsInOtherWindows.has(group.uuid)}
-                      >
-                        {expandedGroups.has(group.uuid) ? '-' : '+'}
-                      </button>
-                      <span className="text-lg font-semibold" style={{ color: group.color }}>
-                        {group.name} ({group.tabs.length} tabs)
-                      </span>
-                      {group.uuid === activeGroupInCurrentWindow && (
-                        <span className="badge badge-info ml-2">Active in this window</span>
-                      )}
-                      {activeGroupsInOtherWindows.has(group.uuid) && (
-                        <span data-testid="lock-icon"><Lock className="h-5 w-5 ml-2 text-warning" /></span>
-                      )}
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <button onClick={() => handleActivateGroup(group)} className="btn btn-sm btn-info"
-                        disabled={activeGroupsInOtherWindows.has(group.uuid)}
-                      >
-                        Activate
-                      </button>
-                      <button onClick={() => handleOpenGroupInNewWindow(group)} className="btn btn-sm btn-accent"
-                        disabled={activeGroupsInOtherWindows.has(group.uuid)}
-                      >
-                        Open in New Window
-                      </button>
-                      <button onClick={() => handleEditGroup(group)} className="btn btn-sm btn-warning"
-                        disabled={activeGroupsInOtherWindows.has(group.uuid)}
-                      >
-                        Edit
-                      </button>
-                      <button onClick={() => handleDeleteGroup(group.uuid)} className="btn btn-sm btn-error"
-                        disabled={activeGroupsInOtherWindows.has(group.uuid)}
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  </div>
-                )}
-                {expandedGroups.has(group.uuid) && (
-                  <ul className="ml-8 mt-2 space-y-1">
-                    {group.tabs.map((tab, index) => (
-                      <li key={index} className="flex items-center space-x-2">
-                        {tab.favIconUrl && <img src={tab.favIconUrl} alt="Favicon" className="w-4 h-4" />}
-                        <a href={tab.url} target="_blank" rel="noopener noreferrer" className="link link-hover">
-                          {tab.title}
-                        </a>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
-            </li>
-          ))}
-          {groups.filter(group => group.isDeleted).length > 0 && (
-            <div className="border-t border-base-300 pt-4 mt-4">
-              <h3 className="text-lg font-bold mb-2">Deleted Groups</h3>
-              <ul className="space-y-2">
-                {groups.filter(group => group.isDeleted).map(group => (
-                  <li key={group.uuid} className="card bg-base-100 shadow-md">
-                    <div className="card-body flex-row items-center justify-between">
-                      <span className="text-lg line-through">{group.name}</span>
-                      <button onClick={() => handleRestoreGroup(group.uuid)} className="btn btn-sm btn-success">
-                        Restore
-                      </button>
-                    </div>
+    <div className="group-list-container p-2 bg-gray-100">
+      <div className="search-bar mb-2">
+        <input
+          type="text"
+          placeholder="Recherche..."
+          className="w-full p-1 border border-gray-300 rounded"
+        />
+      </div>
+      <Accordion.Root type="single" collapsible className="w-full">
+        {groups.filter(group => !group.isDeleted).map(group => (
+          <Accordion.Item key={group.uuid} value={group.uuid} className="border-b border-gray-300">
+            <Accordion.Header>
+              <Accordion.Trigger className="w-full p-2 text-left flex justify-between items-center">
+                <span>{group.name} ({group.tabs.length})</span>
+                {/* Add group controls here */}
+              </Accordion.Trigger>
+            </Accordion.Header>
+            <Accordion.Content className="p-2 bg-white">
+              <ul className="space-y-1">
+                {group.tabs.map((tab, index) => (
+                  <li key={index} className="flex items-center space-x-2">
+                    {tab.favIconUrl && <img src={tab.favIconUrl} alt="Favicon" className="w-4 h-4" />}
+                    <a href={tab.url} target="_blank" rel="noopener noreferrer" className="link link-hover">
+                      {tab.title}
+                    </a>
                   </li>
                 ))}
               </ul>
-            </div>
-          )}
-        </ul>
-      )}
-
-      {/* Create New Group Section */}
-      <div className="border-t border-base-300 pt-4 mt-4">
-        <h3 className="text-lg font-bold mb-2">Create New Group</h3>
-        <div className="mb-4 flex items-center space-x-2">
-          <input
-            type="text"
-            placeholder="New group name"
-            value={newGroupName}
-            onChange={e => setNewGroupName(e.target.value)}
-            className="input input-bordered w-full max-w-xs"
-          />
-          <input
-            type="color"
-            value={newGroupColor}
-            onChange={e => setNewGroupColor(e.target.value)}
-            className="input input-bordered w-16"
-          />
-          <select
-            value={newGroupIcon}
-            onChange={e => setNewGroupIcon(e.target.value)}
-            className="select select-bordered"
-          >
-            <option value="Folder">Folder</option>
-            <option value="Home">Home</option>
-            <option value="Work">Work</option>
-            <option value="Travel">Travel</option>
-            <option value="Code">Code</option>
-            <option value="Game">Game</option>
-            <option value="Music">Music</option>
-            <option value="Read">Read</option>
-          </select>
-          <button onClick={handleCreateGroup} className="btn btn-primary">
-            Create Group
-          </button>
-        </div>
-        <button onClick={handleSaveCurrentWindowAsGroup} className="btn btn-secondary mb-4">
-          Save Current Window as Group
-        </button>
-      </div>
+            </Accordion.Content>
+          </Accordion.Item>
+        ))}
+      </Accordion.Root>
     </div>
   );
 };
