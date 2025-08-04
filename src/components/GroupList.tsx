@@ -300,43 +300,6 @@ const GroupList: React.FC = () => {
     <div className="group-list-container p-4">
       <h2 className="text-xl font-bold mb-4">Your Groups</h2>
 
-      {/* Input for new group */}
-      <div className="mb-4 flex items-center space-x-2">
-        <input
-          type="text"
-          placeholder="New group name"
-          value={newGroupName}
-          onChange={e => setNewGroupName(e.target.value)}
-          className="input input-bordered w-full max-w-xs"
-        />
-        <input
-          type="color"
-          value={newGroupColor}
-          onChange={e => setNewGroupColor(e.target.value)}
-          className="input input-bordered w-16"
-        />
-        <select
-          value={newGroupIcon}
-          onChange={e => setNewGroupIcon(e.target.value)}
-          className="select select-bordered"
-        >
-          <option value="Folder">Folder</option>
-          <option value="Home">Home</option>
-          <option value="Work">Work</option>
-          <option value="Travel">Travel</option>
-          <option value="Code">Code</option>
-          <option value="Game">Game</option>
-          <option value="Music">Music</option>
-          <option value="Read">Read</option>
-        </select>
-        <button onClick={handleCreateGroup} className="btn btn-primary">
-          Create Group
-        </button>
-      </div>
-      <button onClick={handleSaveCurrentWindowAsGroup} className="btn btn-secondary mb-4">
-        Save Current Window as Group
-      </button>
-
       {groups.length === 0 ? (
         <p>No groups yet. Create one!</p>
       ) : (
@@ -457,6 +420,46 @@ const GroupList: React.FC = () => {
           )}
         </ul>
       )}
+
+      {/* Create New Group Section */}
+      <div className="border-t border-base-300 pt-4 mt-4">
+        <h3 className="text-lg font-bold mb-2">Create New Group</h3>
+        <div className="mb-4 flex items-center space-x-2">
+          <input
+            type="text"
+            placeholder="New group name"
+            value={newGroupName}
+            onChange={e => setNewGroupName(e.target.value)}
+            className="input input-bordered w-full max-w-xs"
+          />
+          <input
+            type="color"
+            value={newGroupColor}
+            onChange={e => setNewGroupColor(e.target.value)}
+            className="input input-bordered w-16"
+          />
+          <select
+            value={newGroupIcon}
+            onChange={e => setNewGroupIcon(e.target.value)}
+            className="select select-bordered"
+          >
+            <option value="Folder">Folder</option>
+            <option value="Home">Home</option>
+            <option value="Work">Work</option>
+            <option value="Travel">Travel</option>
+            <option value="Code">Code</option>
+            <option value="Game">Game</option>
+            <option value="Music">Music</option>
+            <option value="Read">Read</option>
+          </select>
+          <button onClick={handleCreateGroup} className="btn btn-primary">
+            Create Group
+          </button>
+        </div>
+        <button onClick={handleSaveCurrentWindowAsGroup} className="btn btn-secondary mb-4">
+          Save Current Window as Group
+        </button>
+      </div>
     </div>
   );
 };
