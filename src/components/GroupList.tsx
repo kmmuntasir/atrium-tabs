@@ -12,7 +12,7 @@ declare const chrome: any; // Declare chrome for TypeScript
 import * as Accordion from '@radix-ui/react-accordion';
 import * as Toolbar from '@radix-ui/react-toolbar';
 import * as Dialog from '@radix-ui/react-dialog';
-import { X, Trash2, Pencil, MoveVertical, GripVertical } from 'lucide-react';
+import { X, Trash2, Pencil, MoveVertical, GripVertical, Settings, ArrowUpDown, List } from 'lucide-react';
 
 const GroupList: React.FC = () => {
   const [groups, setGroups] = useState<Group[]>([]);
@@ -301,7 +301,7 @@ const GroupList: React.FC = () => {
         {groups.filter(group => !group.isDeleted && group.name.toLowerCase().includes(searchTerm.toLowerCase())).map(group => (
           <Accordion.Item key={group.uuid} value={group.uuid} className="border-b border-gray-300">
             <Accordion.Header>
-              <Accordion.Trigger className="w-full p-2 text-left flex justify-between items-center">
+              <Accordion.Trigger className="w-full p-2 text-left flex justify-between items-center data-[state=open]:bg-blue-200">
                 <span>{group.name} ({group.tabs.length})</span>
                 <Toolbar.Root className="flex items-center">
                   <Toolbar.Button className="p-1" onClick={() => handleEditGroup(group)}>
@@ -340,7 +340,7 @@ const GroupList: React.FC = () => {
       <div className="mt-2">
         <Dialog.Root>
           <Dialog.Trigger asChild>
-            <button className="w-full p-2 border border-gray-300 rounded">
+            <button className="w-full p-2 border border-gray-300 rounded bg-gray-200 hover:bg-gray-300">
               Créer un nouveau groupe
             </button>
           </Dialog.Trigger>
@@ -389,6 +389,19 @@ const GroupList: React.FC = () => {
           </Dialog.Portal>
         </Dialog.Root>
       </div>
+      <Toolbar.Root className="flex items-center justify-between mt-2 p-2 border-t border-gray-300">
+        <Toolbar.Button className="p-1">
+          <List className="h-4 w-4" />
+        </Toolbar.Button>
+        <div className="flex items-center">
+          <Toolbar.Button className="p-1">
+            <ArrowUpDown className="h-4 w-4" />
+          </Toolbar.Button>
+          <Toolbar.Button className="p-1">
+            <Settings className="h-4 w-4" />
+          </Toolbar.Button>
+        </div>
+      </Toolbar.Root>
     </div>
   );
 };
