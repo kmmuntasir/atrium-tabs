@@ -394,8 +394,6 @@ const GroupList: React.FC = () => {
           </Dialog.Portal>
         </Dialog.Root>
       </div>
-      </Dialog.Root>
-      </div>
       <Toolbar.Root className="flex items-center justify-between mt-2 p-2 border-t border-gray-300">
         <button className="p-1" onClick={() => handleDeleteGroupAndKeepTabs(activeGroupInCurrentWindow || '')}>
           Supprimer le groupe actuel en gardant les onglets ouverts
