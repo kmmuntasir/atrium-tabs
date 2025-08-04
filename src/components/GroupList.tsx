@@ -332,8 +332,8 @@ const GroupList: React.FC = () => {
                         {tab.title}
                       </a>
                     </div>
-                    <button className="p-1">
-                      <X className="h-4 w-4" />
+                    <button className="p-0.5 w-5 h-5 flex items-center justify-center rounded-full hover:bg-gray-200">
+                      <X className="h-3 w-3" />
                     </button>
                   </li>
                 ))}
