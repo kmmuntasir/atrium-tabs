@@ -308,14 +308,14 @@ const GroupList: React.FC = () => {
             <Accordion.Header>
               <Accordion.Trigger className={`w-full p-2 text-left flex justify-between items-center ${group.uuid === activeGroupInCurrentWindow ? 'bg-blue-200' : ''}`}>
                 <span>{group.name} ({group.tabs.length})</span>
-                <div className="flex items-center">
-                  <button className="p-1" onClick={() => handleEditGroup(group)}>
+                <div className="flex items-center space-x-1">
+                  <button className="p-1" onClick={() => handleEditGroup(group)} aria-label="Edit group">
                     <Pencil className="h-4 w-4" />
                   </button>
-                  <button className="p-1" onClick={() => handleDeleteGroup(group.uuid)}>
+                  <button className="p-1" onClick={() => handleDeleteGroup(group.uuid)} aria-label="Delete group">
                     <Trash2 className="h-4 w-4" />
                   </button>
-                  <button className="p-1">
+                  <button className="p-1" aria-label="Close group">
                     <X className="h-4 w-4" />
                   </button>
                 </div>
@@ -401,13 +401,13 @@ const GroupList: React.FC = () => {
           Supprimer le groupe actuel en gardant les onglets ouverts
         </button>
         <div className="flex items-center">
-          <button className="p-1">
+          <button className="p-1" aria-label="Group manager">
             <List className="h-4 w-4" />
           </button>
-          <button className="p-1">
+          <button className="p-1" aria-label="Reorder groups">
             <ArrowUpDown className="h-4 w-4" />
           </button>
-          <button className="p-1">
+          <button className="p-1" aria-label="Settings">
             <Settings className="h-4 w-4" />
           </button>
         </div>
