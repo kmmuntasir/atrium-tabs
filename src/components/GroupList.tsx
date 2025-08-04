@@ -26,6 +26,7 @@ const GroupList: React.FC = () => {
   const [currentWindowId, setCurrentWindowId] = useState<number | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [activeGroupInCurrentWindow, setActiveGroupInCurrentWindow] = useState<string | null>(null);
+  const [activeTabUrl, setActiveTabUrl] = useState<string | null>(null);
   const [activeGroupsInOtherWindows, setActiveGroupsInOtherWindows] = useState<Set<string>>(new Set());
 
   const fetchGroups = () => {
@@ -70,7 +71,11 @@ const GroupList: React.FC = () => {
         removeActiveGroupForWindow(windowId);
         fetchGroups(); // Refresh groups to update UI
       });
-      chrome.tabs.onActivated.addListener(fetchGroups); // Listen for tab changes
+      chrome.tabs.onActivated.addListener(async (activeInfo: any) => {
+        const tab = await chrome.tabs.get(activeInfo.tabId);
+        setActiveTabUrl(tab.url);
+        fetchGroups();
+      }); // Listen for tab changes
       chrome.tabs.onRemoved.addListener(fetchGroups); // Listen for tab removal
       chrome.tabs.onUpdated.addListener(fetchGroups); // Listen for tab updates
     }
@@ -324,7 +329,7 @@ const GroupList: React.FC = () => {
             <Accordion.Content className="p-2 bg-white">
               <ul className="space-y-0.5">
                 {group.tabs.map((tab, index) => (
-                  <li key={index} className="flex items-center justify-between py-1">
+                  <li key={index} className={`flex items-center justify-between py-1 ${tab.url === activeTabUrl ? 'bg-blue-100' : ''}`}>
                     <div className="flex items-center space-x-2">
                       <GripVertical className="h-4 w-4 cursor-move" />
                       {tab.favIconUrl && <img src={tab.favIconUrl} alt="Favicon" className="w-4 h-4" />}
