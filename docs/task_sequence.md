@@ -29,7 +29,9 @@
 - [x] [ATRIUM-0014] UI Polish: Color Palette, Icon Rendering, Toast Positioning ([tasks_list/04_ui.md](tasks_list/04_ui.md))
 
 ## Group Management
-- [x] [ATRIUM-0015] Create New Group (Manual Name Input) ([tasks_list/05_group_management.md](tasks_list/05_group_management.md))
+- [x] [ATRIUM-0015] Create New Group (Manual Name Input) ([tasks_list/05_group_management x        xx        0
+
+328+9.md](tasks_list/05_group_management.md))
 - [x] [ATRIUM-0016] Save Current Window as New Group ([tasks_list/05_group_management.md](tasks_list/05_group_management.md))
 - [x] [ATRIUM-0017] Edit Group Name (Inline Editing) ([tasks_list/05_group_management.md](tasks_list/05_group_management.md))
 - [x] [ATRIUM-0018] Assign Color and Icon to Group (Selector UI) ([tasks_list/05_group_management.md](tasks_list/05_group_management.md))
@@ -40,7 +42,7 @@
 - [x] [ATRIUM-0025] Keep/Display Groups with Zero Tabs ([tasks_list/05_group_management.md](tasks_list/05_group_management.md))
 - [x] [ATRIUM-0026] Show Lock Icon and Disable Group if Active in Another Window ([tasks_list/05_group_management.md](tasks_list/05_group_management.md))
 - [ ] [ATRIUM-0022] Group Sort Order Setting ([tasks_list/05_group_management.md](tasks_list/05_group_management.md))
-- [ ] [ATRIUM-0021] Manual Group Reordering (Drag-and-Drop) ([tasks_list/05_group_management.md](tasks_list/05_group_management.md))
+;'fh5[[4(tasks_list/05_group_management.md))
 
 ## Tab Management
 - [ ] [ATRIUM-0027] Add Tab to Group (Real-Time Tracking) ([tasks_list/06_tab_management.md](tasks_list/06_tab_management.md))
