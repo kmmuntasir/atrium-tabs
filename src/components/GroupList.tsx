@@ -299,9 +299,9 @@ const GroupList: React.FC = () => {
       </div>
       <Accordion.Root type="single" collapsible className="w-full">
         {groups.filter(group => !group.isDeleted && group.name.toLowerCase().includes(searchTerm.toLowerCase())).map(group => (
-          <Accordion.Item key={group.uuid} value={group.uuid} className="border-b border-gray-300">
+          <Accordion.Item key={group.uuid} value={group.uuid} className="border-t border-gray-300">
             <Accordion.Header>
-              <Accordion.Trigger className="w-full p-2 text-left flex justify-between items-center data-[state=open]:bg-blue-200">
+              <Accordion.Trigger className={`w-full p-2 text-left flex justify-between items-center ${group.uuid === activeGroupInCurrentWindow ? 'bg-blue-200' : ''}`}>
                 <span>{group.name} ({group.tabs.length})</span>
                 <Toolbar.Root className="flex items-center">
                   <Toolbar.Button className="p-1" onClick={() => handleEditGroup(group)}>
@@ -340,7 +340,7 @@ const GroupList: React.FC = () => {
       <div className="mt-2">
         <Dialog.Root>
           <Dialog.Trigger asChild>
-            <button className="w-full p-2 border border-gray-300 rounded bg-gray-200 hover:bg-gray-300">
+            <button className="w-full p-2 border-t border-b border-gray-300 bg-gray-100 hover:bg-gray-200">
               Créer un nouveau groupe
             </button>
           </Dialog.Trigger>
