@@ -296,7 +296,7 @@ const GroupList: React.FC = () => {
       <div className="search-bar mb-2">
         <input
           type="text"
-          placeholder="Recherche..."
+          placeholder="Search..."
           className="w-full p-1 border border-gray-300 rounded"
           value={searchTerm}
           onChange={e => setSearchTerm(e.target.value)}
@@ -346,7 +346,7 @@ const GroupList: React.FC = () => {
         <Dialog.Root>
           <Dialog.Trigger asChild>
             <button className="w-full p-2 border-t border-b border-gray-300 bg-gray-100 hover:bg-gray-200">
-              Créer un nouveau groupe
+              Create a new group
             </button>
           </Dialog.Trigger>
           <Dialog.Portal>
@@ -396,7 +396,7 @@ const GroupList: React.FC = () => {
       </div>
       <Toolbar.Root className="flex items-center justify-between mt-2 p-2 border-t border-gray-300">
         <button className="p-1" onClick={() => handleDeleteGroupAndKeepTabs(activeGroupInCurrentWindow || '')}>
-          Supprimer le groupe actuel en gardant les onglets ouverts
+          Delete current group and keep tabs open
         </button>
         <div className="flex items-center">
           <button className="p-1" aria-label="Group manager">
