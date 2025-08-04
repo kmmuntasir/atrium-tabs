@@ -322,9 +322,9 @@ const GroupList: React.FC = () => {
               </Accordion.Trigger>
             </Accordion.Header>
             <Accordion.Content className="p-2 bg-white">
-              <ul className="space-y-1">
+              <ul className="space-y-0.5">
                 {group.tabs.map((tab, index) => (
-                  <li key={index} className="flex items-center justify-between">
+                  <li key={index} className="flex items-center justify-between py-1">
                     <div className="flex items-center space-x-2">
                       <GripVertical className="h-4 w-4 cursor-move" />
                       {tab.favIconUrl && <img src={tab.favIconUrl} alt="Favicon" className="w-4 h-4" />}
